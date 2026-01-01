@@ -1,10 +1,10 @@
 # FinalYearProject
-Final Year Project - topic 
+Final Year Project :- 
 
 Team Members:
-1.Ayush Parkhe
-2.Vaishnavi Patil
-3.Dipika Warade
-4.Prajakta Mane
-5.Dipali Sanap
-6.Dipali Khosare
+1.Ayush Parkhe - AP
+2.Vaishnavi Patil - VP
+3.Dipika Warade - DW
+4.Prajakta Mane - PM
+5.Dipali Sanap - DS
+6.Dipali Khosare - DK
