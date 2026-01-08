@@ -71,14 +71,29 @@ def scrape_page(url):
             location = ""
 
         try:
-            stipend = intern.find("span", class_="stipend").text.strip()
-        except:
+            info_blocks = intern.find_all("div", class_="row-1-item")
             stipend = ""
+            duration = ""
+
+            for block in info_blocks:
+                icon = block.find("i")
+
+                if icon and "ic-16-money" in icon.get("class", []):
+                    stipend = block.find("span").text.strip()
+
+                if icon and "ic-16-calendar" in icon.get("class", []):
+                    duration = block.find("span").text.strip()
+
+        except:
+                    stipend = ""
+                    duration = ""
 
         try:
-            duration = intern.find("span", class_="duration").text.strip()
+            skills = intern.find("div", class_="job-skill").text.strip()
+          
         except:
-            duration = ""
+            skills = ""
+
 
         try:
             link = intern.find("a", class_="job-title-href")["href"]
@@ -91,6 +106,7 @@ def scrape_page(url):
             "organization": company,
             "location": location,
             "stipend": stipend,
+            "skills": skills,
             "duration": duration,
             "type": "Internship",
             "source": "Internshala",
@@ -124,6 +140,10 @@ def main():
 
     print(f"✅ Saved {len(df)} internships to {output_path}")
     print("Scraping finished at:", datetime.now())
+
+    print("Before dedupe:", len(all_data))
+    print("After dedupe:", len(df))
+
 
 
 if __name__ == "__main__":
