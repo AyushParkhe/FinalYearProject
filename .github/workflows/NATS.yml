@@ -21,7 +21,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
-          playwright install chromium
+          python -m playwright install --with-deps
 
       - name: Run NATS scraper
         run: python scraper.py
