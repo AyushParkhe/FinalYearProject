@@ -4,4 +4,6 @@ lxml
 pandas
 apscheduler
 playwright
+selenium
+
 
