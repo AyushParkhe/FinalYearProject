@@ -21,7 +21,7 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Run scraper
+      - name: Run Internshala scraper
         run: python scraper.py
 
       - name: Commit updated data
