@@ -5,6 +5,7 @@ pandas
 apscheduler
 playwright
 selenium
-weddriver_manager
+webdriver_manager
+
 
 
