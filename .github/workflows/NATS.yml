@@ -24,7 +24,7 @@ jobs:
           python -m playwright install --with-deps
 
       - name: Run NATS scraper
-        run: python scraper.py
+        run: python NATS.py
 
       - name: Commit updated data
         run: |
