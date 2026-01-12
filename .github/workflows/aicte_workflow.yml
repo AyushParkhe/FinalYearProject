@@ -1,4 +1,4 @@
-name: AICTE Playwright Scraper
+name: Scheduled AICTE Scraper
 
 on:
   workflow_dispatch:   # manual trigger
