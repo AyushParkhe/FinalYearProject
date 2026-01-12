@@ -9,8 +9,36 @@ from datetime import datetime
 
 BASE_URLS = [
     "https://internshala.com/internships/artificial-intelligence-ai-internship",
+    "https://internshala.com/internships/artificial-intelligence-ai-internship/page-2/",
     "https://internshala.com/internships/computer-science-internship",
-    "https://internshala.com/internships/information-technology-internship"
+    "https://internshala.com/internships/computer-science-internship/page-2/",
+    "https://internshala.com/internships/information-technology-internship",
+    "https://internshala.com/internships/information-technology-internship/page-2/",
+    "https://internshala.com/internships/web-development-internship/",
+    "https://internshala.com/internships/web-development-internship/page-2/",
+    "https://internshala.com/internships/backend-development-internship/",
+    "https://internshala.com/internships/backend-development-internship/page-2/",
+    "https://internshala.com/internships/data-science-internship/",
+    "https://internshala.com/internships/data-science-internship/page-2/",
+    "https://internshala.com/internships/game-development-internship/",
+    "https://internshala.com/internships/game-development-internship/page-2/",
+    "https://internshala.com/internships/mobile-app-development-internship/",
+    "https://internshala.com/internships/mobile-app-development-internship/page-2/",
+    "https://internshala.com/internships/software-development-internship/",
+    "https://internshala.com/internships/software-development-internship/page-2/",
+    "https://internshala.com/internships/software-testing-internship/",
+    "https://internshala.com/internships/software-testing-internship/page-2/",
+    "https://internshala.com/internships/full-stack-development-internship/",
+    "https://internshala.com/internships/full-stack-development-internship/page-2/",
+    "https://internshala.com/internships/front-end-development-internship/",
+    "https://internshala.com/internships/front-end-development-internship/page-2/",
+    "https://internshala.com/internships/cloud-computing-internship/",
+    "https://internshala.com/internships/cloud-computing-internship/page-2",
+    "https://internshala.com/internships/natural-language-processing-nlp-internship/",
+    "https://internshala.com/internships/natural-language-processing-nlp-internship/page-2/"
+
+
+    
 ]
 
 HEADERS = {
@@ -25,7 +53,7 @@ HEADERS = {
 }
 
 OUTPUT_DIR = "data"
-OUTPUT_FILE = "internships.csv"
+OUTPUT_FILE = "internshala_inp.csv"
 
 # ------------------------------------------------
 
@@ -89,8 +117,13 @@ def scrape_page(url):
                     duration = ""
 
         try:
-            skills = intern.find("div", class_="job-skill").text.strip()
-          
+            # Use find_all to get every skill pill, not just the first one
+            skill_tags = intern.find_all("div", class_="job_skill")
+            if skill_tags:
+                # Create a comma-separated string (e.g., "Python, Django, SQL")
+                skills = ", ".join([s.text.strip() for s in skill_tags])
+            else:
+                skills = ""
         except:
             skills = ""
 
@@ -101,6 +134,26 @@ def scrape_page(url):
         except:
             link = ""
 
+        try:
+            posted_on = ""
+            # The time is usually inside 'color-labels' -> 'status-success' or 'status-inactive'
+            labels_container = intern.find("div", class_="color-labels")
+            
+            if labels_container:
+                # Look for the specific div that holds the time (it usually has these classes)
+                status_div = labels_container.find("div", class_=["status-success", "status-inactive"])
+                
+                if status_div:
+                    # The text is typically inside a <span> tag within that div
+                    time_span = status_div.find("span")
+                    if time_span:
+                        posted_on = time_span.text.strip()
+                    else:
+                        # Fallback: just get the text if no span exists
+                        posted_on = status_div.text.strip()
+        except:
+            posted_on = ""
+
         page_data.append({
             "title": title,
             "organization": company,
@@ -108,6 +161,7 @@ def scrape_page(url):
             "stipend": stipend,
             "skills": skills,
             "duration": duration,
+            "posted_on": posted_on,
             "type": "Internship",
             "source": "Internshala",
             "apply_link": link,
