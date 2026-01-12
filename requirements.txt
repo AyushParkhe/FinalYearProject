@@ -1,0 +1,13 @@
+requests
+beautifulsoup4
+lxml
+pandas
+apscheduler
+playwright
+selenium
+webdriver_manager
+
+
+
+
+
