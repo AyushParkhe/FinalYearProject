@@ -1,11 +1,4 @@
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from webdriver_manager.chrome import ChromeDriverManager
-
+from playwright.sync_api import sync_playwright, TimeoutError
 import pandas as pd
 import time
 import os
@@ -23,71 +16,70 @@ def ensure_data_dir():
     if not os.path.exists(OUTPUT_DIR):
         os.makedirs(OUTPUT_DIR)
 
-def get_driver():
-    options = Options()
-    options.add_argument("--start-maximized")
-    options.add_argument("--disable-blink-features=AutomationControlled")
-    options.add_argument("--headless=new")
-    options.add_argument("--no-sandbox")
-    options.add_argument("--disable-dev-shm-usage")
-    options.add_argument("--disable-gpu")
-    options.add_argument("--window-size=1920,1080")
-    service = Service(ChromeDriverManager().install())
-    return webdriver.Chrome(service=service, options=options)
-
-def wait_for_manual_login(driver):
+def wait_for_manual_login(page):
     print("🔐 Please login manually:")
     print("1️⃣ Click Login on the website")
     print("2️⃣ Enter your credentials")
-    print("3️⃣ Wait after dashboard loads")
+    print("3️⃣ Go to Apprenticeship Opportunities page")
+    print("⏳ You have 5 minutes...")
 
-    WebDriverWait(driver, 300).until(
-        EC.presence_of_element_located((By.TAG_NAME, "body"))
-    )
+    # Wait until user navigates after login
+    page.wait_for_timeout(300_000)  # 5 minutes
 
-    print("✅ Login completed (page loaded)")
+def scrape_apprenticeships(page):
+    print("📄 Scraping apprenticeship table...")
 
-def scrape_apprenticeships(driver):
-    print("📄 Navigate to Apprenticeship Opportunities page manually if required")
-    time.sleep(20)  # allow manual navigation if needed
+    # Wait for table to appear
+    try:
+        page.wait_for_selector("table tbody tr", timeout=60_000)
+    except TimeoutError:
+        print("❌ Table not found")
+        return []
 
-    rows = driver.find_elements(By.CSS_SELECTOR, "table tbody tr")
+    rows = page.query_selector_all("table tbody tr")
     data = []
 
     for row in rows:
-        cols = row.find_elements(By.TAG_NAME, "td")
+        cols = row.query_selector_all("td")
         if len(cols) < 6:
             continue
 
         data.append({
-            "organization": cols[0].text.strip(),
-            "title": cols[1].text.strip(),
-            "location": cols[2].text.strip(),
-            "duration": cols[3].text.strip(),
-            "stipend": cols[4].text.strip(),
-            "apply_by": cols[5].text.strip(),
+            "organization": cols[0].inner_text().strip(),
+            "title": cols[1].inner_text().strip(),
+            "location": cols[2].inner_text().strip(),
+            "duration": cols[3].inner_text().strip(),
+            "stipend": cols[4].inner_text().strip(),
+            "apply_by": cols[5].inner_text().strip(),
             "scraped_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         })
 
-        time.sleep(2.5)
-
+    print(f"✅ Scraped {len(data)} records")
     return data
 
 def main():
     ensure_data_dir()
-    driver = get_driver()
 
-    try:
-        driver.get(HOME_URL)
-        wait_for_manual_login(driver)
+    with sync_playwright() as p:
+        browser = p.chromium.launch(
+            headless=False,  # MUST be False for manual login
+            args=["--start-maximized"]
+        )
 
-        print("⏳ Waiting before scraping...")
-        time.sleep(20)
+        context = browser.new_context(
+            viewport={"width": 1920, "height": 1080}
+        )
 
-        internships = scrape_apprenticeships(driver)
+        page = context.new_page()
+        page.goto(HOME_URL)
+
+        wait_for_manual_login(page)
+
+        internships = scrape_apprenticeships(page)
 
         if not internships:
-            print("⚠️ No table found yet. Make sure you are on the Opportunities page.")
+            print("⚠️ No data scraped")
+            browser.close()
             return
 
         df = pd.DataFrame(internships)
@@ -96,10 +88,7 @@ def main():
 
         print(f"🎉 Saved {len(df)} records to {output_path}")
 
-    finally:
-        time.sleep(10)
-        driver.quit()
+        browser.close()
 
 if __name__ == "__main__":
     main()
-
