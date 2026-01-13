@@ -26,7 +26,7 @@ jobs:
 
       - name: Run Skill India scraper
         run: |
-          python skill-india_inp.py
+          python skill_india_inp.py
 
       - name: Commit and push changes
         run: |
