@@ -26,7 +26,7 @@ jobs:
 
       - name: Run AICTE scraper
         run: |
-          python aicte_scraper.py
+          python aicte_inp_scraper.py
 
       - name: Commit and push changes
         run: |
