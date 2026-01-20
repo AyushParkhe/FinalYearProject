@@ -1,0 +1,35 @@
+name: RemoteOK Scraper Automation
+
+on:
+  schedule:
+    - cron: "0 */3 * * *"   # Runs every 3 hours
+  workflow_dispatch:        # Manual trigger option
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          playwright install chromium
+
+      - name: Run RemoteOK Scraper
+        run: |
+          python remoteok.py
+
+      - name: Upload CSV output
+        uses: actions/upload-artifact@v4
+        with:
+          name: remoteok-data
+          path: remoteok_jobs_playwright.csv
