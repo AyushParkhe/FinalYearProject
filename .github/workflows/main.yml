@@ -3,7 +3,7 @@ name: RemoteOK Scraper Automation
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 */3 * * *"
+    - cron: '0 */3 * * *'
 
 jobs:
   scrape:
@@ -16,16 +16,12 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.10"
+          python-version: '3.10'
 
       - name: Install dependencies
         run: |
+          python -m pip install --upgrade pip
           pip install requests beautifulsoup4 pandas
 
       - name: Run scraper
         run: python remoteok_scraper.py
-
-
-       - name: Run scraper
-         run: 
-               python remoteok_scraper.py
