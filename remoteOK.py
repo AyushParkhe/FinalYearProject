@@ -68,7 +68,7 @@ def main():
         browser.close()
 
     df = pd.DataFrame(data).drop_duplicates(subset=["job_url"])
-    df.to_csv("remoteok_jobs_playwright.csv", index=False)
+    df.to_csv("remote-ok_inp.csv", index=False)
 
     print("\n✅ SUCCESS")
     print(f"📊 Total jobs scraped: {len(df)}")
@@ -77,4 +77,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
