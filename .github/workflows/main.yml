@@ -25,7 +25,7 @@ jobs:
           pip install requests beautifulsoup4 pandas
 
       - name: Run scraper
-        run: python remoteok_scraper.py
+        run: python remoteOK.py
 
       - name: Check for data changes
         run: |
