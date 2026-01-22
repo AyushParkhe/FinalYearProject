@@ -16,7 +16,7 @@ def main():
     print("🚀 Starting RemoteOK scraping with Playwright...")
 
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=False)
+        browser = p.chromium.launch(headless=True)
         page = browser.new_page()
 
         page.goto(URL, timeout=60_000)
@@ -77,3 +77,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
