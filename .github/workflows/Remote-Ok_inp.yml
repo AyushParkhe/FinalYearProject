@@ -1,9 +1,9 @@
 name: Scheduled RemoteOk scraper
 
 on:
+  workflow_dispatch:   # manual trigger
   schedule:
-    - cron: "0 */3 * * *"   # every 3 hours
-  workflow_dispatch:
+    - cron: "0 */3 * * *" 
 
 jobs:
   scrape:
