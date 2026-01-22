@@ -21,7 +21,8 @@ jobs:
           python-version: "3.10"
 
       - name: Install dependencies
-        run: |
+        run: 
+          pip install -r requirements.txt
           pip install requests beautifulsoup4 pandas
 
       - name: Run scraper
