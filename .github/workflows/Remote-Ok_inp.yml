@@ -1,4 +1,4 @@
-name: RemoteOK Auto Update
+name: Scheduled RemoteOk scraper
 
 on:
   schedule:
@@ -39,9 +39,9 @@ jobs:
 
       - name: Commit & push updated data
         run: |
-          git config user.name "github-actions"
-          git config user.email "actions@github.com"
-          git add data/remote-ok_inp.csv
-          git commit -m "Auto update RemoteOK jobs"
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+          git add .
+          git diff --cached --quiet || git commit -m "Update Remote Ok data"
           git push
 
