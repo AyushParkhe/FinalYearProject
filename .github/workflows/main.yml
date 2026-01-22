@@ -22,8 +22,7 @@ jobs:
 
       - name: Install dependencies
         run: 
-          pip install -r requirements.txt
-          pip install requests beautifulsoup4 pandas
+          
 
       - name: Run scraper
         run: python remoteOK.py
