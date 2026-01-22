@@ -32,7 +32,7 @@ jobs:
 
       - name: Check for data changes
         run: |
-          if git diff --quiet remoteok_jobs.csv; then
+          if git diff --quiet data/remote-ok_inp.csv; then
             echo "No changes detected"
             exit 0
           fi
@@ -41,7 +41,7 @@ jobs:
         run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
-          git add remoteok_jobs.csv
+          git add data/remote-ok_inp.csv
           git commit -m "Auto update RemoteOK jobs"
           git push
 
