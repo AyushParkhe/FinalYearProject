@@ -3,7 +3,7 @@ name: Scheduled RemoteOk scraper
 on:
   workflow_dispatch:   # manual trigger
   schedule:
-    - cron: "0 */3 * * *" 
+  - cron: "17 */3 * * *"  # Runs at 03:17, 06:17, 09:17... 
 
 jobs:
   scrape:
