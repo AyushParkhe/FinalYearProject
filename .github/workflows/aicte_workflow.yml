@@ -33,5 +33,8 @@ jobs:
           git config --global user.name "github-actions"
           git config --global user.email "github-actions@github.com"
           git add .
-          git diff --cached --quiet || git commit -m "Update AICTE internship data"
-          git push
+          git commit -m "Update AICTE internship data" || echo "No changes to commit"
+
+          git pull origin main --rebase
+          git push origin main
+
