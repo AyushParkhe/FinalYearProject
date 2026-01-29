@@ -17,11 +17,15 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.10"
+          cache: 'pip' # Recommended: speeds up future runs
 
       - name: Install dependencies
         run: pip install -r requirements.txt
 
       - name: Run Internshala scraper
+        # ✅ THE FIX: PYTHONPATH tells Python where to find 'utils'
+        env:
+          PYTHONPATH: ${{ github.workspace }}
         run: python scrapers/internshala_inp_scraper.py
 
       - name: Commit updated data
