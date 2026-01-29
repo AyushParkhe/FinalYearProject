@@ -69,7 +69,12 @@ def ensure_data_dir():
 def scrape_page(url):
     print(f"Scraping page: {url}")
 
-    response = requests.get(url, headers=HEADERS, timeout=20)
+    try:
+    response = requests.get(url, headers=HEADERS, timeout=60)
+    except requests.exceptions.ReadTimeout:
+        print("Timeout on page, skipping:", url)
+        return []
+
     print("Status:", response.status_code, "Length:", len(response.text))
 
     if response.status_code != 200 or len(response.text) < 50000:
@@ -231,3 +236,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
