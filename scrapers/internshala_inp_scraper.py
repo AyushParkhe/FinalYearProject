@@ -70,7 +70,7 @@ def scrape_page(url):
     print(f"Scraping page: {url}")
 
     try:
-    response = requests.get(url, headers=HEADERS, timeout=60)
+        response = requests.get(url, headers=HEADERS, timeout=60)
     except requests.exceptions.ReadTimeout:
         print("Timeout on page, skipping:", url)
         return []
@@ -236,4 +236,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
