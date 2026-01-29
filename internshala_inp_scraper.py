@@ -3,9 +3,12 @@ from bs4 import BeautifulSoup
 import pandas as pd
 import os
 import time
-from datetime import datetime
-
+from datetime import datetime,timezone
+from utils.insert_supabase import insert_internship_supabase
+from utils.hashing import row_hash
 # -------------------- CONFIG --------------------
+
+
 
 BASE_URLS = [
     "https://internshala.com/internships/artificial-intelligence-ai-internship",
@@ -165,13 +168,35 @@ def scrape_page(url):
             "type": "Internship",
             "source": "Internshala",
             "apply_link": link,
-            "scraped_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            "scraped_at": datetime.now(timezone.utc).isoformat(),
         })
+
+        row = {
+        "title": title,
+        "organization": company,
+        "location": location,
+        "duration": duration,
+        "stipend": stipend,
+        "skills_final": skills,
+        "posted_on": posted_on,
+        "type": "Internship",
+        "source": "Internshala",
+        "apply_link": link,
+        "scraped_at": datetime.now(timezone.utc).isoformat(),
+        "extra_data": "{}"
+        }
+
+        row["content_hash"] = row_hash(row)
+        insert_internship_supabase(row)
+
+
+
 
     return page_data
 
 
 def main():
+    # create_tables()
     print("Scraping started at:", datetime.now())
 
     all_data = []
@@ -188,6 +213,8 @@ def main():
     df = pd.DataFrame(all_data).drop_duplicates(subset=["apply_link"])
 
     ensure_data_dir()
+    
+
 
     output_path = os.path.join(OUTPUT_DIR, OUTPUT_FILE)
     df.to_csv(output_path, index=False)
@@ -197,6 +224,8 @@ def main():
 
     print("Before dedupe:", len(all_data))
     print("After dedupe:", len(df))
+
+    
 
 
 
