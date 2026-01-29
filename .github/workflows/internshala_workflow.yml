@@ -28,10 +28,14 @@ jobs:
           PYTHONPATH: ${{ github.workspace }}
         run: python scrapers/internshala_inp_scraper.py
 
-      - name: Commit updated data
+      - name: Commit and push changes
         run: |
-          git config --global user.name "github-actions"
-          git config --global user.email "actions@github.com"
-          git add data/
-          git commit -m "Automated internship data update" || echo "No changes"
-          git push
+            git config --global user.name "github-actions"
+            git config --global user.email "github-actions@github.com"
+        
+            git add .
+            git commit -m "Automated internship data update" || echo "No changes to commit"
+        
+            git pull --rebase origin main
+            git push origin main
+
