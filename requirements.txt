@@ -1,13 +1,24 @@
+flask
+werkzeug
+jinja2
+itsdangerous
+click
+
+python-dotenv
+
 requests
+authlib
+
+psycopg2-binary
+
 beautifulsoup4
 lxml
 pandas
-apscheduler
+
 playwright
 selenium
-webdriver_manager
+webdriver-manager
 
+apscheduler
 
-
-
-
+pytz
