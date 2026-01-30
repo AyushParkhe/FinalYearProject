@@ -4,8 +4,8 @@ import pandas as pd
 import os
 import time
 from datetime import datetime,timezone
-from utils.insert_supabase import insert_internship_supabase
-from utils.hashing import row_hash
+# from utils.insert_supabase import insert_internship_supabase
+# from utils.hashing import row_hash
 # -------------------- CONFIG --------------------
 
 
@@ -36,7 +36,7 @@ BASE_URLS = [
     "https://internshala.com/internships/front-end-development-internship/",
     "https://internshala.com/internships/front-end-development-internship/page-2/",
     "https://internshala.com/internships/cloud-computing-internship/",
-    "https://internshala.com/internships/cloud-computing-internship/page-2",
+    # "https://internshala.com/internships/cloud-computing-internship/page-2",
     "https://internshala.com/internships/natural-language-processing-nlp-internship/",
     "https://internshala.com/internships/natural-language-processing-nlp-internship/page-2/"
 
@@ -69,12 +69,7 @@ def ensure_data_dir():
 def scrape_page(url):
     print(f"Scraping page: {url}")
 
-    try:
-        response = requests.get(url, headers=HEADERS, timeout=60)
-    except requests.exceptions.ReadTimeout:
-        print("Timeout on page, skipping:", url)
-        return []
-
+    response = requests.get(url, headers=HEADERS, timeout=20)
     print("Status:", response.status_code, "Length:", len(response.text))
 
     if response.status_code != 200 or len(response.text) < 50000:
@@ -162,37 +157,48 @@ def scrape_page(url):
         except:
             posted_on = ""
 
+
+        title = title.strip() if title else None
+        company = company.strip() if company else None
+
+        # 🚫 IMPORTANT: skip broken / empty cards
+        if not title or not company:
+            continue
         page_data.append({
             "title": title,
             "organization": company,
             "location": location,
             "stipend": stipend,
-            "skills": skills,
+            "skills_final": skills,
             "duration": duration,
             "posted_on": posted_on,
+            "start_date":None,
             "type": "Internship",
             "source": "Internshala",
             "apply_link": link,
             "scraped_at": datetime.now(timezone.utc).isoformat(),
+            "content_hash":None,
+            "extra_data":None
+
         })
 
-        row = {
-        "title": title,
-        "organization": company,
-        "location": location,
-        "duration": duration,
-        "stipend": stipend,
-        "skills_final": skills,
-        "posted_on": posted_on,
-        "type": "Internship",
-        "source": "Internshala",
-        "apply_link": link,
-        "scraped_at": datetime.now(timezone.utc).isoformat(),
-        "extra_data": "{}"
-        }
+        # row = {
+        # "title": title,
+        # "organization": company,
+        # "location": location,
+        # "duration": duration,
+        # "stipend": stipend,
+        # "skills_final": skills,
+        # "posted_on": posted_on,
+        # "type": "Internship",
+        # "source": "Internshala",
+        # "apply_link": link,
+        # "scraped_at": datetime.now(timezone.utc).isoformat(),
+        # "extra_data": "{}"
+        # }
 
-        row["content_hash"] = row_hash(row)
-        insert_internship_supabase(row)
+        # row["content_hash"] = row_hash(row)
+        # insert_internship_supabase(row)
 
 
 
@@ -236,5 +242,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-

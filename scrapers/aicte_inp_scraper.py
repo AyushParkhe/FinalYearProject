@@ -4,8 +4,10 @@ import time
 import json
 from datetime import datetime, timezone
 from playwright.sync_api import sync_playwright
-from utils.insert_supabase import insert_internship_supabase
-from utils.hashing import row_hash
+
+# ❌ DB imports kept but commented (as requested)
+# from utils.insert_supabase import insert_internship_supabase
+# from utils.hashing import row_hash
 
 # ---------------- CONFIG ---------------- #
 
@@ -19,25 +21,26 @@ MAX_PAGES = 50  # safety cap
 def ensure_output_dir():
     os.makedirs(OUTPUT_FOLDER, exist_ok=True)
 
+# ✅ NEW: CSV writer (added, not replacing logic)
 def save_to_csv(data):
     ensure_output_dir()
     file_path = os.path.join(OUTPUT_FOLDER, OUTPUT_FILE)
 
     fieldnames = [
         "title",
-        "company",
-        "work_type",
-        "posted_on",
+        "organization",
         "location",
         "duration",
-        "start_date",
         "stipend",
-        "openings",
-        "apply_by",
+        "skills_final",
+        "posted_on",
+        "start_date",
         "type",
         "source",
         "apply_link",
-        "scraped_at"
+        "scraped_at",
+        "content_hash",
+        "extra_data",
     ]
 
     with open(file_path, "w", newline="", encoding="utf-8") as f:
@@ -79,17 +82,7 @@ def scrape_aicte():
                             return loc.nth(idx).inner_text().strip()
                         return loc.inner_text().strip()
                     except:
-                        return ""
-
-                # -------- EXTRA DATA -------- #
-                extra_data_raw = {
-                    "work_type": text("li.wfh span"),
-                    "start_date": text("li.start-date span"),
-                    "openings": text("li.user span"),
-                    "apply_by": text("li.apply-by span")
-                }
-
-                extra_data_json = json.dumps(extra_data_raw)
+                        return None
 
                 raw_link = card.locator("div.btn-wrap a").get_attribute("href")
                 if not raw_link:
@@ -97,68 +90,73 @@ def scrape_aicte():
 
                 apply_link = f"{raw_link}#page={current_page}_idx={i}"
 
-                # -------- CSV RECORD -------- #
-                record = {
-                    "title": text("h3.job-title"),
-                    "company": text("h5.company-name"),
+                # -------- EXTRA DATA (kept, but structured) -------- #
+                extra_data = {
                     "work_type": text("li.wfh span"),
-                    "posted_on": text("li.posted-on span"),
-                    "location": text("li.location span"),
-                    "duration": text("li.duration span"),
-                    "start_date": text("li.start-date span"),
-                    "stipend": text("li.stipend span", 0),
                     "openings": text("li.user span"),
                     "apply_by": text("li.apply-by span"),
-                    "type": "internship",
+                }
+
+                # ✅ NEW: canonical CSV record (matches allinternships)
+                record = {
+                    "title": text("h3.job-title"),
+                    "organization": text("h5.company-name"),
+                    "location": text("li.location span"),
+                    "duration": text("li.duration span"),
+                    "stipend": text("li.stipend span", 0),
+                    "skills_final": None,
+                    "posted_on": text("li.posted-on span"),
+                    "start_date": text("li.start-date span"),
+                    "type": "Internship",
                     "source": "AICTE",
                     "apply_link": apply_link,
-                    "scraped_at": datetime.now(timezone.utc).isoformat()
+                    "scraped_at": datetime.now(timezone.utc).isoformat(),
+                    "content_hash": None,  # kept for schema compatibility
+                    "extra_data": json.dumps(extra_data),
                 }
 
                 all_internships.append(record)
 
-                # -------- DB ROW -------- #
-                row = {
-                    "title": record["title"],
-                    "organization": record["company"],
-                    "location": record["location"],
-                    "duration": record["duration"],
-                    "stipend": record["stipend"],
-                    "skills_final": "",
-                    "posted_on": record["posted_on"],
-                    "type": "Internship",
-                    "source": "AICTE",
-                    "apply_link": apply_link,
-                    "scraped_at": record["scraped_at"],
-                    "extra_data": extra_data_json
-                }
+                # ❌ OLD DB LOGIC — COMMENTED, NOT REMOVED
+                # row = {
+                #     "title": record["title"],
+                #     "organization": record["organization"],
+                #     "location": record["location"],
+                #     "duration": record["duration"],
+                #     "stipend": record["stipend"],
+                #     "skills_final": "",
+                #     "posted_on": record["posted_on"],
+                #     "type": "Internship",
+                #     "source": "AICTE",
+                #     "apply_link": apply_link,
+                #     "scraped_at": record["scraped_at"],
+                #     "extra_data": record["extra_data"],
+                # }
+                #
+                # row["content_hash"] = row_hash(row)
+                # insert_internship_supabase(row)
 
-                row["content_hash"] = row_hash(row)
-                insert_internship_supabase(row)
-
-            # -------- PAGINATION (FIXED) -------- #
-            # -------- PAGINATION (AICTE JS-BASED, FIXED) --------
-# -------- PAGINATION (AICTE FINAL, STABLE) --------
+            # -------- PAGINATION (unchanged) -------- #
             try:
                 next_page = current_page + 1
-
-                next_btn = page.locator("a.page-link[data-page='%s']" % next_page)
+                next_btn = page.locator(f"a.page-link[data-page='{next_page}']")
 
                 if next_btn.count() == 0:
                     break
 
                 next_btn.first.click()
-
-                # wait for network + DOM to settle
                 page.wait_for_load_state("networkidle", timeout=15000)
                 time.sleep(1)
-
                 current_page += 1
 
             except Exception as e:
                 print("Pagination stopped:", e)
                 break
 
+        browser.close()
+
+    # ✅ NEW: single CSV write at the end
+    save_to_csv(all_internships)
+
 if __name__ == "__main__":
-    # create_tables()
     scrape_aicte()
