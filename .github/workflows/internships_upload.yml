@@ -30,7 +30,7 @@ jobs:
         run: |
           python scrapers/internshala_inp_scraper.py
           python scrapers/aicte_inp_scraper.py
-          python scrapers/skill_india_scraper.py
+          python scrapers/skill_india_inp.py
 
       - name: Bulk upload to Supabase
         env:
