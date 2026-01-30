@@ -1,5 +1,5 @@
 # FinalYearProject
-Final Year Project :- 
+Final Year Project :-  SMARTINTERN - Personalized Internship and Scholarship Recommendation Portal
 
 Team Members:
 
