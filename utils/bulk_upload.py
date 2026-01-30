@@ -25,21 +25,20 @@ TABLE_NAME = "internships"
 # Helpers
 # -------------------------------------------------
 def get_csv_files():
-    if not os.path.exists(DATA_FOLDER):
-        raise RuntimeError("data/ folder not found")
+    files = []
 
-    files = [
-        os.path.join(DATA_FOLDER, f)
-        for f in os.listdir(DATA_FOLDER)
-        if f.endswith(".csv")
-    ]
+    for f in os.listdir(DATA_FOLDER):
+        full_path = os.path.join(DATA_FOLDER, f)
 
-    if not files:
-        print("❌ No CSV files found in data/")
-    else:
-        print(f"📁 Found {len(files)} CSV files")
+        if os.path.isfile(full_path) and f.lower().endswith(".csv"):
+            files.append(full_path)
+
+    print("📄 CSV files detected:")
+    for f in files:
+        print(" -", f)
 
     return files
+
 
 
 def clean_dataframe(df):
@@ -155,3 +154,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
