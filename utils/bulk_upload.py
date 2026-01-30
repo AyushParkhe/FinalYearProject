@@ -24,20 +24,29 @@ TABLE_NAME = "internships"
 # -------------------------------------------------
 # Helpers
 # -------------------------------------------------
+ALLOWED_CSV_FILES = {
+    "aicte_inp.csv",
+    "skill-india_inp.csv",
+    "internshala_inp.csv",
+}
+
 def get_csv_files():
     files = []
 
-    for f in os.listdir(DATA_FOLDER):
-        full_path = os.path.join(DATA_FOLDER, f)
+    for fname in ALLOWED_CSV_FILES:
+        path = os.path.join(DATA_FOLDER, fname)
 
-        if os.path.isfile(full_path) and f.lower().endswith(".csv"):
-            files.append(full_path)
+        if os.path.exists(path):
+            files.append(path)
+        else:
+            print(f"⚠️ Expected CSV not found: {fname}")
 
-    print("📄 CSV files detected:")
+    print("📄 CSV files selected for upload:")
     for f in files:
         print(" -", f)
 
     return files
+
 
 
 
@@ -154,4 +163,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
