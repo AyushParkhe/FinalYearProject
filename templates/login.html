@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block title %}Login - SmartIntern{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+{% endblock %}
+
+{% block content %}
+<!-- ===================================
+     LOGIN FORM SECTION
+=================================== -->
+<div class="login-container">
+  <div class="login-card">
+    <div class="login-header">
+      <h1>Welcome Back</h1>
+      <p>Login to access your personalized dashboard</p>
+              <!-- LOGIN FLASH ONLY -->
+  {% with messages = get_flashed_messages(category_filter=["login_error"]) %}
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-danger">
+          {{ message }}
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+    </div>
+
+    <!-- Flash messages -->
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="alert-container">
+          {% for message in messages %}
+            <div class="alert alert-danger">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <form method="POST" action="{{ url_for('login') }}" novalidate >
+
+      <!-- USERNAME -->
+      <div class="mb-3">
+        <label for="username" class="form-label">Username</label>
+        <input
+          type="text"
+          class="form-control"
+          id="username"
+          name="username"
+          placeholder="Enter Username"
+          required
+          autocomplete="username"
+        >
+        <div class="invalid-feedback">Please enter your username.</div>
+      </div>
+
+      <!-- PASSWORD -->
+      <div class="mb-3">
+        <label for="password" class="form-label">Password</label>
+        <div class="password-wrapper">
+          <input
+            type="password"
+            class="form-control"
+            id="password"
+            name="password"
+            placeholder="Enter your password"
+            required
+            autocomplete="current-password"
+          >
+          <span class="password-toggle" id="passwordToggle">👁️</span>
+        </div>
+        <div class="invalid-feedback">Please enter your password.</div>
+      </div>
+
+      <!-- Submit -->
+      <button type="submit" class="btn-primary-login">
+        Login
+      </button>
+    </form>
+
+    <div class="divider"><span>OR</span></div>
+
+    <!-- GOOGLE LOGIN -->
+    <div class="social-login">
+      <a href="{{ url_for('login_google') }}" class="btn-google-login">
+        <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google">
+        Continue with Google
+      </a>
+    </div>
+
+    <div class="signup-redirect">
+      Don't have an account?
+      <a href="{{ url_for('signup') }}">Create Free Account</a>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  const pw = document.getElementById('password');
+  const toggle = document.getElementById('passwordToggle');
+
+  toggle.addEventListener('click', () => {
+    pw.type = pw.type === 'password' ? 'text' : 'password';
+    toggle.textContent = pw.type === 'password' ? '👁️' : '🙈';
+  });
+</script>
+{% endblock %}

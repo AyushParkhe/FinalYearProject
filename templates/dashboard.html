@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard | SmartIntern{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<div class="container dashboard">
+
+  <!-- WELCOME -->
+  <div class="user-greeting">
+    <h2>Welcome {{ display_name or "Error" }}... <span>👋</span></h2>
+    <p class="text-muted">
+      <strong>Hope you are doing well...
+      Here are the best opportunities based on Our Personalized RS...</strong>
+    </p>
+  </div>
+
+  <!-- SMART INTERN PERSONALIZED SECTION -->
+  <section class="smartintern mb-5">
+
+    {% if not profile_complete %}
+      <!-- 🔒 LOCKED STATE -->
+      <div class="locked-box p-4 border rounded bg-light">
+        <h3>🔒 Personalized Recommendations</h3>
+        <p class="mt-2">
+          Complete your profile to unlock personalized internship and
+          scholarship recommendations.
+        </p>
+        <a href="/profile/setup" class="btn btn-primary mt-2">
+          Complete Profile
+        </a>
+      </div>
+
+    {% else %}
+      <!-- ✅ UNLOCKED STATE -->
+      <h3>SmartIntern Recommendations</h3>
+
+      <div class="tabs mt-3">
+        <button class="btn btn-outline-primary btn-sm me-2">
+          Internships
+        </button>
+        <button class="btn btn-outline-secondary btn-sm">
+          Scholarships
+        </button>
+      </div>
+
+      <!-- Real recommendations will be rendered here next -->
+
+      {% if profile_complete %}
+  <h3>Recommended Internships</h3>
+
+
+ <div class="internship-grid">
+  {% for i in internships %}
+    <div class="internship-card">
+      
+      <div class="card-header">
+        <h4 class="role">
+  <a href="/internships/{{ i.id }}" class="role-link">
+    {{ i.title }}
+  </a>
+</h4>
+
+        <span class="match-badge">
+          {{ i.match_score }} skill match
+        </span>
+      </div>
+
+      <p class="company">
+        {{ i.organization }}
+        <span class="hiring">Actively hiring</span>
+      </p>
+
+      <div class="meta">
+        <span class="location">📍 {{ i.location }}</span>
+      </div>
+
+     <button class="save-btn outline"
+                          data-id="{{ i.id }}"
+                          data-type="internship">
+                    Save
+                  </button>
+
+
+    </div>
+  {% endfor %}
+</div>
+
+{% endif %}
+
+
+    {% endif %}
+
+  </section>
+
+  <!-- UPCOMING DEADLINES -->
+  <section class="deadlines mb-5">
+    <h3>📅 Upcoming Deadlines</h3>
+    <ul class="mt-2">
+      {% for d in deadlines %}
+        <li>{{ d }}</li>
+      {% endfor %}
+    </ul>
+  </section>
+
+  <!-- QUICK NAV -->
+  <div class="d-flex gap-3">
+    <a href="/internships" class="btn btn-outline-primary">
+      View All Internships
+    </a>
+    <a href="#" class="btn btn-outline-dark">
+      View All Scholarships
+    </a>
+  </div>
+
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener("click", async (e) => {
+  if (!e.target.classList.contains("save-btn")) return;
+
+  const btn = e.target;
+
+  const res = await fetch("/save", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      opportunity_id: btn.dataset.id,
+      opportunity_type: btn.dataset.type
+    })
+  });
+
+  if (res.ok) {
+    btn.innerText = "Saved";
+    btn.disabled = true;
+  }
+});
+</script>
+
+{% endblock %}

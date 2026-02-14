@@ -1,0 +1,485 @@
+{% extends "base.html" %}
+
+{% block title %}SmartIntern | My Profile{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/profile_setup.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="page-wrapper">
+    <div class="profile-card">
+
+        <div class="profile-header">
+            <h2>Complete Your Profile</h2>
+            <p>This helps us personalize internships and scholarships for you.</p>
+        </div>
+
+
+        <div class="profile-avatar">
+            <div class="avatar-circle">
+                <span id="avatarInitial">
+                    {{ profile.full_name[0]|upper if profile and profile.full_name else 'A' }}
+                </span>
+            </div>
+            <p class="avatar-text">Profile Picture</p>
+        </div>
+
+        <div class="completion-wrapper">
+            <div class="completion-bar">
+                <div class="completion-fill" id="completionFill"></div>
+            </div>
+            <p class="completion-text">
+                Profile Completion: <span id="completionPercent">0%</span>
+            </p>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+            <div class="flash {{ category }}">
+                {{ message }}
+            </div>
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+
+        <form id="profileForm" class="profile-form">
+
+            <div class="profile-grid">
+
+                <div class="section-block">
+                    <h3 class="section-heading">Personal Information</h3>
+                </div>
+
+                <div class="form-group full">
+                    <label>Full Name</label>
+                    <input name="full_name" required value="{{ profile.full_name if profile else '' }}" >
+                </div>
+
+                <div class="form-group">
+                    <label>Email</label>
+                    <input name="email" value="{{ email }}" {% if email %}disabled{% endif %}>
+                </div>
+
+                <div class="form-group">
+                    <label>Date of Birth</label>
+                    <input type="date" name="dob" required value="{{ profile.dob if profile else '' }}">
+                </div>
+
+                <div class="form-group">
+                    <label>Gender</label>
+                    <select name="gender" required>
+                        <option value="">Select</option>
+                        {% for g in ['male','female','other','prefer not to say'] %}
+                        <option value="{{ g }}" {% if profile and profile.gender == g %}selected{% endif %}>
+                            {{ g.title() }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="section-block">
+                    <h3 class="section-heading">Education & Preferences</h3>
+                </div>
+
+                <div class="form-group">
+                    <label>Education Level</label>
+                    <select name="education_level" onchange="toggleOther(this)">
+                        <option value="">Select</option>
+                        {% for e in ['High School','Diploma','Undergraduate','Postgraduate'] %}
+                        <option value="{{ e }}" {% if profile and profile.education_level == e|lower %}selected{% endif %}>
+                            {{ e }}
+                        </option>
+                        {% endfor %}
+                        <option value="OTHER">Other</option>
+                    </select>
+                   
+                </div>
+
+                <div class="form-group">
+                    <label>Field of Study</label>
+                    <select name="field_of_study" onchange="toggleOther(this)">
+                        <option value="">Select</option>
+                        {% for f in ['Computer Science','Information Technology','Electronics','Data Science','Artificial Intelligence','Content Creation'] %}
+                        <option value="{{ f }}" {% if profile and profile.field_of_study == f %}selected{% endif %}>
+                            {{ f }}
+                        </option>
+                        {% endfor %}
+                        <option value="OTHER">Other</option>
+                    </select>
+                    <input type="text" name="field_of_study_other"
+                        value="{{ profile.field_of_study if profile and profile.field_of_study not in ['Computer Science','Information Technology','Electronics','Data Science','Artificial Intelligence','Content Creation'] else '' }}"
+                        hidden class="mt-2" placeholder="Please specify">
+                </div>
+
+                <div class="form-group">
+                    <label>Graduation Year</label>
+                    <select name="graduation_year">
+                        {% for y in range(2015, 2036) %}
+                        <option value="{{ y }}" {% if profile and profile.graduation_year == y %}selected{% endif %}>
+                            {{ y }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Location</label>
+                    <select name="location" onchange="toggleOther(this)">
+                        <option value="">Select</option>
+                        {% for l in ['Mumbai','Pune','Bangalore','Delhi','Hyderabad','Remote'] %}
+                        <option value="{{ l }}" {% if profile and profile.location == l %}selected{% endif %}>
+                            {{ l }}
+                        </option>
+                        {% endfor %}
+                        <option value="OTHER">Other</option>
+                    </select>
+                    <input type="text" name="location_other"
+                        value="{{ profile.location if profile and profile.location not in ['Mumbai','Pune','Bangalore','Delhi','Hyderabad','Remote'] else '' }}"
+                        hidden class="mt-2" placeholder="Enter city">
+                </div>
+
+                <div class="form-group">
+                    <label>Experience Level</label>
+                    <select name="experience_level">
+                        <option value="">Select</option>
+                        {% for e in ['beginner','intermediate','advanced'] %}
+                        <option value="{{ e }}" {% if profile and profile.experience_level == e %}selected{% endif %}>
+                            {{ e.title() }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Preferred Work Mode</label>
+                    <select name="preferred_mode">
+                        <option value="">Select</option>
+                        {% for m in ['onsite','remote','hybrid'] %}
+                        <option value="{{ m }}" {% if profile and profile.preferred_mode == m %}selected{% endif %}>
+                            {{ m.title() }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Availability Duration</label>
+                    <select name="availability_duration">
+                        <option value="">Select</option>
+                        {% for a in ['1–2 months','3–4 months','6 months','flexible'] %}
+                        <option value="{{ a }}" {% if profile and profile.availability_duration == a %}selected{% endif %}>
+                            {{ a }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group full">
+                    <label>Skills</label>
+                    <input name="skills" required value="{{ skills }}" placeholder="e.g. Python, Java, SQL (comma separated)">
+                </div>
+
+                <div class="form-group full">
+                    <label>Interests</label>
+                    <input name="interests" value="{{ interests }}" placeholder="e.g. AI, Web Development, Data Science">
+                </div>
+
+                <div class="section-block">
+                    <h3 class="section-heading">Scholarship Eligibility</h3>
+                </div>
+
+                <div class="form-group">
+                    <label>Category</label>
+                    <select name="category">
+                        <option value="">Select</option>
+                        {% for c in ['General','OBC','SC','ST','EWS'] %}
+                        <option value="{{ c }}" {% if profile and profile.category == c %}selected{% endif %}>
+                            {{ c }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Person with Disability (PwD)</label>
+                    <select name="disability_status">
+                        <option value="">Select</option>
+                        {% for d in ['No','Yes'] %}
+                        <option value="{{ d }}" {% if profile and profile.disability_status == d %}selected{% endif %}>
+                            {{ d }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group" id="disabilityTypeBlock" style="display: none;">
+                    <label>Disability Type</label>
+                    <select name="disability_type">
+                        <option value="">Select</option>
+                        {% for t in ['Visual','Hearing','Locomotor','Intellectual','Multiple'] %}
+                        <option value="{{ t }}" {% if profile and profile.disability_type == t %}selected{% endif %}>
+                            {{ t }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Annual Family Income</label>
+                    <select name="family_income">
+                        <option value="">Select</option>
+                        {% for i in ['0 – 8 Lakhs','Above 8 Lakhs'] %}
+                        <option value="{{ i }}" {% if profile and profile.family_income == i %}selected{% endif %}>
+                            {{ i }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Institution Type</label>
+                    <select name="institution_type">
+                        <option value="">Select</option>
+                        {% for it in ['Government','Private','Aided'] %}
+                        <option value="{{ it }}" {% if profile and profile.institution_type == it %}selected{% endif %}>
+                            {{ it }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Looking For</label>
+                    <select name="preferred_type">
+                        <option value="">Select</option>
+                        {% for p in ['Internship','Scholarship','Both'] %}
+                        <option value="{{ p }}" {% if profile and profile.preferred_type == p|lower %}selected{% endif %}>
+                            {{ p }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+            </div> <button type="submit">Save & Continue</button>
+        </form>
+
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+/* =====================================================
+   CONFIG & INITIALIZATION
+===================================================== */
+
+const requiredFields = [
+  "full_name", "dob", "gender", "education_level",
+  "field_of_study", "graduation_year", "location",
+  "experience_level", "preferred_mode", "preferred_type",
+  "availability_duration", "skills", "category",
+  "disability_status", "family_income"
+];
+
+const form = document.getElementById("profileForm");
+
+/* =====================================================
+   PROFILE COMPLETION BAR
+===================================================== */
+
+function updateCompletion() {
+  let filled = 0;
+  requiredFields.forEach(name => {
+    const el = form.querySelector(`[name="${name}"]`);
+    if (el && el.value && el.value.trim() !== "") {
+      filled++;
+    }
+  });
+  const percent = Math.round((filled / requiredFields.length) * 100);
+  document.getElementById("completionFill").style.width = percent + "%";
+  document.getElementById("completionPercent").innerText = percent + "%";
+}
+
+form.querySelectorAll("input, select").forEach(el => {
+  el.addEventListener("change", updateCompletion);
+  el.addEventListener("input", updateCompletion);
+});
+
+// Run once on load
+updateCompletion();
+
+/* =====================================================
+   AVATAR INITIAL
+===================================================== */
+
+const nameInput = form.querySelector('input[name="full_name"]');
+const avatarInitial = document.getElementById("avatarInitial");
+
+if (nameInput) {
+  nameInput.addEventListener("input", () => {
+    const v = nameInput.value.trim();
+    if (v.length > 0) {
+      avatarInitial.innerText = v[0].toUpperCase();
+    }
+  });
+}
+
+/* =====================================================
+   TOGGLE "OTHER" INPUTS
+   (Requires onchange="toggleOther(this)" in HTML)
+===================================================== */
+
+function toggleOther(select) {
+  const otherInput = select.parentElement.querySelector(
+    `input[name="${select.name}_other"]`
+  );
+  if (!otherInput) return;
+
+  if (select.value === "OTHER") {
+    otherInput.hidden = false;
+    otherInput.required = true;
+    otherInput.focus();
+  } else {
+    otherInput.hidden = true;
+    otherInput.required = false;
+    otherInput.value = "";
+  }
+  updateCompletion();
+}
+
+// Restore "Other" inputs if they were filled (e.g., page reload or edit mode)
+document.querySelectorAll('select').forEach(select => {
+    const otherInput = select.parentElement.querySelector(`input[name="${select.name}_other"]`);
+    if (otherInput && otherInput.value && otherInput.value.trim() !== "") {
+        select.value = "OTHER";
+        otherInput.hidden = false;
+    }
+});
+
+
+/* =====================================================
+   DISABILITY TOGGLE
+===================================================== */
+
+const disabilitySelect = form.querySelector('[name="disability_status"]');
+const disabilityBlock = document.getElementById("disabilityTypeBlock");
+
+function toggleDisability() {
+  if (disabilitySelect.value === "Yes") {
+    disabilityBlock.style.display = "block";
+  } else {
+    disabilityBlock.style.display = "none";
+  }
+}
+
+if (disabilitySelect) {
+  disabilitySelect.addEventListener("change", toggleDisability);
+  toggleDisability(); // restore on load
+}
+
+/* =====================================================
+   FORM SUBMIT
+===================================================== */
+
+form.onsubmit = async (e) => {
+  e.preventDefault();
+
+  function valueOrOther(name) {
+    const el = form[name];
+    if (!el) return null;
+    return el.value === "OTHER"
+      ? form[`${name}_other`]?.value.trim()
+      : el.value.trim();
+  }
+
+  const data = {
+    full_name: form.full_name.value.trim(),
+    dob: form.dob.value,
+    gender: form.gender.value,
+    email: form.email ? form.email.value.trim() : null,
+
+    education_level: valueOrOther("education_level"),
+    field_of_study: valueOrOther("field_of_study"),
+    graduation_year: form.graduation_year.value,
+    location: valueOrOther("location"),
+
+    experience_level: form.experience_level.value,
+    preferred_mode: form.preferred_mode.value,
+    preferred_type: form.preferred_type.value,
+    availability_duration: form.availability_duration.value,
+
+    category: form.category.value,
+    disability_status: form.disability_status.value,
+    disability_type: form.disability_type?.value || null,
+    family_income: form.family_income.value,
+    institution_type: form.institution_type.value,
+
+    skills: form.skills.value
+      .split(",")
+      .map(s => s.trim())
+      .filter(Boolean),
+    
+    interests: form.interests.value
+      .split(",")
+      .map(i => i.trim())
+      .filter(Boolean)
+  };
+
+  try {
+    const res = await fetch("/profile/setup", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data)
+    });
+
+    if (res.status === 409) {
+      const err = await res.json();
+      showFlash(err.message || "User already exists");
+      return;
+    }
+
+    if (!res.ok) {
+      const err = await res.json();
+      showFlash(err.error || "Error saving profile");
+      return;
+    }
+
+    showSuccessPopup();
+    setTimeout(() => {
+      window.location.href = "/dashboard";
+    }, 1500);
+
+  } catch (err) {
+    showFlash("Network error. Please try again.");
+  }
+};
+
+/* =====================================================
+   UI FEEDBACK
+===================================================== */
+
+function showSuccessPopup() {
+  const popup = document.createElement("div");
+  popup.className = "success-popup";
+  popup.innerText = "✅ Profile updated successfully";
+  document.body.appendChild(popup);
+  setTimeout(() => popup.remove(), 1400);
+}
+
+function showFlash(msg) {
+  const flash = document.createElement("div");
+  flash.className = "flash-error";
+  flash.innerText = msg;
+  document.body.appendChild(flash);
+  setTimeout(() => flash.remove(), 3000);
+}
+
+setTimeout(()=>{
+  const flash = document.querySelector(".flash");
+  if(flash){ flash.style.opacity="0"; }
+},3000);
+</script>
+{% endblock %}

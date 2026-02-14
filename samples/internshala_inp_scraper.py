@@ -3,12 +3,9 @@ from bs4 import BeautifulSoup
 import pandas as pd
 import os
 import time
-from datetime import datetime,timezone
-# from utils.insert_supabase import insert_internship_supabase
-# from utils.hashing import row_hash
+from datetime import datetime
+
 # -------------------- CONFIG --------------------
-
-
 
 BASE_URLS = [
     "https://internshala.com/internships/artificial-intelligence-ai-internship",
@@ -36,7 +33,7 @@ BASE_URLS = [
     "https://internshala.com/internships/front-end-development-internship/",
     "https://internshala.com/internships/front-end-development-internship/page-2/",
     "https://internshala.com/internships/cloud-computing-internship/",
-    # "https://internshala.com/internships/cloud-computing-internship/page-2",
+    "https://internshala.com/internships/cloud-computing-internship/page-2",
     "https://internshala.com/internships/natural-language-processing-nlp-internship/",
     "https://internshala.com/internships/natural-language-processing-nlp-internship/page-2/"
 
@@ -120,19 +117,15 @@ def scrape_page(url):
                     duration = ""
 
         try:
+            # Use find_all to get every skill pill, not just the first one
             skill_tags = intern.find_all("div", class_="job_skill")
-
             if skill_tags:
-                skills = [
-                    s.text.strip()
-                    for s in skill_tags
-                    if s.text.strip()
-                ]
+                # Create a comma-separated string (e.g., "Python, Django, SQL")
+                skills = ", ".join([s.text.strip() for s in skill_tags])
             else:
-                skills = []
-
-        except Exception:
-            skills = []
+                skills = ""
+        except:
+            skills = ""
 
 
         try:
@@ -161,57 +154,24 @@ def scrape_page(url):
         except:
             posted_on = ""
 
-
-        title = title.strip() if title else None
-        company = company.strip() if company else None
-
-        # 🚫 IMPORTANT: skip broken / empty cards
-        if not title or not company:
-            continue
         page_data.append({
             "title": title,
             "organization": company,
             "location": location,
             "stipend": stipend,
-            "skills_final": skills,
+            "skills": skills,
             "duration": duration,
             "posted_on": posted_on,
-            "start_date":None,
             "type": "Internship",
             "source": "Internshala",
             "apply_link": link,
-            "scraped_at": datetime.now(timezone.utc).isoformat(),
-            "content_hash":None,
-            "extra_data":None
-
+            "scraped_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         })
-
-        # row = {
-        # "title": title,
-        # "organization": company,
-        # "location": location,
-        # "duration": duration,
-        # "stipend": stipend,
-        # "skills_final": skills,
-        # "posted_on": posted_on,
-        # "type": "Internship",
-        # "source": "Internshala",
-        # "apply_link": link,
-        # "scraped_at": datetime.now(timezone.utc).isoformat(),
-        # "extra_data": "{}"
-        # }
-
-        # row["content_hash"] = row_hash(row)
-        # insert_internship_supabase(row)
-
-
-
 
     return page_data
 
 
 def main():
-    # create_tables()
     print("Scraping started at:", datetime.now())
 
     all_data = []
@@ -228,8 +188,6 @@ def main():
     df = pd.DataFrame(all_data).drop_duplicates(subset=["apply_link"])
 
     ensure_data_dir()
-    
-
 
     output_path = os.path.join(OUTPUT_DIR, OUTPUT_FILE)
     df.to_csv(output_path, index=False)
@@ -239,8 +197,6 @@ def main():
 
     print("Before dedupe:", len(all_data))
     print("After dedupe:", len(df))
-
-    
 
 
 

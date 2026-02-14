@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% block title %}Sign Up - SmartIntern{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+{% endblock %}
+
+{% block content %}
+<!-- ===================================
+     SIGNUP FORM SECTION
+=================================== -->
+<div class="login-container">
+  <div class="login-card">
+    <div class="login-header">
+      <h1>Create Your Account</h1>
+      <p>Get personalized internship and scholarship recommendations</p>
+              <!-- SIGNUP FLASH ONLY -->
+  {% with messages = get_flashed_messages(category_filter=["signup_error"]) %}
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-danger">
+          {{ message }}
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+    </div>
+
+    <form id="signupForm" method="POST" action="{{ url_for('signup') }}" novalidate>
+
+      <!-- USERNAME -->
+      <div class="mb-3">
+        <label for="username" class="form-label">Username</label>
+        <input
+          type="text"
+          class="form-control"
+          id="username"
+          name="username"
+          placeholder="Enter Your Username"
+          required
+          autocomplete="username"
+        >
+        <div class="invalid-feedback">Please enter a username.</div>
+      </div>
+
+      <!-- PASSWORD -->
+      <div class="mb-3">
+        <label for="password" class="form-label">Password</label>
+        <div class="password-wrapper">
+          <input
+            type="password"
+            class="form-control"
+            id="password"
+            name="password"
+            placeholder="Create a strong password"
+            required
+            autocomplete="new-password"
+          >
+          <span class="password-toggle" id="passwordToggle1">👁️</span>
+        </div>
+        <div class="invalid-feedback">Please enter a password.</div>
+      </div>
+
+      <!-- CONFIRM PASSWORD -->
+      <div class="mb-3">
+        <label for="confirmPassword" class="form-label">Confirm Password</label>
+        <div class="password-wrapper">
+          <input
+            type="password"
+            class="form-control"
+            id="confirmPassword"
+            placeholder="Re-enter password"
+            required
+          >
+          <span class="password-toggle" id="passwordToggle2">👁️</span>
+        </div>
+        <div class="invalid-feedback">Passwords do not match.</div>
+      </div>
+
+      <button type="submit" class="btn-primary-login" id="submitBtn">
+        Create Account
+      </button>
+    </form>
+
+    <div class="divider"><span>OR</span></div>
+
+    <!-- GOOGLE LOGIN -->
+    <div class="social-login">
+      <a href="{{ url_for('login_google') }}" class="btn-google-login">
+        <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google">
+        Continue with Google
+      </a>
+    </div>
+
+    <div class="signup-redirect">
+      Already have an account?
+      <a href="{{ url_for('login') }}">Login here</a>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  const pw1 = document.getElementById('password');
+  const pw2 = document.getElementById('confirmPassword');
+  const toggle1 = document.getElementById('passwordToggle1');
+  const toggle2 = document.getElementById('passwordToggle2');
+  const form = document.getElementById('signupForm');
+
+  [toggle1, toggle2].forEach((toggle, idx) => {
+    toggle.addEventListener('click', () => {
+      const field = idx === 0 ? pw1 : pw2;
+      field.type = field.type === 'password' ? 'text' : 'password';
+    });
+  });
+
+  form.addEventListener('submit', e => {
+    if (pw1.value !== pw2.value) {
+      pw2.classList.add('is-invalid');
+      e.preventDefault();
+    }
+  });
+</script>
+{% endblock %}

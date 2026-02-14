@@ -1,0 +1,464 @@
+.dashboard {
+    padding-top: 120px;
+    padding-bottom: 90px;
+    background-color: #f8fafc; /* subtle light background */
+    min-height: 100vh;
+}
+
+/* .user-greeting{
+  display:grid;
+  place-items: center;
+  height: 100%; 
+  border: radius 15px;
+  transition: 0.5s ease-in-out;
+  background-color: rgb(61, 200, 255);
+  box-sizing: content-box;
+  background:scroll;
+} */
+
+/* ===============================
+   USER GREETING REFINEMENT
+   ================================ */
+.user-greeting {
+  padding: 2rem 0;
+  margin-bottom: 2.5rem;
+  border-left: 4px solid #05213a; /* Subtle brand-colored accent */
+  padding-left: 1.5rem;
+  animation:fadeInSlide 0.8s ease-in;
+}
+@keyframes handWaver {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-10deg); }
+  75% { transform: rotate(10deg); }
+}
+
+.user-greeting h2 span { /* Wrap your emoji in a span */
+  display: inline-block;
+  animation: handWaver 1.5s ease-in-out infinite;
+  transform-origin: bottom center;
+}
+
+.user-greeting h2 {
+  font-size: 2.25rem;
+  font-weight: 800;
+  color: #05213a; /* Your core theme color */
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.02em;
+}
+
+.user-greeting p.text-muted {
+  font-size: 1.05rem;
+  color: #64748b; /* Soft slate gray for readability */
+  line-height: 1.6;
+  max-width: 600px;
+}
+
+.user-greeting p strong {
+  font-weight: 500;
+  color: #475569; /* Slightly darker than the muted text */
+}
+
+/* Optional: Subtle entrance animation */
+@keyframes fadeInSlide {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Responsive adjustment */
+@media (max-width: 768px) {
+  .user-greeting {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  }
+  .user-greeting h2 {
+    font-size: 1.75rem;
+  }
+}
+
+/* ===================================
+   SECTION HEADERS
+   =================================== */
+.smartintern h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #05213a;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ===================================
+   🔒 LOCKED STATE (Clean & Soft)
+   =================================== */
+.locked-box {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 16px !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+  text-align: center;
+  padding: 3rem 2rem !important;
+  transition: transform 0.3s ease;
+}
+
+.locked-box h3 {
+  justify-content: center;
+  margin-top: 0;
+  color: #475569;
+}
+
+.locked-box p {
+  color: #64748b;
+  font-size: 1rem;
+  max-width: 500px;
+  margin: 0 auto 1.5rem !important;
+}
+
+.locked-box .btn-primary {
+  background-color: #05213a;
+  border: none;
+  padding: 10px 25px;
+  font-weight: 600;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.locked-box .btn-primary:hover {
+  background-color: #0a2e50;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(5, 33, 58, 0.2);
+}
+
+/* ===================================
+   ✅ TABS (Modern Segmented Control)
+   =================================== */
+.tabs {
+  background: #f1f5f9;
+  padding: 6px;
+  border-radius: 12px;
+  display: inline-flex;
+  gap: 4px;
+  margin-bottom: 2rem;
+}
+
+.tabs .btn {
+  border: none !important;
+  border-radius: 8px !important;
+  padding: 8px 20px !important;
+  font-weight: 600 !important;
+  font-size: 0.9rem !important;
+  transition: all 0.2s ease;
+}
+
+/* Active Tab Style (Primary) */
+.tabs .btn-outline-primary {
+  background-color: #ffffff !important;
+  color: #05213a !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* Inactive Tab Style (Secondary) */
+.tabs .btn-outline-secondary {
+  background-color: transparent !important;
+  color: #64748b !important;
+}
+
+.tabs .btn-outline-secondary:hover {
+  color: #05213a !important;
+  background-color: rgba(255, 255, 255, 0.5) !important;
+}
+
+/* ===================================
+   SECTION TRANSITION
+   =================================== */
+.smartintern {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.recommend-card {
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 22px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.06);
+    height: 100%;
+    transition: all 0.25s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+
+.recommend-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 35px rgba(0,0,0,0.10);
+}
+
+.recommend-card h6 {
+    font-weight: 600;
+    font-size: 1.05rem;
+    margin-bottom: 4px;
+}
+
+
+.recommend-card p {
+    margin-bottom: 6px;
+    font-size: 0.9rem;
+    color: #475569;
+}
+
+.recommend-card strong {
+    color: #0f172a;
+}
+
+.recommend-card .btn {
+    font-size: 0.85rem;
+    padding: 6px 14px;
+    border-radius: 8px;
+}
+
+.info-box {
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 26px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.06);
+    height: 100%;
+}
+
+.info-box h5 {
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: #0f172a;
+}
+
+.info-box ul {
+    padding-left: 18px;
+    margin-bottom: 0;
+}
+
+.info-box li {
+    font-size: 0.9rem;
+    color: #475569;
+    margin-bottom: 6px;
+}
+
+.profile-progress {
+    font-weight: 600;
+    color: #16a34a; /* success green */
+}
+
+
+.dashboard h4 {
+    font-weight: 600;
+    margin-bottom: 18px;
+    color: #0f172a;
+}
+
+/* ---- Internship Cards ---- */
+
+.internship-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+  gap: 18px;
+  margin-top: 16px;
+}
+
+.internship-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 18px 20px;
+  transition: all 0.2s ease;
+}
+
+.internship-card:hover {
+  border-color: #2563eb;
+  box-shadow: 0 12px 28px rgba(0,0,0,0.08);
+  transform: translateY(-2px);
+}
+
+/* Header row */
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.role {
+  font-size: 18px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+}
+
+/* Match badge */
+.match-badge {
+  background: #ecfeff;
+  color: #0369a1;
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* Company */
+.company {
+  margin: 8px 0 10px;
+  font-size: 14px;
+  color: #374151;
+}
+
+.hiring {
+  color: #16a34a;
+  font-weight: 500;
+  margin-left: 6px;
+}
+
+/* Meta */
+.meta {
+  display: flex;
+  gap: 16px;
+  font-size: 13px;
+  color: #6b7280;
+}
+.role-link {
+  color: #111827;
+  text-decoration: none;
+}
+
+.role-link:hover {
+  text-decoration: underline;
+  color: #2563eb;
+}
+
+/* ===============================
+   SAVE BUTTON (LISTING CARDS)
+================================ */
+.save-btn {
+  /* Layout & Typography */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  
+  /* Styling */
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) ease;
+  border: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* Primary Outline/Action State */
+.save-btn.outline {
+  background: linear-gradient(135deg, #67a4ff 0%, #308ee0 100%);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.save-btn.outline:hover {
+  background: #1e4bdf;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(5, 33, 58, 0.25);
+}
+
+/* Active "Click" Animation */
+.save-btn.outline:active {
+  transform: translateY(1px);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Saved (Disabled) State - Refined for success */
+.save-btn:disabled {
+  background: #f0fdf4; /* Very light success green */
+  border: 1px solid #bbf7d0; /* Soft green border */
+  color: #166534; /* Deep forest green for readability */
+  cursor: default;
+  box-shadow: none;
+  opacity: 0.9;
+}
+
+/* Adding a checkmark icon via CSS (optional enhancement) */
+.save-btn:disabled::before {
+  content: '✓';
+  font-weight: 800;
+}
+.card-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+/* ===================================
+   QUICK NAVIGATION BUTTONS
+   =================================== */
+.d-flex.gap-3 {
+  margin-top: 3rem;
+  padding: 2rem 0;
+  border-top: 1px solid #f1f5f9; /* Subtle separator from the content above */
+}
+
+.btn-outline-primary, 
+.btn-outline-dark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 24px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border-radius: 10px;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  text-decoration: none;
+}
+
+/* View All Internships - Light & Themed */
+.btn-outline-primary {
+  color: #05213a;
+  background-color: #ffffff;
+  border: 1.5px solid #05213a;
+}
+
+.btn-outline-primary:hover {
+  background-color: #05213a;
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(5, 33, 58, 0.15);
+}
+
+/* View All Scholarships - Neutral & Elegant */
+.btn-outline-dark {
+  color: #475569;
+  background-color: #ffffff;
+  border: 1.5px solid #e2e8f0;
+}
+
+.btn-outline-dark:hover {
+  background-color: #f8fafc;
+  border-color: #94a3b8;
+  color: #1e293b;
+  transform: translateY(-2px);
+}
+
+/* Active "Press" State */
+.btn-outline-primary:active, 
+.btn-outline-dark:active {
+  transform: scale(0.97);
+}
+

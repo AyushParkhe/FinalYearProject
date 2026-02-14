@@ -4,6 +4,7 @@ import time
 import json
 from datetime import datetime, timezone
 from playwright.sync_api import sync_playwright
+from utils.skills.factory import get_extractor
 
 # ❌ DB imports kept but commented (as requested)
 # from utils.insert_supabase import insert_internship_supabase
@@ -14,7 +15,7 @@ from playwright.sync_api import sync_playwright
 URL = "https://internship.aicte-india.org/recentlyposted.php"
 OUTPUT_FOLDER = "data"
 OUTPUT_FILE = "aicte_inp.csv"
-MAX_PAGES = 50  # safety cap
+MAX_PAGES = 70  # safety cap
 
 # --------------------------------------- #
 
@@ -50,6 +51,8 @@ def save_to_csv(data):
 
     print(f"\n✅ Saved {len(data)} records to {file_path}")
 
+extractor = get_extractor("AICTE")
+
 def scrape_aicte():
     all_internships = []
 
@@ -64,7 +67,7 @@ def scrape_aicte():
             print(f"Scraping page {current_page}...")
 
             try:
-                page.wait_for_selector("div.card.internship-item", timeout=10000)
+                page.wait_for_selector("div.card.internship-item", timeout=60000)
             except:
                 print("No more listings found.")
                 break
@@ -85,11 +88,12 @@ def scrape_aicte():
                         return None
 
                 raw_link = card.locator("div.btn-wrap a").get_attribute("href")
-                if not raw_link:
-                    continue
+                if raw_link.startswith("http"):
+                    apply_link = raw_link
+                else:
+                    apply_link = "https://internship.aicte-india.org/" + raw_link.lstrip("/")
 
-                apply_link = f"{raw_link}#page={current_page}_idx={i}"
-
+                    
                 # -------- EXTRA DATA (kept, but structured) -------- #
                 extra_data = {
                     "work_type": text("li.wfh span"),
@@ -97,14 +101,25 @@ def scrape_aicte():
                     "apply_by": text("li.apply-by span"),
                 }
 
+                title=text("h3.job-title") or ""
+
+                try:
+                    skills=extractor.extract(title) if title else []
+                except Exception as e:
+                    print("Skills ectraction failed :" ,e)
+                    skills=[]
+                    
+
+
+
                 # ✅ NEW: canonical CSV record (matches allinternships)
                 record = {
-                    "title": text("h3.job-title"),
+                    "title": title,
                     "organization": text("h5.company-name"),
                     "location": text("li.location span"),
                     "duration": text("li.duration span"),
                     "stipend": text("li.stipend span", 0),
-                    "skills_final": None,
+                    "skills_final": skills,
                     "posted_on": text("li.posted-on span"),
                     "start_date": text("li.start-date span"),
                     "type": "Internship",

@@ -1,0 +1,247 @@
+{% extends "base.html" %}
+
+{% block title %}About Us | SmartIntern{% endblock %}
+{% block extra_css %}
+<!-- <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet"> -->
+
+<style>
+/* *{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif;} */
+body{background:#f8f9fa;color:#333;}
+/* .container{width:90%;max-width:1200px;margin:auto;} */
+
+/* HERO */
+.hero{
+  background:linear-gradient(120deg,#00a5ec,#0077b6);
+  color:#fff;
+  padding:100px 0;
+}
+.hero h1{font-size:46px;margin-bottom:16px;}
+.hero p{font-size:18px;max-width:750px;line-height:1.7;}
+
+/* SECTIONS */
+.section{background:#fff;padding:80px 0;}
+.section h2{font-size:34px;color:#1f4fa3;margin-bottom:22px;}
+.section p{font-size:16px;line-height:1.9;max-width:900px;color:#444;}
+
+/* VALUES */
+.values{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:32px;
+  margin-top:50px;
+}
+.value-box{
+  background:#f4f6f8;
+  padding:34px;
+  border-radius:14px;
+}
+.value-box h3{color:#0077b6;margin-bottom:12px;}
+
+/* TEAM */
+.tabs{
+  display:flex;
+  gap:45px;
+  margin:50px 0;
+  font-size:16px;
+}
+.tab{
+  cursor:pointer;
+  color:#777;
+  padding-bottom:6px;
+}
+.tab.active{
+  color:#0077b6;
+  border-bottom:2px solid #0077b6;
+}
+
+.team-list{max-width:900px;}
+
+.member{
+  display:flex;
+  gap:28px;
+  margin-bottom:45px;
+}
+.member img{
+  width:120px;
+  height:120px;
+  border-radius:50%;
+  object-fit:cover;
+}
+.member h4{
+  margin-bottom:8px;
+  font-size:18px;
+}
+.member p{
+  font-size:14px;
+  color:#555;
+  line-height:1.6;
+}
+
+
+@media(max-width:650px){
+  .member{
+    flex-direction:column;
+    align-items:center;
+    text-align:center;
+  }
+  .hero h1{font-size:34px;}
+}
+</style>
+{% endblock %}
+
+
+{% block content %}
+
+<!-- HERO -->
+<div class="hero">
+  <div class="container">
+    <h1>About SmartIntern</h1>
+    <p>
+      SmartIntern is an intelligent internship and scholarship discovery platform
+      that provides personalized, data-driven recommendations to help students
+      find the right opportunities at the right time.
+    </p>
+  </div>
+</div>
+
+<!-- WHO WE ARE -->
+<div class="section">
+  <div class="container">
+    <h2>Who we are</h2>
+    <p>
+      SmartIntern was built to address the challenge students face in discovering
+      relevant internships and scholarships across multiple platforms.
+      We aggregate verified opportunities and intelligently match them with
+      students based on skills, interests, and academic profiles.
+    </p>
+  </div>
+</div>
+
+<!-- BELIEFS -->
+<div class="section">
+  <div class="container">
+    <h2>What we believe in</h2>
+
+    <div class="values">
+      <div class="value-box">
+        <h3>Accessibility</h3>
+        <p>Every student deserves equal access to career opportunities.</p>
+      </div>
+
+      <div class="value-box">
+        <h3>Transparency</h3>
+        <p>Only verified, trustworthy, and up-to-date information.</p>
+      </div>
+
+      <div class="value-box">
+        <h3>Personalization</h3>
+        <p>Opportunities should match individual goals and strengths.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TEAM -->
+<div class="section">
+  <div class="container">
+    <h2>Meet the team</h2>
+
+    <div class="tabs">
+      <span class="tab active" onclick="showTeam('current')">Current team</span>
+      <span class="tab" onclick="showTeam('advisor')">Advisors</span>
+    </div>
+
+    <!-- CURRENT TEAM -->
+    <div id="current-team" class="team-list">
+
+      <div class="member">
+        <img src="static/img/about_us/ap.jpeg">
+        <div>
+          <h4>Ayush Parkhe</h4>
+          <p>Core team member responsible for system planning and development.</p>
+        </div>
+      </div>
+
+      <div class="member">
+        <img src="static/img/about_us/vp.jpeg">
+        <div>
+          <h4>Vaishnavi Patil</h4>
+          <p>Works on AI logic, data processing, and recommendation systems.</p>
+        </div>
+      </div>
+
+      <div class="member">
+        <img src="static/img/about_us/dk.jpeg">
+        <div>
+          <h4>Dipali Khosare</h4>
+          <p>Handles research, documentation, and data verification.</p>
+        </div>
+      </div>
+
+      <div class="member">
+        <img src="static/img/about_us/pm.jpeg">
+        <div>
+          <h4>Prajkta Mane</h4>
+          <p>Supports UI structure and content validation.</p>
+        </div>
+      </div>
+
+      <div class="member">
+        <img src="static/img/about_us/ds.jpeg">
+        <div>
+          <h4>Dipali Sanap</h4>
+          <p>Assists with backend coordination and data preparation.</p>
+        </div>
+      </div>
+
+      <div class="member">
+        <img src="static/img/about_us/dw.jpeg">
+        <div>
+          <h4>Dipika Warade</h4>
+          <p>Works on data analysis and recommendation accuracy.</p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ADVISOR -->
+    <div id="advisor-team" class="team-list" style="display:none;">
+      <div class="member">
+        <img src="advisor_placeholder.jpg">
+        <div>
+          <h4>P. V. Sontakke</h4>
+          <p>
+            Project Advisor and Mentor, guiding the team in research methodology,
+            system design, and technical implementation.
+          </p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+
+<script>
+function showTeam(type){
+  const current=document.getElementById('current-team');
+  const advisor=document.getElementById('advisor-team');
+  const tabs=document.querySelectorAll('.tab');
+  tabs.forEach(t=>t.classList.remove('active'));
+  if(type==='current'){
+    current.style.display='block';
+    advisor.style.display='none';
+    tabs[0].classList.add('active');
+  }else{
+    current.style.display='none';
+    advisor.style.display='block';
+    tabs[1].classList.add('active');
+  }
+}
+</script>
+{% endblock %}
+
+
+

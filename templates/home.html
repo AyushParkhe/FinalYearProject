@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+
+{% block title %}SmartIntern{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+{% endblock %}
+
+{% block content %}
+    <!-- ===================================
+         HERO SECTION
+    =================================== -->
+    <section id="home" class="hero-section">
+        <div class="container">
+            <h1>Find Internships & Scholarships You Are Eligible For</h1>
+            <p>
+                SmartIntern automatically collects verified opportunities and recommends the most relevant 
+                internships and scholarships based on your academic profile and skills.
+            </p>
+            <div class="hero-buttons">
+                <a href="{{ url_for('signup') }}" class="btn btn-primary-hero">Get Started</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================================
+         ABOUT PLATFORM SECTION
+    =================================== -->
+    <section class="section about-section">
+        <div class="container">
+            <h2 class="section-title">Why SmartIntern?</h2>
+            <div class="about-content">
+                <p>
+                    Every year, thousands of students miss valuable internships and scholarships simply because 
+                    information is scattered across countless websites, social media posts, and email newsletters. 
+                    SmartIntern solves this problem by centralizing verified opportunities in one place and using 
+                    intelligent eligibility-based matching to recommend only the opportunities that are truly 
+                    relevant to your academic profile, skills, and goals. Stop wasting time searching—let SmartIntern 
+                    do the work for you.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================================
+         HOW IT WORKS SECTION
+    =================================== -->
+    <section id="how-it-works" class="section how-it-works-section">
+        <div class="container">
+            <h2 class="section-title">How It Works</h2>
+            <p class="section-subtitle">
+                Getting personalized recommendations is simple. Follow these four easy steps.
+            </p>
+            
+            <div class="step-container">
+                <div class="step-card">
+                    <div class="step-number">1</div>
+                    <div class="step-title">Create Your Profile</div>
+                    <p class="step-description">
+                        Sign up and fill in your academic details, skills, and preferences.
+                    </p>
+                </div>
+
+                <div class="step-card">
+                    <div class="step-number">2</div>
+                    <div class="step-title">We Collect Opportunities</div>
+                    <p class="step-description">
+                        SmartIntern automatically gathers verified internships and scholarships.
+                    </p>
+                </div>
+
+                <div class="step-card">
+                    <div class="step-number">3</div>
+                    <div class="step-title">Eligibility Matching</div>
+                    <p class="step-description">
+                        Our system matches opportunities based on your profile and eligibility.
+                    </p>
+                </div>
+
+                <div class="step-card">
+                    <div class="step-number">4</div>
+                    <div class="step-title">Get Recommendations</div>
+                    <p class="step-description">
+                        Receive curated, relevant opportunities directly in your dashboard.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================================
+         FEATURES SECTION
+    =================================== -->
+    <section id="features" class="section features-section">
+        <div class="container">
+            <h2 class="section-title">Platform Features</h2>
+            <p class="section-subtitle">
+                Everything you need to discover and apply to the right opportunities.
+            </p>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">📂</div>
+                    <div class="feature-title">Internship & Scholarship Separation</div>
+                    <p class="feature-description">
+                        Opportunities are organized separately for easy browsing and filtering.
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <div class="feature-title">Eligibility-Based Recommendations</div>
+                    <p class="feature-description">
+                        Only see opportunities you actually qualify for based on your profile.
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <div class="feature-title">Near Real-Time Updates</div>
+                    <p class="feature-description">
+                        Get notified as soon as new opportunities matching your profile are added.
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <div class="feature-title">Clean Student Dashboard</div>
+                    <p class="feature-description">
+                        Manage your profile, saved opportunities, and applications in one place.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================================
+         CALL TO ACTION SECTION
+    =================================== -->
+    <section class="cta-section">
+        <div class="container">
+            <h2>Stop missing opportunities you are already eligible for.</h2>
+            <a href="{{ url_for('signup') }}" class="btn btn-cta">Create Free Account</a>
+        </div>
+    </section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+{% endblock %}

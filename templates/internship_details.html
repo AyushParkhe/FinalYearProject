@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}{{ internship.title }} | SmartIntern{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+
+  <h2>{{ internship.title }}</h2>
+  <p class="text-muted">
+    {{ internship.organization }} • {{ internship.location }}
+  </p>
+
+  <hr>
+
+  <p><strong>Duration:</strong> {{ internship.duration }}</p>
+  <p><strong>Stipend:</strong> {{ internship.stipend }}</p>
+  <p><strong>Skills Required:</strong> {{ internship.skills_final }}</p>
+  <p><strong>Source:</strong> {{ internship.source }}</p>
+  <p><strong>Posted On:</strong> {{ internship.posted_on }}</p>
+
+  {% if internship.extra_data %}
+    <pre class="bg-light p-3 rounded">
+{{ internship.extra_data | tojson(indent=2) }}
+    </pre>
+  {% endif %}
+
+  <a href="{{ internship.apply_link }}"
+     target="_blank"
+     class="btn btn-primary mt-3">
+    Apply on Source
+  </a>
+
+</div>
+{% endblock %}

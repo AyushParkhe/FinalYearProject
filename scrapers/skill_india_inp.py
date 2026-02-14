@@ -4,6 +4,9 @@ import time
 import json
 from datetime import datetime, timezone
 import os
+from utils.skills.factory import get_extractor
+
+
 
 # Configuration
 URL = "https://www.skillindiadigital.gov.in/internship"
@@ -12,6 +15,9 @@ OUTPUT_FILE = "skill-india_inp.csv"
 
 def ensure_output_dir():
     os.makedirs(OUTPUT_FOLDER, exist_ok=True)
+
+extractor = get_extractor("Skill India")
+
 
 def run_complex_scraper():
     with sync_playwright() as p:
@@ -94,6 +100,19 @@ def run_complex_scraper():
                         "sector": sector
                     }
 
+                    metadata={}
+
+                    if extra_data:
+                        try:
+                            metadata = json.loads(extra_data)
+                        except:
+                            metadata = {}
+
+                        skills = extractor.extract(
+                        title=title,
+                        metadata=metadata
+                        )
+
                     # ✅ NEW: Canonical CSV record (schema-aligned)
                     record = {
                         "title": title,
@@ -101,7 +120,7 @@ def run_complex_scraper():
                         "location": None,
                         "duration": duration,
                         "stipend": None,
-                        "skills_final": None,
+                        "skills_final": skills,
                         "posted_on": None,
                         "start_date": None,
                         "type": "Internship",

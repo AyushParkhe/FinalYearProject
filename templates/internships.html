@@ -1,0 +1,216 @@
+{% extends "base.html" %}
+
+{% block title %}All Internships | SmartIntern{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+
+  <!-- ===============================
+       PAGE HEADER
+  ================================ -->
+  <div class="mb-4">
+    <h2 class="fw-bold">All Internships</h2>
+    <p class="text-muted">
+      Explore verified internship opportunities from multiple trusted sources.
+    </p>
+  </div>
+
+  <!-- ===============================
+       FILTERS
+  ================================ -->
+  <form method="GET" class="row g-3 mb-4">
+    <!-- <div class="col-md-4">
+      <input
+        type="text"
+        name="location"
+        value="{{ request.args.get('location', '') }}"
+        class="form-control"
+        placeholder="Filter by Location"
+      >
+    </div> -->
+
+       <div class="col-md-4">
+  <select name="location" class="form-select">
+    <option value="">All Locations</option>
+    <option value="Mumbai">Mumbai</option>
+    <option value="Pune">Pune</option>
+    <option value="Delhi">Delhi</option>
+    <option value="">More Coming Soon..</option>
+  </select>
+</div>
+
+    <!-- <div class="col-md-4">
+      <input
+        type="text"
+        name="source"
+        value="{{ request.args.get('source', '') }}"
+        class="form-control"
+        placeholder="Filter by Source"
+      >
+    </div> -->
+
+    <div class="col-md-4">
+  <select name="source" class="form-select">
+    <option value="">All Sources</option>
+    <option value="AICTE">AICTE</option>
+    <option value="Internshala">Internshala</option>
+    <option value="Skill India">Skill India</option>
+    <option value="">More Coming Soon..</option>
+  </select>
+</div>
+
+
+
+    <div class="col-md-4">
+      <button type="submit" class="btn btn-primary w-100">
+        Apply Filters
+      </button>
+    </div>
+  </form>
+
+  <!-- ===============================
+       INTERNSHIP CARDS
+  ================================ -->
+  {% if internships %}
+    <div class="row g-4">
+
+      {% for internship in internships %}
+        <div class="col-md-6 col-lg-4">
+          <div class="card h-100 shadow-sm">
+            <div class="card-body d-flex flex-column">
+
+              <!-- Title -->
+              <h5 class="card-title">
+                {{ internship.title }}
+              </h5>
+
+              <!-- Organization -->
+              <p class="text-muted mb-1">
+                {{ internship.organization }}
+              </p>
+
+              <!-- Location -->
+              <p class="small text-muted mb-2">
+                {{ internship.location }}
+              </p>
+
+              <!-- Basic Info -->
+              <p class="small mb-2">
+                <strong>Duration:</strong> {{ internship.duration or "Not specified" }}<br>
+                <strong>Stipend:</strong> {{ internship.stipend or "Not specified" }}
+              </p>
+
+              <!-- Source -->
+              {% if internship.source %}
+                <span class="badge bg-secondary mb-2 align-self-start">
+                  Source: {{ internship.source }}
+                </span>
+              {% endif %}
+
+              <!-- Posted Date -->
+              {% if internship.posted_on %}
+                <p class="small text-muted mb-3">
+                  Posted on: {{ internship.posted_on }}
+                </p>
+              {% endif %}
+
+              <!-- Actions -->
+              <div class="card-actions">
+                <a href="{{ internship.apply_link }}"
+                   target="_blank"
+                   class="btn btn-primary btn-sm w-50">
+                  Apply
+                </a>
+
+                <a href="/internships/{{ internship.id }}"
+                   class="btn btn-outline-secondary btn-sm w-50">
+                  View Details
+                </a>
+
+                {% if internships.id in saved_ids %}
+                  <button class="save-btn outline" disabled>
+                    Saved
+                  </button>
+                {% else %}
+                  <button class="save-btn outline"
+                          data-id="{{ internship.id }}"
+                          data-type="internship">
+                    Save
+                  </button>
+                {% endif %}
+               
+
+              </div>
+
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+
+    </div>
+  {% else %}
+    <p>No internships available at the moment.</p>
+  {% endif %}
+
+  <!-- ===============================
+       PAGINATION
+  ================================ -->
+  {% if internships %}
+    <nav class="mt-5">
+      <ul class="pagination justify-content-center">
+
+        {% if page > 1 %}
+          <li class="page-item">
+            <a class="page-link"
+               href="?page={{ page - 1 }}&location={{ request.args.get('location','') }}&organization={{ request.args.get('organization','') }}">
+              Previous
+            </a>
+          </li>
+        {% endif %}
+
+        <li class="page-item active">
+          <span class="page-link">{{ page }}</span>
+        </li>
+
+        {% if internships|length == 12 %}
+          <li class="page-item">
+            <a class="page-link"
+               href="?page={{ page + 1 }}&location={{ request.args.get('location','') }}&organization={{ request.args.get('organization','') }}">
+              Next
+            </a>
+          </li>
+        {% endif %}
+
+      </ul>
+    </nav>
+  {% endif %}
+
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+document.addEventListener("click", async (e) => {
+  const btn = e.target.closest(".save-btn");
+  if (!btn || btn.disabled) return;
+
+  const res = await fetch("/save", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      opportunity_id: btn.dataset.id,
+      opportunity_type: btn.dataset.type
+    })
+  });
+
+  if (res.ok) {
+    btn.innerText = "Saved";
+    btn.disabled = true;
+  }
+});
+
+</script>
+{% endblock %}

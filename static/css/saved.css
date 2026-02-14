@@ -1,0 +1,123 @@
+/* ===============================
+   SAVED PAGE LAYOUT
+================================ */
+
+.saved-container {
+  max-width: 1100px;
+  margin: 40px auto;
+  padding: 0 16px;
+}
+
+.saved-container h2 {
+  font-size: 26px;
+  font-weight: 600;
+  margin-bottom: 32px;
+  color: #111827;
+}
+
+/* ===============================
+   SECTIONS
+================================ */
+
+.saved-section {
+  margin-bottom: 48px;
+}
+
+.saved-section h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 18px;
+}
+
+/* ===============================
+   SAVED CARD
+================================ */
+
+.saved-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 18px;
+
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 18px 22px;
+  margin-bottom: 16px;
+
+  transition: all 0.2s ease;
+}
+
+.saved-card:hover {
+  border-color: #2563eb;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.06);
+  transform: translateY(-2px);
+}
+
+/* ===============================
+   CARD CONTENT
+================================ */
+
+.saved-card-main {
+  flex: 1;
+}
+
+.saved-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+  text-decoration: none;
+}
+
+.saved-title:hover {
+  color: #2563eb;
+  text-decoration: underline;
+}
+
+.saved-org {
+  font-size: 14px;
+  color: #374151;
+  margin: 6px 0 4px;
+}
+
+.saved-meta-row {
+  font-size: 13px;
+  color: #6b7280;
+  display: flex;
+  gap: 8px;
+}
+
+/* ===============================
+   ACTIONS
+================================ */
+
+.saved-card-actions {
+  flex-shrink: 0;
+}
+
+.unsave-btn {
+  background: transparent;
+  border: 1px solid #ef4444;
+  color: #ef4444;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.unsave-btn:hover {
+  background: #ef4444;
+  color: #ffffff;
+}
+
+/* ===============================
+   EMPTY STATE
+================================ */
+
+.empty-state {
+  font-size: 14px;
+  color: #9ca3af;
+  padding: 10px 4px;
+}

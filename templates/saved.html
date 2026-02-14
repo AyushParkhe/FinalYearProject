@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}Saved Opportunities{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/saved.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="saved-container">
+  <h2>Saved Opportunities</h2>
+
+  <!-- ================= INTERNSHIPS ================= -->
+  <div class="saved-section">
+    <h3>Internships</h3>
+
+    {% if internships %}
+      {% for i in internships %}
+        <div class="saved-card">
+          <div class="saved-card-main">
+            <h4>
+              <a href="/internships/{{ i.id }}" class="saved-title">
+                {{ i.title }}
+              </a>
+            </h4>
+
+            <p class="saved-org">{{ i.organization }}</p>
+
+            <div class="saved-meta-row">
+              <span>{{ i.location }}</span>
+              {% if i.mode %}
+                <span>• {{ i.mode }}</span>
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="saved-card-actions">
+            <button class="unsave-btn"
+                    data-id="{{ i.id }}"
+                    data-type="internship">
+              Remove
+            </button>
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <p class="empty-state">No saved internships</p>
+    {% endif %}
+  </div>
+
+  <!-- ================= SCHOLARSHIPS (FUTURE) ================= -->
+  <div class="saved-section">
+    <h3>Scholarships</h3>
+    <p class="empty-state">Scholarships will appear here soon</p>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener("click", async (e) => {
+  if (!e.target.classList.contains("unsave-btn")) return;
+
+  const btn = e.target;
+  const card = btn.closest(".saved-card");
+
+  const res = await fetch("/unsave", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      opportunity_id: btn.dataset.id,
+      opportunity_type: btn.dataset.type
+    })
+  });
+
+  if (res.ok) {
+    card.remove();
+  }
+});
+</script>
+{% endblock %}
