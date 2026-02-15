@@ -27,7 +27,7 @@ jobs:
         
           
       - name: Run scraper
-        run: python remoteOK.py
+        run: python remoteOK_inp.py
 
       - name: Check for data changes
         run: |
