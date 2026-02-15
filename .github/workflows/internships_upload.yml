@@ -26,10 +26,14 @@ jobs:
         run: python -m playwright install chromium
 
       - name: Run scrapers
+        # This ENV variable tells Python: "Look for 'utils' in the main folder"
+        env:
+          PYTHONPATH: ${{ github.workspace }}
         run: |
           python scrapers/internshala_inp_scraper.py
           python scrapers/aicte_inp_scraper.py
           python scrapers/skill_india_inp.py
+          
       - name: Bulk upload to Supabase
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}

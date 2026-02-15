@@ -1,20 +1,24 @@
 from .skill_india import SkillIndiaExtractor
-
+from .aicte_skills import AICTEExtractor
+# If you have an Internshala extractor, import it here too
+# from .internshala_skills import InternshalaExtractor 
 
 def get_extractor(source: str):
-    source = source.lower()
+    """
+    Returns the correct skill extractor class based on the source name.
+    """
+    # Normalize the source string (remove extra spaces)
+    source = source.strip()
 
-    if source == "skill india":
+    if source == "Skill India":
         return SkillIndiaExtractor()
 
-    raise ValueError(f"No extractor configured for source: {source}")
-
-from .aicte_skills import AICTEExtractor
-
-def get_extractor(source: str):
-    source = source
-
-    if source == "AICTE":
+    elif source == "AICTE":
         return AICTEExtractor()
     
-    raise ValueError(f"No extractor configured for source : {source}")
+    # elif source == "Internshala":
+    #     return InternshalaExtractor()
+
+    else:
+        # If no match is found, raise an error
+        raise ValueError(f"No extractor configured for source: {source}")

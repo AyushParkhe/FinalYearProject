@@ -182,6 +182,7 @@ def signup():
         conn.commit()
         cur.close()
         conn.close()
+        display_name=display_name.split()[0].capitalize()
 
         session["user_id"] = str(user_id)
         session["display_name"] = display_name
@@ -266,6 +267,7 @@ def google_callback():
         # 4️⃣ SET SESSION
         session.permanent = True # Keep user logged in even if they close browser
         session["user_id"] = str(user_id)
+        display_name=display_name.split()[0].capitalize()
         session["display_name"] = display_name
         
         cur.close()
