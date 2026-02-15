@@ -27,7 +27,11 @@ jobs:
         
           
       - name: Run scraper
-        run: python remoteOK_inp.py
+        # 1. Add the folder path (scrapers/...)
+        # 2. Add PYTHONPATH so it can find 'utils' if needed
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: python scrapers/remoteOK_inp.py
 
       - name: Check for data changes
         run: |
