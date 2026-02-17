@@ -3,7 +3,7 @@
 {% block title %}All Internships | SmartIntern{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/internships.css') }}">
 {% endblock %}
 
 {% block content %}
@@ -114,7 +114,7 @@
               <!-- Posted Date -->
               {% if internship.posted_on %}
                 <p class="small text-muted mb-3">
-                  Posted on: {{ internship.posted_on }}
+                  Posted on: {{ internship.posted_on or "Not Specified" }}
                 </p>
               {% endif %}
 
@@ -122,12 +122,12 @@
               <div class="card-actions">
                 <a href="{{ internship.apply_link }}"
                    target="_blank"
-                   class="btn btn-primary btn-sm w-50">
+                   class="btn btn-primary btn-sm w-100">
                   Apply
                 </a>
 
                 <a href="/internships/{{ internship.id }}"
-                   class="btn btn-outline-secondary btn-sm w-50">
+                   class="btn btn-outline-secondary btn-sm w-100">
                   View Details
                 </a>
 

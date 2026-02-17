@@ -63,18 +63,122 @@
   margin: 0 auto 3rem;
 }
 
+/* 1. THE MAIN CONTAINER */
 .about-section {
-  background-color: var(--bg-white);
+    position: relative;
+    width: 100%;
+    /* Remove min-height: 80vh if you want the section to only be as tall as the video */
+    height: 600px; /* Set a standard height for the section */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden; 
+    background-color: #05213a; 
+}
+
+/* 2. THE BACKGROUND VIDEO */
+.hero-video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* This ensures the video fills the container without gaps */
+    z-index: 1;
+}
+
+/* 3. THE CONTENT OVERLAY (Add this class to your text/box div) */
+.about-content {
+    position: relative;
+    z-index: 2; /* Ensures text sits on top of the video */
+    text-align: center;
+    color: white;
+    padding: 20px;
+    max-width: 800px; /* Keeps your "Why SmartIntern" text from stretching too wide */
+}
+
+/* 3. THE GRADIENT OVERLAY (for readability) */
+.about-section::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    /* Gradient from transparent to dark navy */
+    background: linear-gradient(
+        to bottom,
+        rgba(5, 33, 58, 0.4) 0%, 
+        rgba(5, 33, 58, 0.7) 100%
+    );
+    z-index: 2; /* Middle layer */
+}
+
+/* 4. THE CONTENT (Centered on top) */
+.about-section .container {
+    position: relative;
+    z-index: 3; /* Highest layer - stays on top of video and overlay */
+    text-align: center;
+    color: #ffffff;
 }
 
 .about-content {
-  max-width: 900px;
-  margin: 0 auto;
-  text-align: center;
-  font-size: 1.1rem;
-  color: var(--text-dark);
-  line-height: 1.8;
+    max-width: 850px;
+    margin: 0 auto;
+    line-height: 1.8;
+    /* 1. The Shape & Transparency */
+    background: rgba(5, 33, 58, 0.4); /* Navy blue with 40% opacity */
+    
+    /* 2. The Blur (Makes the text pop) */
+    backdrop-filter: blur(10px); 
+    -webkit-backdrop-filter: blur(10px);
+    
+    /* 3. Spacing & Shape */
+    padding: 3rem;
+    border-radius: 20px;
+    max-width: 850px;
+    margin: 0 auto;
+    
+    /* 4. Subtle Border (Adds a premium 'glass' edge) */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    
+    /* 5. Shadow for Depth */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
+
+.section-title-videowala {
+    display: inline-block; /* Wraps the background tightly around the text */
+    padding: 0.8rem 2.8rem;
+    background: rgba(5, 33, 58, 0.55); /* Semi-transparent navy */
+    backdrop-filter: blur(10px); /* Blurs the network animation behind the title */
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 50px; /* Modern pill shape */
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    
+    font-size: 2.6rem;
+    font-weight: 800;
+    color: #ffffff;
+    margin-bottom: 2.5rem;
+    text-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.about-content p{
+  color: #ffffff;
+    font-weight: 500; /* Slightly thicker for better visibility */
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); /* Halo effect */
+    margin: 0;
+}
+
+.section-title {
+    color: #0c0658;
+    margin-bottom: 2rem;
+    font-weight: 700;
+    
+}
+
+
+
+
+
+
 
 /* HOW IT WORKS */
 .how-it-works-section {
@@ -221,44 +325,4 @@
     grid-template-columns: 1fr;
   }
 }
-
-/* ===============================
-   SAVE BUTTON (LISTING CARDS)
-================================ */
-
-.save-btn {
-  padding: 6px 14px;
-  font-size: 13px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  pointer-events: auto;
-}
-
-/* Outline style – secondary action */
-.save-btn.outline {
-  background: #ffffff;
-  border: 1.5px solid #d1d5db;
-  color: #374151;
-}
-
-.save-btn.outline:hover {
-  border-color: #2563eb;
-  color: #2563eb;
-  background: #f9fafb;
-}
-
-/* Saved state */
-.save-btn:disabled {
-  background: #ecfdf5;
-  border-color: #000000;
-  color: #0f084d;
-  cursor: default;
-}
-.card-actions {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-}
-
 

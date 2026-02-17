@@ -20,6 +20,61 @@ body {
   background-color: var(--bg-white);
 }
 
+/* toggler */
+/* =====================================
+   MODERN NAVBAR TOGGLER
+===================================== */
+
+.custom-toggler {
+    width: 44px;
+    height: 44px;
+    border: none;
+    background: #ffffff;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+}
+
+.custom-toggler:focus {
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25);
+}
+
+.custom-toggler:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 22px rgba(0, 0, 0, 0.12);
+}
+
+/* Hamburger lines */
+.toggler-line {
+    width: 22px;
+    height: 2px;
+    background: #1f2937;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+/* =====================================
+   ANIMATION TO X WHEN OPEN
+===================================== */
+
+.navbar-toggler[aria-expanded="true"] .top {
+    transform: rotate(45deg) translate(5px, 5px);
+}
+
+.navbar-toggler[aria-expanded="true"] .middle {
+    opacity: 0;
+}
+
+.navbar-toggler[aria-expanded="true"] .bottom {
+    transform: rotate(-45deg) translate(5px, -5px);
+}
+
+
 /* =====================
    GLOBAL HEADER STYLES
 ===================== */

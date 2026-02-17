@@ -1,0 +1,211 @@
+/* ======================================
+   GLOBAL
+====================================== */
+body {
+    background: #f4f6fb;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    color: #1a1a1a;
+}
+
+/* Container spacing */
+.container {
+    max-width: 1200px;
+}
+
+/* ======================================
+   PAGE HEADER
+====================================== */
+h2 {
+    font-weight: 700;
+    font-size: 1.8rem;
+    margin-bottom: 6px;
+}
+
+.text-muted {
+    color: #6c757d !important;
+}
+
+/* ======================================
+   FILTER BAR (CLEAN + FLOATING)
+====================================== */
+form {
+    background: #ffffff;
+    padding: 18px;
+    border-radius: 14px;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
+    border: 1px solid #eef0f5;
+}
+
+.form-select {
+    border-radius: 10px;
+    border: 1px solid #e5e7eb;
+    padding: 10px 12px;
+    font-size: 0.9rem;
+}
+
+.form-select:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+/* ======================================
+   INTERNSHIP CARD
+====================================== */
+.card {
+    border: none;
+    border-radius: 18px;
+    background: #ffffff;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+    transition: all 0.25s ease;
+    overflow: hidden;
+}
+
+.card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.1);
+}
+
+.card-body {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Title */
+.card-title {
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: #111827;
+}
+
+/* Organization */
+.card-body p.text-muted {
+    font-size: 0.9rem;
+    margin-bottom: 4px;
+}
+
+/* Location */
+.card-body p.small {
+    font-size: 0.85rem;
+    color: #6b7280;
+}
+
+/* Duration + Stipend block */
+.card-body p.small strong {
+    font-weight: 600;
+    color: #374151;
+}
+
+/* ======================================
+   SOURCE BADGE (MODERN PILL)
+====================================== */
+.badge {
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: #eef2ff !important;
+    color: #4338ca !important;
+}
+
+/* ======================================
+   ACTION AREA
+====================================== */
+.card-actions {
+    margin-top: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* APPLY BUTTON */
+.btn-primary {
+    border-radius: 12px;
+    padding: 8px 0;
+    font-weight: 600;
+    font-size: 0.9rem;
+    background: linear-gradient(135deg, #2563eb, #1e40af);
+    border: none;
+    transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+}
+
+/* VIEW DETAILS */
+.btn-outline-secondary {
+    border-radius: 12px;
+    padding: 8px 0;
+    font-weight: 600;
+    font-size: 0.9rem;
+    background: linear-gradient(135deg, #2563eb, #1e40af);
+    border: none;
+    transition: all 0.2s ease;
+    color: #eef0f5;
+}
+
+.btn-outline-secondary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+}
+
+/* SAVE BUTTON */
+.save-btn {
+    border-radius: 12px;
+    font-size: 0.85rem;
+    padding: 7px 0;
+    background: #ffffff;
+    border: 1px solid #2563eb;
+    color: #2563eb;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.save-btn:hover {
+    background: #2563eb;
+    color: #ffffff;
+}
+
+.save-btn:disabled {
+    background: #eff6ff;
+    border-color: #bfdbfe;
+    color: #2563eb;
+    cursor: not-allowed;
+}
+
+/* ======================================
+   PAGINATION (MODERN MINIMAL)
+====================================== */
+.pagination .page-link {
+    border-radius: 10px;
+    margin: 0 4px;
+    border: none;
+    background: #ffffff;
+    color: #374151;
+    box-shadow: 0 4px 10px rgba(15, 23, 42, 0.05);
+}
+
+.pagination .page-item.active .page-link {
+    background: #2563eb;
+    color: #ffffff;
+}
+
+.pagination .page-link:hover {
+    background: #e0e7ff;
+}
+
+/* ======================================
+   RESPONSIVE IMPROVEMENT
+====================================== */
+@media (max-width: 768px) {
+    .card-body {
+        padding: 18px;
+    }
+
+    form {
+        padding: 14px;
+    }
+}
