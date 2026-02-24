@@ -1,0 +1,305 @@
+
+{% extends "base.html" %}
+
+{% block title %}Feedback | SmartIntern{% endblock %}
+{% block extra_css %}
+    
+    <style>
+        /* body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #e6f2ff; /* Light Blue Background */
+            /* display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 15px;
+        } */ 
+
+
+        .card {
+            background: white;
+            width: 100%;
+            max-width: 750px;
+            padding: 35px;
+            border-radius: 16px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+            animation: fadeIn 0.6s ease-in-out;
+        }
+
+        .feedback-container {
+            margin: 0 auto; /* Centers the block if it has a width */
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #e6f2ff; /* Light Blue Background */
+            
+            /* Fix: Change flexbox to flex */
+            display: flex; 
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            
+            padding: 40px 15px;
+            min-height: 80vh; /* Ensures it takes up vertical space */
+        }
+
+        /* Add this to center the actual card inside the blue area */
+        .feedback-card {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 600px; /* Adjust based on your visual preference */
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 10px;
+            color: #004080;
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 25px;
+        }
+
+        .question {
+            margin-bottom: 22px;
+        }
+
+        .question label.title {
+            font-weight: 600;
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        input[type="text"],
+        input[type="email"] {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            outline: none;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus {
+            border-color: #3399ff;
+            box-shadow: 0 0 8px rgba(51,153,255,0.4);
+        }
+
+        .options label {
+            display: block;
+            background: #f2f8ff;
+            padding: 10px 12px;
+            margin-bottom: 8px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            border: 2px solid transparent;
+        }
+
+        .options label:hover {
+            background: #d9ecff;
+            transform: scale(1.02);
+        }
+
+        .options input {
+            margin-right: 8px;
+        }
+
+        /* Animated selection effect */
+        .options input:checked + span {
+            font-weight: 600;
+            color: #004080;
+        }
+
+        .options input:checked {
+            accent-color: #3399ff;
+        }
+
+        .options label:has(input:checked) {
+            background: #cce5ff;
+            border: 2px solid #3399ff;
+            transform: scale(1.03);
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            background: #3399ff;
+            color: white;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: #007acc;
+            transform: scale(1.02);
+        }
+
+        @media(max-width:600px){
+            .card{
+                padding: 20px;
+            }
+        }
+    </style>
+    {% endblock %}
+
+{% block content %}
+<div class="feedback-container">
+
+    <h2>SmartIntern Feedback</h2>
+    <p class="subtitle">Your feedback helps us improve personalized internship and scholarship recommendations.</p>
+
+    <form action="/submit-feedback" method="POST">
+
+        <div class="question">
+            <label class="title">Your Name</label>
+            <input type="text" name="name" required>
+        </div>
+
+        <div class="question">
+            <label class="title">Email Address</label>
+            <input type="email" name="email" required>
+        </div>
+
+        <!-- Reusable Option Format -->
+        <!-- Important: wrap text in <span> for animation -->
+
+        <div class="question">
+            <label class="title">1. How satisfied are you with SmartIntern recommendations?</label>
+            <div class="options">
+                <label><input type="radio" name="satisfaction" value="Very Satisfied" required><span> Very Satisfied</span></label>
+                <label><input type="radio" name="satisfaction" value="Satisfied"><span> Satisfied</span></label>
+                <label><input type="radio" name="satisfaction" value="Neutral"><span> Neutral</span></label>
+                <label><input type="radio" name="satisfaction" value="Unsatisfied"><span> Unsatisfied</span></label>
+                <label><input type="radio" name="satisfaction" value="Very Unsatisfied"><span> Very Unsatisfied</span></label>
+            </div>
+        </div>
+
+        <div class="question">
+            <label class="title">2. Were the recommendations relevant to your profile?</label>
+            <div class="options">
+                <label><input type="radio" name="relevance" value="Very Relevant" required><span> Very Relevant</span></label>
+                <label><input type="radio" name="relevance" value="Somewhat Relevant"><span> Somewhat Relevant</span></label>
+                <label><input type="radio" name="relevance" value="Neutral"><span> Neutral</span></label>
+                <label><input type="radio" name="relevance" value="Not Relevant"><span> Not Relevant</span></label>
+            </div>
+        </div>
+
+        <div class="question">
+            <label class="title">3. Which type did you use?</label>
+            <div class="options">
+                <label><input type="radio" name="used_type" value="Internship" required><span> Internship</span></label>
+                <label><input type="radio" name="used_type" value="Scholarship"><span> Scholarship</span></label>
+                <label><input type="radio" name="used_type" value="Both"><span> Both</span></label>
+            </div>
+        </div>
+
+        <div class="question">
+            <label class="title">4. Did SmartIntern save your time?</label>
+            <div class="options">
+                <label><input type="radio" name="time_saved" value="Yes" required><span> Yes</span></label>
+                <label><input type="radio" name="time_saved" value="No"><span> No</span></label>
+                <label><input type="radio" name="time_saved" value="Not Sure"><span> Not Sure</span></label>
+            </div>
+        </div>
+
+        <div class="question">
+            <label class="title">5. How easy is SmartIntern to use?</label>
+            <div class="options">
+                <label><input type="radio" name="ease" value="Very Easy" required><span> Very Easy</span></label>
+                <label><input type="radio" name="ease" value="Easy"><span> Easy</span></label>
+                <label><input type="radio" name="ease" value="Neutral"><span> Neutral</span></label>
+                <label><input type="radio" name="ease" value="Difficult"><span> Difficult</span></label>
+            </div>
+        </div>
+
+        <div class="question">
+            <label class="title">6. Overall Experience (Out of 5)</label>
+            <div class="options">
+                <label><input type="radio" name="overall_experience" value="1" required><span> 1 - Very Poor</span></label>
+                <label><input type="radio" name="overall_experience" value="2"><span> 2 - Poor</span></label>
+                <label><input type="radio" name="overall_experience" value="3"><span> 3 - Average</span></label>
+                <label><input type="radio" name="overall_experience" value="4"><span> 4 - Good</span></label>
+                <label><input type="radio" name="overall_experience" value="5"><span> 5 - Excellent</span></label>
+            </div>
+        </div>
+
+        <!-- Q7 -->
+        <div class="question">
+            <label class="title">
+             7. What factors should SmartIntern improve personalization on?
+            </label>
+            <div class="options">
+                <label>
+                    <input type="radio" name="improve" value="Skills" required>
+                    <span> Skills</span>
+                </label>
+                <label>
+                    <input type="radio" name="improve" value="Location">
+                    <span> Location</span>
+                </label>
+                <label>
+                    <input type="radio" name="improve" value="Education Level">
+                    <span> Education Level</span>
+                </label>
+                <label>
+                    <input type="radio" name="improve" value="Interests">
+                    <span> Interests</span>
+                </label>
+                <label>
+                    <input type="radio" name="improve" value="Experience">
+                    <span> Experience</span>
+                </label>
+                <label>
+                    <input type="radio" name="improve" value="All of the above">
+                    <span> All of the above</span>
+                </label>
+            </div>
+        </div>
+
+
+        <div class="question">
+            <label class="title">
+            8. Would you recommend SmartIntern to other students?
+            </label>
+            <div class="options">
+                <label>
+                    <input type="radio" name="recommend" value="Yes" required>
+                    <span> Yes</span>
+                </label>
+                <label>
+                    <input type="radio" name="recommend" value="Maybe">
+                    <span> Maybe</span>
+                </label>
+                <label>
+                    <input type="radio" name="recommend" value="No">
+                    <span> No</span>
+                </label>
+            </div>
+        </div>
+
+        <button type="submit">Submit Feedback</button>
+
+    </form>
+
+</div>
+
+{% endblock %}
+

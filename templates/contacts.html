@@ -1,0 +1,302 @@
+{% extends "base.html" %}
+
+{% block title %}Contact Us |SmartIntern{% endblock %}
+{% block extra_css %}
+
+<style>
+/* *{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Inter', sans-serif;
+} */
+
+body{
+    background:#f4f8ff;
+    color:#1f2937;
+}
+
+/* Hero Section */
+.hero{
+    background:#dbeafe;
+    padding:60px 20px;
+    text-align:center;
+}
+
+.hero h1{
+    font-size:36px;
+    font-weight:700;
+    color:#1e3a8a;
+    margin-bottom:15px;
+}
+
+.hero p{
+    font-size:16px;
+    color:#374151;
+    max-width:600px;
+    margin:0 auto;
+}
+
+
+
+/* Add the grid ONLY for the contact version */
+.contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+}
+/* Contact Info */
+.contact-info{
+    background:white;
+    padding:30px;
+    border-radius:12px;
+    box-shadow:0 8px 20px rgba(0,0,0,0.05);
+}
+
+.contact-info h2{
+    margin-bottom:20px;
+    color:#1e40af;
+}
+
+.info-item{
+    margin-bottom:20px;
+}
+
+.info-item h4{
+    font-size:15px;
+    font-weight:600;
+    margin-bottom:5px;
+    color:#2563eb;
+}
+
+.info-item p{
+    font-size:14px;
+    color:#4b5563;
+}
+
+/* Contact Form */
+.contact-form{
+    background:white;
+    padding:30px;
+    border-radius:12px;
+    box-shadow:0 8px 20px rgba(0,0,0,0.05);
+}
+
+.contact-form h2{
+    margin-bottom:20px;
+    color:#1e40af;
+}
+
+.form-group{
+    margin-bottom:18px;
+}
+
+.form-group label{
+    display:block;
+    font-size:14px;
+    margin-bottom:6px;
+    font-weight:500;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select{
+    width:100%;
+    padding:10px;
+    border:1px solid #d1d5db;
+    border-radius:8px;
+    font-size:14px;
+    outline:none;
+    transition:0.3s;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus{
+    border-color:#3b82f6;
+    box-shadow:0 0 0 3px rgba(59,130,246,0.1);
+}
+
+textarea{
+    resize:none;
+    height:100px;
+}
+
+button{
+    width:100%;
+    padding:12px;
+    background:#3b82f6;
+    border:none;
+    border-radius:8px;
+    color:white;
+    font-size:15px;
+    font-weight:600;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+button:hover{
+    background:#2563eb;
+}
+
+/* Why Contact Section */
+.why-contact{
+    margin:60px auto;
+    max-width:1100px;
+    padding:0 20px;
+}
+
+.why-contact h2{
+    text-align:center;
+    margin-bottom:40px;
+    color:#1e40af;
+}
+
+.cards{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+    gap:20px;
+}
+
+.card{
+    background:white;
+    padding:25px;
+    border-radius:12px;
+    box-shadow:0 6px 18px rgba(0,0,0,0.05);
+    transition:0.3s;
+}
+
+.card:hover{
+    transform:translateY(-5px);
+}
+
+.card h4{
+    margin-bottom:10px;
+    color:#2563eb;
+}
+
+.card p{
+    font-size:14px;
+    color:#4b5563;
+}
+
+/* Footer */
+/* .footer{
+    text-align:center;
+    padding:20px;
+    margin-top:40px;
+    background:#dbeafe;
+    font-size:14px;
+} */
+
+/* Responsive */
+@media(max-width:768px){
+    .container{
+        grid-template-columns:1fr;
+    }
+}
+</style>
+</head>
+
+<body>
+{% endblock %}
+
+
+{% block content %}
+
+<!-- Hero Section -->
+<section class="hero">
+    <h1>Contact SmartIntern</h1>
+    <p>Have questions about internships or scholarships? We're here to help you grow your career journey.</p>
+</section>
+
+<!-- Contact Section -->
+<div class="container contact-grid">
+
+    <!-- Contact Info -->
+    <div class="contact-info">
+        <h2>Get in Touch</h2>
+
+        <div class="info-item">
+            <h4>Email</h4>
+            <p>smartintern.org@gmail.com</p>
+        </div>
+
+        <div class="info-item">
+            <h4>Location</h4>
+            <p>Chhatrapati SambhajiNagar, Maharashtra, India</p>
+        </div>
+
+        <div class="info-item">
+            <h4>Support Hours</h4>
+            <p>Monday – Saturday | 10:00 AM – 6:00 PM</p>
+        </div>
+
+        <p style="margin-top:20px; font-size:14px; color:#6b7280;">
+            At SmartIntern, we believe opportunities should be accessible to every student. 
+            Your queries and feedback help us improve every day.
+        </p>
+    </div>
+
+    <!-- Contact Form -->
+    <div class="contact-form">
+        <h2>Send Us a Message</h2>
+
+        <form action="/send-message" method="POST">
+
+            <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" name="name" placeholder="Enter your name" required>
+            </div>
+
+            <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" name="email" placeholder="Enter your email" required>
+            </div>
+
+            <div class="form-group">
+                <label>Category</label>
+                <select name="category" required>
+                    <option value="">Select category</option>
+                    <option value="Internship Issue">Internship Issue</option>
+                    <option value="Scholarship Issue">Scholarship Issue</option>
+                    <option value="Technical Problem">Technical Problem</option>
+                    <option value="General Inquiry">General Inquiry</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Message</label>
+                <textarea name="message" placeholder="Write your message here..." required></textarea>
+            </div>
+
+            <button type="submit">Send Message</button>
+
+        </form>
+    </div>
+
+</div>
+
+<!-- Why Contact Us -->
+<section class="why-contact">
+    <h2>Contact us for following cases..</h2>
+
+    <div class="cards">
+        <div class="card">
+            <h4>Report Incorrect Listings</h4>
+            <p>Help us keep internship and scholarship data accurate and verified.</p>
+        </div>
+
+        <div class="card">
+            <h4>Partnership Opportunities</h4>
+            <p>Interested in collaborating with SmartIntern? Let’s build together.</p>
+        </div>
+
+        <div class="card">
+            <h4>Technical Support</h4>
+            <p>Facing login or submission issues? Our team is ready to assist you.</p>
+        </div>
+    </div>
+</section> 
+{% endblock %}
+

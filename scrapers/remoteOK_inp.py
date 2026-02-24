@@ -6,7 +6,7 @@ import time
 # ---------------- CONFIG ---------------- #
 URL = "https://remoteok.com"
 TARGET_JOBS = 120
-OUTPUT_FILE = "remoteok_aicte_inp.csv"
+OUTPUT_FILE = "data/remoteok_aicte_inp.csv"
 
 # ---------------- HELPERS ---------------- #
 def auto_scroll(page, scrolls=12):

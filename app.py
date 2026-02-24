@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, session, flash, url_for
+from flask import Flask, render_template, request, redirect, session, flash, url_for,send_from_directory
 from psycopg2.extras import RealDictCursor
 from authlib.integrations.flask_client import OAuth,OAuthError
 from dotenv import load_dotenv
@@ -9,7 +9,7 @@ from utils.security import validate_password, hash_password, check_password
 from utils.supabase_client import supabase
 from utils.profile_utils import is_profile_complete
 from utils.recommendation_utils import get_internship_recommendations
-
+from supabase import create_client
 
 def fetch_all_internships():
     response = (
@@ -596,7 +596,84 @@ def about_us():
 #Route for Privacy page
 @app.route("/privacy")
 def privacy():
-    return render_template("privacy.html")
+    return render_template("privacy.html") 
+
+#Route for Feedback Form
+@app.route("/feedback")
+def feedback():
+    return render_template("feedback.html")
+
+@app.route("/submit-feedback", methods=["POST"])
+def submit_feedback():
+    # 1. Get the data from the form
+    # Note: request.form.get() returns None if the field is missing, which is safer.
+    data = {
+        "name": request.form.get("name"),
+        "email": request.form.get("email"),
+        "satisfaction": request.form.get("satisfaction"),
+        "relevance": request.form.get("relevance"),
+        "used_type": request.form.get("used_type"),
+        "time_saved": request.form.get("time_saved"),
+        "ease": request.form.get("ease"),
+        "overall_experience": request.form.get("overall_experience"),
+        "improve": request.form.get("improve"),
+        "recommend": request.form.get("recommend")
+    }
+    try:
+        # 2. Use the EXISTING supabase client you created at the top of app.py
+        # (Assuming you have 'from utils.supabase_client import supabase' or initialized it globally)
+        
+        # If you MUST re-initialize it here for some reason, fix the URL first:
+        # url = f"https://{os.getenv('SUPABASE_PROJECT_ID')}.supabase.co" 
+        
+        # Correct Insert Call:
+        supabase.table("feedback").insert(data).execute()
+
+        # Optional: Flash a success message
+        flash("Thank you for your feedback!", "success")
+        
+        return redirect("/")
+        
+    except Exception as e:
+        print("FEEDBACK ERROR:", e)
+        return "An error occurred while saving feedback. Check console.", 500
+
+#Route for contacts 
+
+@app.route("/contact")
+def contacts():
+    return render_template("contacts.html")
+
+
+@app.route("/send-message", methods=["POST"])
+def send_message():
+
+    data = {
+        "name": request.form.get("name"),
+        "email": request.form.get("email"),
+        "category": request.form.get("category"),
+        "message": request.form.get("message")
+    }
+
+    try:
+        supabase.table("contact_messages").insert(data).execute()
+
+        flash("Your message has been sent successfully!", "success")
+
+        return redirect(url_for("contacts"))
+
+    except Exception as e:
+        print("CONTACT MESSAGE ERROR:", e)
+        return "An error occurred.", 500
+
+
+# Documentation link
+@app.route('/docs')
+def download_documentation():
+    # Adjust 'static/docs' to match your actual folder path
+    directory = os.path.join(app.root_path, 'static', 'docs')
+    return send_from_directory(directory, 'Documentation.pdf')
+
 
 # ---------------- LOGOUT ----------------
 @app.route("/logout")
