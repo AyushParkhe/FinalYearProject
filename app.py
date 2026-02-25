@@ -652,9 +652,10 @@ def submit_feedback():
         supabase.table("feedback").insert(data).execute()
 
         # Optional: Flash a success message
-        flash("Thank you for your feedback!", "success")
+        flash("✅ Thank you! Your feedback has been submitted.", "feedback_success")
+        return redirect(url_for("feedback"))
         
-        return redirect("/")
+        
         
     except Exception as e:
         print("FEEDBACK ERROR:", e)

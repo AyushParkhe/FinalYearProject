@@ -2,6 +2,15 @@
 {% extends "base.html" %}
 
 {% block title %}Feedback | SmartIntern{% endblock %}
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% for category, message in messages %}
+    {% if category == "feedback_success" %}
+      <div id="feedback-flash" class="feedback-flash">
+        {{ message }}
+      </div>
+    {% endif %}
+  {% endfor %}
+{% endwith %}
 {% block extra_css %}
     
     <style>
@@ -157,6 +166,28 @@
                 padding: 20px;
             }
         }
+        .feedback-flash {
+        width: 60%;
+        margin: 20px auto;
+        padding: 15px 20px;
+        background-color: #e6ffed;
+        color: #155724;
+        border: 1px solid #b7ebc6;
+        border-radius: 8px;
+        text-align: center;
+        font-weight: 500;
+
+        opacity: 0;
+        transform: translateY(-10px);
+        animation: fadeSlideIn 0.5s ease forwards;
+    }
+
+    @keyframes fadeSlideIn {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
     </style>
     {% endblock %}
 
@@ -302,4 +333,15 @@
 </div>
 
 {% endblock %}
-
+{% block extra_js %}
+<script>
+    setTimeout(function () {
+        const flash = document.getElementById("feedback-flash");
+        if (flash) {
+            flash.style.transition = "opacity 0.5s ease";
+            flash.style.opacity = "0";
+            setTimeout(() => flash.remove(), 500);
+        }
+    }, 3000);
+</script>
+{% endblock %}
