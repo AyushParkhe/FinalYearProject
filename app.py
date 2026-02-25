@@ -331,18 +331,33 @@ def dashboard():
         display_name=display_name
     )
 
+# View all internships
+# @app.route("/internships")
+# def internships():
+#     # Only fetch the first 12 internships, no sorting, no filtering
+#     try:
+#         # We removed .order() and .ilike() to make it fast
+#         response = supabase.table("internships").select("*").limit(12).execute()
+#         internships = response.data
+#     except Exception as e:
+#         print(f"Error: {e}")
+#         internships = []
 
-#View all internships
+    # Keep the rest simple
+    # return render_template("internships.html", internships=internships, saved_ids=set(), page=1)
 @app.route("/internships")
 def internships():
+    # 1. Pagination Setup
     page = request.args.get("page", 1, type=int)
     PER_PAGE = 12
     start = (page - 1) * PER_PAGE
     end = start + PER_PAGE - 1
 
+    # 2. Filtering Inputs
     location = request.args.get("location")
     source = request.args.get("source")
 
+    # 3. Build Internship Query using SDK
     query = supabase.table("internships").select("*")
 
     if location:
@@ -351,29 +366,36 @@ def internships():
     if source:
         query = query.ilike("source", f"%{source}%")
 
-    query = query.order("created_at", desc=True).range(start, end)
+    # Order and apply range (pagination)
+    query = query.order("id").range(start, end)
+    # Execute fetch for internships
+    try:
+        internships_response = query.execute()
+        internships = internships_response.data
+    except Exception as e:
+        print(f"Error fetching internships: {e}")
+        internships = []
 
-    internships = query.execute().data
-
-    # fetch saved internship ids for this user
-    user_id = session.get("user_id") # Use .get() to avoid error if not logged in
+    # 4. Fetch Saved Internship IDs for the logged-in user
+    user_id = session.get("user_id")
     saved_ids = set()
     
     if user_id:
-        conn=get_db()
-        cur=conn.cursor()
-        cur.execute(
-            """
-            SELECT opportunity_id
-            FROM saved_opportunities
-            WHERE user_id = %s
-            AND opportunity_type = 'internship'
-            """,
-            (user_id,)
-        )
-        saved_ids = set(int(row[0]) for row in cur.fetchall())
-        conn.close() # Ensure connection is closed
+        try:
+            # Using SDK instead of psycopg2 to prevent Port 6543 timeouts
+            saved_data = supabase.table("saved_opportunities") \
+                .select("opportunity_id") \
+                .eq("user_id", user_id) \
+                .eq("opportunity_type", "internship") \
+                .execute()
+            
+            # Convert list of dicts to a set of IDs for fast lookup in the template
+            saved_ids = {int(item['opportunity_id']) for item in saved_data.data}
+        except Exception as e:
+            print(f"Error fetching saved IDs: {e}")
+            saved_ids = set()
 
+    # 5. Render Page
     return render_template(
         "internships.html",
         internships=internships,
