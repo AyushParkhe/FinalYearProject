@@ -10,6 +10,10 @@ from utils.supabase_client import supabase
 from utils.profile_utils import is_profile_complete
 from utils.recommendation_utils import get_internship_recommendations
 from supabase import create_client
+from werkzeug.middleware.proxy_fix import ProxyFix # Add this import
+
+
+
 
 # def fetch_all_internships():
 #     response = (
@@ -26,6 +30,13 @@ from supabase import create_client
 load_dotenv()
 app = Flask(__name__)
 app.secret_key = "dev-secret"
+
+# Add these two lines immediately after creating your app
+# This forces Flask to recognize that it is running on HTTPS behind a proxy
+app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
+
+# Secure your session cookies for production
+app.config['SESSION_COOKIE_SECURE'] = True
 
 # ---------------- OAUTH SETUP ----------------
 oauth = OAuth(app)
