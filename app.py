@@ -11,15 +11,15 @@ from utils.profile_utils import is_profile_complete
 from utils.recommendation_utils import get_internship_recommendations
 from supabase import create_client
 
-def fetch_all_internships():
-    response = (
-        supabase
-        .table("internships")
-        .select("*")
-        .order("created_at", desc=True)
-        .execute()
-    )
-    return response.data
+# def fetch_all_internships():
+#     response = (
+#         supabase
+#         .table("internships")
+#         .select("*")
+#         .order("created_at", desc=True)
+#         .execute()
+#     )
+#     return response.data
 
 
 # ---------------- LOAD ENV ----------------
@@ -347,62 +347,69 @@ def dashboard():
     # return render_template("internships.html", internships=internships, saved_ids=set(), page=1)
 @app.route("/internships")
 def internships():
-    # 1. Pagination Setup
     page = request.args.get("page", 1, type=int)
     PER_PAGE = 12
-    start = (page - 1) * PER_PAGE
-    end = start + PER_PAGE - 1
+    offset = (page - 1) * PER_PAGE
 
-    # 2. Filtering Inputs
     location = request.args.get("location")
     source = request.args.get("source")
 
-    # 3. Build Internship Query using SDK
-    query = supabase.table("internships").select("*")
-
-    if location:
-        query = query.ilike("location", f"%{location}%")
-
-    if source:
-        query = query.ilike("source", f"%{source}%")
-
-    # Order and apply range (pagination)
-    query = query.order("id").range(start, end)
-    # Execute fetch for internships
-    try:
-        internships_response = query.execute()
-        internships = internships_response.data
-    except Exception as e:
-        print(f"Error fetching internships: {e}")
-        internships = []
-
-    # 4. Fetch Saved Internship IDs for the logged-in user
-    user_id = session.get("user_id")
+    conn = None
+    internships = []
     saved_ids = set()
-    
-    if user_id:
-        try:
-            # Using SDK instead of psycopg2 to prevent Port 6543 timeouts
-            saved_data = supabase.table("saved_opportunities") \
-                .select("opportunity_id") \
-                .eq("user_id", user_id) \
-                .eq("opportunity_type", "internship") \
-                .execute()
-            
-            # Convert list of dicts to a set of IDs for fast lookup in the template
-            saved_ids = {int(item['opportunity_id']) for item in saved_data.data}
-        except Exception as e:
-            print(f"Error fetching saved IDs: {e}")
-            saved_ids = set()
 
-    # 5. Render Page
+    try:
+        conn = get_db()
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+
+        # Build SQL dynamically
+        sql = "SELECT * FROM internships"
+        conditions = []
+        params = []
+
+        if location:
+            conditions.append("location ILIKE %s")
+            params.append(f"%{location}%")
+
+        if source:
+            conditions.append("source ILIKE %s")
+            params.append(f"%{source}%")
+
+        if conditions:
+            sql += " WHERE " + " AND ".join(conditions)
+
+        sql += " ORDER BY id LIMIT %s OFFSET %s"
+        params.extend([PER_PAGE, offset])
+
+        cur.execute(sql, params)
+        internships = cur.fetchall()
+
+        # Fetch saved internships
+        user_id = session.get("user_id")
+        if user_id:
+            cur.execute(
+                """
+                SELECT opportunity_id 
+                FROM saved_opportunities
+                WHERE user_id = %s
+                AND opportunity_type = 'internship'
+                """,
+                (user_id,)
+            )
+            saved_ids = {int(row["opportunity_id"]) for row in cur.fetchall()}
+
+        cur.close()
+        conn.close()
+
+    except Exception as e:
+        print("DB ERROR:", e)
+
     return render_template(
         "internships.html",
         internships=internships,
         saved_ids=saved_ids,
         page=page
     )
-
 
 @app.route("/internships/<int:internship_id>")
 def internship_details(internship_id):
@@ -620,15 +627,15 @@ def about_us():
 def privacy():
     return render_template("privacy.html") 
 
-#Route for Feedback Form
+# Route for Feedback Form
 @app.route("/feedback")
 def feedback():
     return render_template("feedback.html")
 
+
 @app.route("/submit-feedback", methods=["POST"])
 def submit_feedback():
-    # 1. Get the data from the form
-    # Note: request.form.get() returns None if the field is missing, which is safer.
+
     data = {
         "name": request.form.get("name"),
         "email": request.form.get("email"),
@@ -641,28 +648,42 @@ def submit_feedback():
         "improve": request.form.get("improve"),
         "recommend": request.form.get("recommend")
     }
-    try:
-        # 2. Use the EXISTING supabase client you created at the top of app.py
-        # (Assuming you have 'from utils.supabase_client import supabase' or initialized it globally)
-        
-        # If you MUST re-initialize it here for some reason, fix the URL first:
-        # url = f"https://{os.getenv('SUPABASE_PROJECT_ID')}.supabase.co" 
-        
-        # Correct Insert Call:
-        supabase.table("feedback").insert(data).execute()
 
-        # Optional: Flash a success message
+    try:
+        conn = get_db()
+        cur = conn.cursor()
+
+        cur.execute("""
+            INSERT INTO feedback 
+            (name, email, satisfaction, relevance, used_type, time_saved,
+             ease, overall_experience, improve, recommend)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        """, (
+            data["name"],
+            data["email"],
+            data["satisfaction"],
+            data["relevance"],
+            data["used_type"],
+            data["time_saved"],
+            data["ease"],
+            data["overall_experience"],
+            data["improve"],
+            data["recommend"]
+        ))
+
+        conn.commit()
+        cur.close()
+        conn.close()
+
         flash("✅ Thank you! Your feedback has been submitted.", "feedback_success")
         return redirect(url_for("feedback"))
-        
-        
-        
+
     except Exception as e:
         print("FEEDBACK ERROR:", e)
         return "An error occurred while saving feedback. Check console.", 500
 
-#Route for contacts 
 
+# Route for contacts
 @app.route("/contact")
 def contacts():
     return render_template("contacts.html")
@@ -679,16 +700,30 @@ def send_message():
     }
 
     try:
-        supabase.table("contact_messages").insert(data).execute()
+        conn = get_db()
+        cur = conn.cursor()
+
+        cur.execute("""
+            INSERT INTO contact_messages 
+            (name, email, category, message)
+            VALUES (%s, %s, %s, %s)
+        """, (
+            data["name"],
+            data["email"],
+            data["category"],
+            data["message"]
+        ))
+
+        conn.commit()
+        cur.close()
+        conn.close()
 
         flash("Your message has been sent successfully!", "success")
-
         return redirect(url_for("contacts"))
 
     except Exception as e:
         print("CONTACT MESSAGE ERROR:", e)
         return "An error occurred.", 500
-
 
 # Documentation link
 @app.route('/docs')
