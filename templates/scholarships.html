@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Scholarships | SmartIntern{% endblock %}
+
+{% block extra_css %}
+<style>
+.scholarship-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.scholarship-card {
+    padding: 16px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<h2>Available Scholarships</h2>
+
+<div class="scholarship-container">
+    {% for s in scholarships %}
+        <div class="scholarship-card">
+            <h3>
+            <a href="{{ url_for('scholarship_details', scholarship_id=s.id) }}">
+                {{ s.title }}
+            </a>
+            </h3>
+            <p><strong>Provider:</strong> {{ s.provider }}</p>
+            <p><strong>Amount:</strong> {{ s.amount }}</p>
+            <p><strong>Deadline:</strong> {{ s.deadline }}</p>
+            <a href="{{ s.apply_url }}" target="_blank">Apply Now</a>
+        </div>
+    {% else %}
+        <p>No scholarships available.</p>
+    {% endfor %}
+</div>
+
+{% endblock %}

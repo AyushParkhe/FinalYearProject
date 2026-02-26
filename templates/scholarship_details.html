@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block title %}{{ scholarship.title }} | SmartIntern{% endblock %}
+
+{% block content %}
+
+<div class="scholarship-detail-container">
+
+    <h2 class="scholarship-title">
+        {{ scholarship.title }}
+    </h2>
+
+    <div class="scholarship-meta">
+        <p><strong>Provider:</strong> {{ scholarship.provider }}</p>
+        <p><strong>Source:</strong> {{ scholarship.source }}</p>
+        <p><strong>Category:</strong> {{ scholarship.category }}</p>
+        <p><strong>Amount:</strong> {{ scholarship.amount }}</p>
+        <p><strong>Deadline:</strong> {{ scholarship.deadline }}</p>
+    </div>
+
+    <hr>
+
+    <div class="scholarship-eligibility">
+        <h4>Eligibility Criteria</h4>
+        <p>{{ scholarship.eligibility_text }}</p>
+    </div>
+
+    <br>
+
+    <div class="scholarship-actions">
+        <a href="{{ scholarship.apply_url }}" 
+           target="_blank" 
+           class="apply-btn">
+            Apply Now
+        </a>
+
+        <a href="{{ url_for('scholarships') }}" 
+           class="back-btn">
+            ← Back to Scholarships
+        </a>
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block extra_css %}
+<style>
+
+.scholarship-detail-container {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 20px;
+}
+
+.scholarship-title {
+    margin-bottom: 20px;
+}
+
+.scholarship-meta p {
+    margin: 6px 0;
+}
+
+.scholarship-eligibility {
+    margin-top: 20px;
+}
+
+.apply-btn {
+    display: inline-block;
+    padding: 10px 18px;
+    background-color: #1e88e5;
+    color: white;
+    border-radius: 6px;
+    text-decoration: none;
+    margin-right: 15px;
+}
+
+.apply-btn:hover {
+    background-color: #1565c0;
+}
+
+.back-btn {
+    text-decoration: none;
+    color: #555;
+}
+
+.back-btn:hover {
+    text-decoration: underline;
+}
+
+</style>
+{% endblock %}

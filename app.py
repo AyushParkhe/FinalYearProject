@@ -422,6 +422,41 @@ def internships():
         page=page
     )
 
+
+@app.route("/scholarships")
+def scholarships():
+
+    page = request.args.get("page", 1, type=int)
+    PER_PAGE = 12
+    offset = (page - 1) * PER_PAGE
+
+    try:
+        conn = get_db()
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+
+        cur.execute("""
+            SELECT *
+            FROM scholarships
+            ORDER BY created_at DESC
+            LIMIT %s OFFSET %s
+        """, (PER_PAGE, offset))
+
+        scholarships = cur.fetchall()
+
+        cur.close()
+        conn.close()
+
+        return render_template(
+            "scholarships.html",
+            scholarships=scholarships,
+            page=page
+        )
+
+    except Exception as e:
+        print("SCHOLARSHIP ERROR:", e)
+        return "Error loading scholarships", 500
+
+
 @app.route("/internships/<int:internship_id>")
 def internship_details(internship_id):
     internship = (
@@ -438,6 +473,37 @@ def internship_details(internship_id):
         "internship_details.html",
         internship=internship
     )
+
+@app.route("/scholarships/<int:scholarship_id>")
+def scholarship_details(scholarship_id):
+
+    try:
+        conn = get_db()
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+
+        cur.execute(
+            "SELECT * FROM scholarships WHERE id = %s",
+            (scholarship_id,)
+        )
+
+        scholarship = cur.fetchone()
+
+        cur.close()
+        conn.close()
+
+        if not scholarship:
+            return "Scholarship not found", 404
+
+        return render_template(
+            "scholarship_details.html",
+            scholarship=scholarship
+        )
+
+    
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return str(e), 500
 
 @app.route("/profile/setup", methods=["GET", "POST"])
 @login_required
