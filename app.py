@@ -83,7 +83,7 @@ def login():
         conn.close()
 
         if not user or not check_password(password, user[1]):
-            flash("Invalid credentials")
+            flash("Invalid credentials","login_error")
             return redirect("/login")
 
         # FIX: This was commented out, which broke the login session. 
@@ -729,7 +729,7 @@ def send_message():
         cur.close()
         conn.close()
 
-        flash("Your message has been sent successfully!", "success")
+        flash("Your message has been sent successfully!", "contact_success")
         return redirect(url_for("contacts"))
 
     except Exception as e:

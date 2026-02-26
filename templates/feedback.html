@@ -2,15 +2,7 @@
 {% extends "base.html" %}
 
 {% block title %}Feedback | SmartIntern{% endblock %}
-{% with messages = get_flashed_messages(with_categories=true) %}
-  {% for category, message in messages %}
-    {% if category == "feedback_success" %}
-      <div id="feedback-flash" class="feedback-flash">
-        {{ message }}
-      </div>
-    {% endif %}
-  {% endfor %}
-{% endwith %}
+
 {% block extra_css %}
     
     <style>
@@ -195,6 +187,15 @@
 <div class="feedback-container">
 
     <h2>SmartIntern Feedback</h2>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+  {% for category, message in messages %}
+    {% if category == "feedback_success" %}
+      <div id="feedback-flash" class="feedback-flash">
+        {{ message }}
+      </div>
+    {% endif %}
+  {% endfor %}
+{% endwith %}
     <p class="subtitle">Your feedback helps us improve personalized internship and scholarship recommendations.</p>
 
     <form action="/submit-feedback" method="POST">

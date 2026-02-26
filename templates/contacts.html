@@ -195,6 +195,31 @@ button:hover{
         grid-template-columns:1fr;
     }
 }
+
+/* For flash msg */
+.contact-flash {
+    width: 60%;
+    margin: 20px auto;
+    padding: 14px 20px;
+    background-color: #e6ffed;
+    color: #021024;
+    border: 1px solid #b7ebc6;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: 500;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+
+    opacity: 0;
+    transform: translateY(-10px);
+    animation: slideFadeIn 0.4s ease forwards;
+}
+
+@keyframes slideFadeIn {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
 </style>
 </head>
 
@@ -207,6 +232,14 @@ button:hover{
 <!-- Hero Section -->
 <section class="hero">
     <h1>Contact SmartIntern</h1>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+  {% for category, message in messages %}
+    {% if category == "contact_success" %}
+        <div id="contact-flash" class="contact-flash">        {{ message }}
+      </div>
+    {% endif %}
+  {% endfor %}
+{% endwith %}
     <p>Have questions about internships or scholarships? We're here to help you grow your career journey.</p>
 </section>
 
@@ -300,3 +333,16 @@ button:hover{
 </section> 
 {% endblock %}
 
+{% block extra_js %}
+<script>
+  setTimeout(function () {
+      const flash = document.getElementById("contact-flash");
+      if (flash) {
+          flash.style.transition = "opacity 0.5s ease, transform 0.5s ease";
+          flash.style.opacity = "0";
+          flash.style.transform = "translateY(-10px)";
+          setTimeout(() => flash.remove(), 500);
+      }
+  }, 3000);
+</script>
+{% endblock %}
