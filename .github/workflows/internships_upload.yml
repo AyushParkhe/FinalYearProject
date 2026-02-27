@@ -34,7 +34,8 @@ jobs:
           python scrapers/aicte_inp_scraper.py
           python scrapers/skill_india_inp.py
           python scrapers/remoteOK_inp.py
-          
+          python scrapers/linkedin_scraper.py
+
       - name: Bulk upload to Supabase
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
