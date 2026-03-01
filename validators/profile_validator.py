@@ -101,6 +101,7 @@ def validate_profile_payload(data: dict):
 
 
     # ---- Normalize text fields ----
+    # ---- Normalize text fields ----
     profile = {
         "education_level": data["education_level"].lower().strip(),
         "field_of_study": data["field_of_study"].strip(),
@@ -117,16 +118,14 @@ def validate_profile_payload(data: dict):
         "preferred_type": data["preferred_type"].lower().strip(),
         "availability_duration": data["availability_duration"].lower().strip(),
 
-        #Scholarship data 
-        "category":data["category"].lower().strip(),
-        "disability_status":data["disability_status"].lower().strip(),
-        "disability_type":data["disability_type"],
-        "family_income":data["family_income"].lower().strip(),
-        "institution_type":data["institution_type"].lower().strip(),
-        # "academic_score":data["academic_score"].lower().strip()
-
+        # Scholarship data - REMOVED .lower() so they match HTML exact casing!
+        "category": data.get("category", "").strip(),
+        "disability_status": data.get("disability_status", "").strip(),
+        "disability_type": data.get("disability_type"), # can be None
+        "family_income": data.get("family_income", "").strip(),
+        "institution_type": data.get("institution_type", "").strip(),
         
-
+        # Uncommented this so it actually saves!
+        "academic_score": data.get("academic_score", "").strip() 
     }
-
     return profile, skills, interests

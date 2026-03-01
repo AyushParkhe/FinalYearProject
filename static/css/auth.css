@@ -130,12 +130,13 @@ body {
   padding: 0.85rem;
   font-size: 1.05rem;
   font-weight: 600;
-  background-color: var(--primary-color);
+  background-color:#234d73;
   border: none;
   border-radius: 5px;
   color: #fff;
   transition: all 0.2s ease;
   cursor: pointer;
+
 }
 
 .btn-primary-login:hover:not(:disabled) {

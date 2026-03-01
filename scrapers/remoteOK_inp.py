@@ -6,7 +6,7 @@ import time
 # ---------------- CONFIG ---------------- #
 URL = "https://remoteok.com"
 TARGET_JOBS = 120
-OUTPUT_FILE = "data/remoteok_aicte_inp.csv"
+OUTPUT_FILE = "data/remoteok_inp.csv"
 
 # ---------------- HELPERS ---------------- #
 def auto_scroll(page, scrolls=12):
@@ -17,7 +17,7 @@ def auto_scroll(page, scrolls=12):
 
 # ---------------- MAIN ---------------- #
 def main():
-    print("🚀 Starting RemoteOK scraping (AICTE INP format)...")
+    print("🚀 Starting RemoteOK scraping ...")
 
     data = []
 

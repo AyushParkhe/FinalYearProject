@@ -1,328 +1,801 @@
-/* ===================================
-   HOME PAGE STYLES (from index.html)
-   =================================== */
+/* ============================================
+   HOME.CSS - SMARTINTERN LANDING PAGE
+   Complete Visual Redesign - Navy Blue Theme
+   ============================================ */
+
+:root {
+    --navy-primary: #1e3a8a;
+    --navy-dark: #1e40af;
+    --navy-light: #3b82f6;
+    --navy-lighter: #60a5fa;
+    --accent-green: #10b981;
+    --accent-emerald: #059669;
+    --white: #ffffff;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-600: #4b5563;
+    --gray-900: #111827;
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+/* ============================================
+   HERO SECTION - Navy Blue with Patterns
+   ============================================ */
 
 .hero-section {
-  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-  padding: 5rem 0;
-  text-align: center;
-}
-
-.hero-section h1 {
-  font-size: 2.75rem;
-  font-weight: 700;
-  color: var(--text-dark);
-  margin-bottom: 1.5rem;
-  line-height: 1.2;
-}
-
-.hero-section p {
-  font-size: 1.15rem;
-  color: var(--text-muted);
-  max-width: 800px;
-  margin: 0 auto 2.5rem;
-  line-height: 1.7;
-}
-
-.hero-buttons .btn {
-  margin: 0.5rem;
-  padding: 0.75rem 2rem;
-  font-weight: 600;
-  border-radius: 5px;
-  font-size: 1rem;
-}
-
-.btn-primary-hero {
-  background-color: var(--primary-color);
-  border: none;
-  color: #fff;
-}
-
-.btn-primary-hero:hover {
-  background-color: #05213a;
-  color: #fff;
-}
-
-.section {
-  padding: 4rem 0;
-}
-
-.section-title {
-  font-size: 2rem;
-  font-weight: 700;
-  color: var(--text-dark);
-  margin-bottom: 1rem;
-  text-align: center;
-}
-
-.section-subtitle {
-  font-size: 1.1rem;
-  color: var(--text-muted);
-  text-align: center;
-  max-width: 700px;
-  margin: 0 auto 3rem;
-}
-
-/* 1. THE MAIN CONTAINER */
-.about-section {
-    position: relative;
-    width: 100%;
-    /* Remove min-height: 80vh if you want the section to only be as tall as the video */
-    height: 600px; /* Set a standard height for the section */
+    background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #2563eb 100%);
+    color: var(--white);
+    padding: 8rem 0;
+    text-align: center;
+    min-height: 85vh;
     display: flex;
     align-items: center;
     justify-content: center;
-    overflow: hidden; 
-    background-color: #05213a; 
+    position: relative;
+    overflow: hidden;
 }
 
-/* 2. THE BACKGROUND VIDEO */
-.hero-video {
+/* Animated Background Pattern */
+.hero-section::before {
+    content: '';
     position: absolute;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover; /* This ensures the video fills the container without gaps */
+    right: 0;
+    bottom: 0;
+    background-image: 
+        radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(16, 185, 129, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 40% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%);
+    animation: pulse 15s ease-in-out infinite;
+}
+
+/* Geometric Pattern Overlay */
+.hero-section::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+        linear-gradient(30deg, rgba(255, 255, 255, 0.03) 12%, transparent 12.5%, transparent 87%, rgba(255, 255, 255, 0.03) 87.5%, rgba(255, 255, 255, 0.03)),
+        linear-gradient(150deg, rgba(255, 255, 255, 0.03) 12%, transparent 12.5%, transparent 87%, rgba(255, 255, 255, 0.03) 87.5%, rgba(255, 255, 255, 0.03)),
+        linear-gradient(30deg, rgba(255, 255, 255, 0.03) 12%, transparent 12.5%, transparent 87%, rgba(255, 255, 255, 0.03) 87.5%, rgba(255, 255, 255, 0.03)),
+        linear-gradient(150deg, rgba(255, 255, 255, 0.03) 12%, transparent 12.5%, transparent 87%, rgba(255, 255, 255, 0.03) 87.5%, rgba(255, 255, 255, 0.03));
+    background-size: 80px 80px;
+    background-position: 0 0, 0 0, 40px 40px, 40px 40px;
+    opacity: 0.5;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.8;
+    }
+}
+
+.hero-section .container {
+    position: relative;
     z-index: 1;
 }
 
-/* 3. THE CONTENT OVERLAY (Add this class to your text/box div) */
-.about-content {
-    position: relative;
-    z-index: 2; /* Ensures text sits on top of the video */
-    text-align: center;
-    color: white;
-    padding: 20px;
-    max-width: 800px; /* Keeps your "Why SmartIntern" text from stretching too wide */
-}
-
-/* 3. THE GRADIENT OVERLAY (for readability) */
-.about-section::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    /* Gradient from transparent to dark navy */
-    background: linear-gradient(
-        to bottom,
-        rgba(5, 33, 58, 0.4) 0%, 
-        rgba(5, 33, 58, 0.7) 100%
-    );
-    z-index: 2; /* Middle layer */
-}
-
-/* 4. THE CONTENT (Centered on top) */
-.about-section .container {
-    position: relative;
-    z-index: 3; /* Highest layer - stays on top of video and overlay */
-    text-align: center;
-    color: #ffffff;
-}
-
-.about-content {
-    max-width: 850px;
-    margin: 0 auto;
-    line-height: 1.8;
-    /* 1. The Shape & Transparency */
-    background: rgba(5, 33, 58, 0.4); /* Navy blue with 40% opacity */
-    
-    /* 2. The Blur (Makes the text pop) */
-    backdrop-filter: blur(10px); 
-    -webkit-backdrop-filter: blur(10px);
-    
-    /* 3. Spacing & Shape */
-    padding: 3rem;
-    border-radius: 20px;
-    max-width: 850px;
-    margin: 0 auto;
-    
-    /* 4. Subtle Border (Adds a premium 'glass' edge) */
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    
-    /* 5. Shadow for Depth */
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-}
-
-.section-title-videowala {
-    display: inline-block; /* Wraps the background tightly around the text */
-    padding: 0.8rem 2.8rem;
-    background: rgba(5, 33, 58, 0.55); /* Semi-transparent navy */
-    backdrop-filter: blur(10px); /* Blurs the network animation behind the title */
-    -webkit-backdrop-filter: blur(10px);
-    border-radius: 50px; /* Modern pill shape */
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    
-    font-size: 2.6rem;
+.hero-section h1 {
+    font-size: 3rem;
     font-weight: 800;
-    color: #ffffff;
-    margin-bottom: 2.5rem;
-    text-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    margin-bottom: 1.5rem;
+    line-height: 1.2;
+    letter-spacing: -0.025em;
+    animation: fadeInUp 0.8s ease-out;
+    text-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 }
 
-.about-content p{
-  color: #ffffff;
-    font-weight: 500; /* Slightly thicker for better visibility */
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); /* Halo effect */
-    margin: 0;
+.hero-section p {
+    font-size: 1.35rem;
+    margin-bottom: 2.5rem;
+    opacity: 0.95;
+    max-width: 850px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.8;
+    animation: fadeInUp 0.8s ease-out 0.2s backwards;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.hero-buttons {
+    animation: fadeInUp 0.8s ease-out 0.4s backwards;
+}
+
+.btn-primary-hero {
+    display: inline-block;
+    padding: 1.125rem 3.5rem;
+    background: var(--white);
+    color: var(--navy-primary);
+    border-radius: 14px;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 1.25rem;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    border: 3px solid transparent;
+}
+
+.btn-primary-hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(30, 58, 138, 0.1), transparent);
+    transition: left 0.6s ease;
+}
+
+.btn-primary-hero:hover::before {
+    left: 100%;
+}
+
+.btn-primary-hero:hover {
+    transform: translateY(-4px) scale(1.03);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+    color: var(--navy-dark);
+    border-color: var(--navy-primary);
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ============================================
+   SECTION COMMON STYLES
+   ============================================ */
+
+.section {
+    padding: 6rem 0;
+    position: relative;
 }
 
 .section-title {
-    color: #0c0658;
-    margin-bottom: 2rem;
+    font-size: 2.75rem;
     font-weight: 700;
-    
+    text-align: center;
+    color: var(--navy-primary);
+    margin-bottom: 1rem;
+    letter-spacing: -0.025em;
+    position: relative;
+    display: inline-block;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
+.section-title::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 4px;
+    background: linear-gradient(90deg, var(--navy-primary), var(--accent-green));
+    border-radius: 2px;
+}
 
+.section-subtitle {
+    text-align: center;
+    color: var(--gray-600);
+    font-size: 1.125rem;
+    margin-bottom: 4rem;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+}
 
+/* ============================================
+   ABOUT SECTION - Video Background (Enhanced)
+   ============================================ */
 
+.about-section {
+    background: var(--gray-900);
+    color: var(--white);
+    padding: 7rem 0;
+    position: relative;
+    overflow: hidden;
+}
 
+.hero-video {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    min-width: 100%;
+    min-height: 100%;
+    width: auto;
+    height: auto;
+    transform: translate(-50%, -50%);
+    z-index: 0;
+    opacity: 0.25;
+    object-fit: cover;
+    filter: blur(2px);
+}
 
+.about-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at 50% 50%, rgba(30, 58, 138, 0.4), rgba(17, 24, 39, 0.8));
+    z-index: 1;
+}
 
-/* HOW IT WORKS */
+.about-section .container {
+    position: relative;
+    z-index: 2;
+}
+
+.section-title-videowala {
+    font-size: 2.75rem;
+    font-weight: 700;
+    text-align: center;
+    color: var(--white);
+    margin-bottom: 3rem;
+    letter-spacing: -0.025em;
+    position: relative;
+    display: inline-block;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.section-title-videowala::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 4px;
+    background: linear-gradient(90deg, var(--navy-lighter), var(--accent-green));
+    border-radius: 2px;
+}
+
+.about-content {
+    max-width: 950px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.about-content p {
+    font-size: 1.2rem;
+    line-height: 2;
+    color: rgba(255, 255, 255, 0.95);
+    background: rgba(30, 58, 138, 0.25);
+    padding: 3rem;
+    border-radius: 20px;
+    backdrop-filter: blur(20px);
+    border: 2px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.4);
+    position: relative;
+}
+
+.about-content p::before {
+    content: '"';
+    position: absolute;
+    top: 15px;
+    left: 25px;
+    font-size: 4rem;
+    color: rgba(255, 255, 255, 0.2);
+    font-family: Georgia, serif;
+    line-height: 0;
+}
+
+/* ============================================
+   HOW IT WORKS SECTION - Enhanced with Icons
+   ============================================ */
+
 .how-it-works-section {
-  background-color: var(--bg-light);
+    background: linear-gradient(180deg, var(--white) 0%, var(--gray-50) 100%);
+    position: relative;
+}
+
+.how-it-works-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+        radial-gradient(circle at 10% 20%, rgba(30, 58, 138, 0.03) 0%, transparent 50%),
+        radial-gradient(circle at 90% 80%, rgba(16, 185, 129, 0.03) 0%, transparent 50%);
+    pointer-events: none;
 }
 
 .step-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 2rem;
-  justify-content: center;
-  margin-top: 2rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 2.5rem;
+    margin-top: 3rem;
+    position: relative;
+}
+
+/* Connection Lines between steps (desktop only) */
+.step-container::before {
+    content: '';
+    position: absolute;
+    top: 35px;
+    left: 15%;
+    right: 15%;
+    height: 3px;
+    background: linear-gradient(90deg, var(--navy-light), var(--accent-green));
+    opacity: 0.2;
+    z-index: 0;
 }
 
 .step-card {
-  background-color: var(--bg-white);
-  border: 2px solid var(--border-color);
-  border-radius: 8px;
-  padding: 2rem;
-  text-align: center;
-  flex: 1;
-  min-width: 220px;
-  max-width: 280px;
-  transition: transform 0.2s ease-in, box-shadow 0.4s ease;
+    background: var(--white);
+    border: 2px solid var(--gray-100);
+    border-radius: 20px;
+    padding: 2.5rem 2rem;
+    text-align: center;
+    transition: all 0.4s ease;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.step-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    background: linear-gradient(90deg, var(--navy-primary), var(--navy-light));
+    transform: scaleX(0);
+    transition: transform 0.4s ease;
+}
+
+.step-card:hover::before {
+    transform: scaleX(1);
+}
+
+.step-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(30, 58, 138, 0.03), rgba(16, 185, 129, 0.03));
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+.step-card:hover::after {
+    opacity: 1;
 }
 
 .step-card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  transform: translateY(+5px);
+    transform: translateY(-10px);
+    box-shadow: 0 20px 50px rgba(30, 58, 138, 0.15);
+    border-color: var(--navy-light);
 }
 
 .step-number {
-  display: inline-block;
-  width: 50px;
-  height: 50px;
-  background-color: var(--primary-color);
-  color: #fff;
-  border-radius: 50%;
-  line-height: 50px;
-  font-size: 1.5rem;
-  font-weight: 700;
-  margin-bottom: 1rem;
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, var(--navy-primary), var(--navy-dark));
+    color: var(--white);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0 auto 1.5rem;
+    box-shadow: 0 10px 25px rgba(30, 58, 138, 0.3);
+    transition: all 0.4s ease;
+    position: relative;
+    z-index: 2;
+}
+
+.step-number::before {
+    content: '';
+    position: absolute;
+    top: -5px;
+    left: -5px;
+    right: -5px;
+    bottom: -5px;
+    border-radius: 50%;
+    border: 2px dashed var(--navy-light);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+.step-card:hover .step-number::before {
+    opacity: 1;
+    animation: rotate 20s linear infinite;
+}
+
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.step-card:hover .step-number {
+    transform: scale(1.15) rotate(5deg);
+    box-shadow: 0 15px 35px rgba(30, 58, 138, 0.4);
 }
 
 .step-title {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: var(--text-dark);
-  margin-bottom: 0.5rem;
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--navy-primary);
+    margin-bottom: 1rem;
 }
 
 .step-description {
-  font-size: 0.95rem;
-  color: var(--text-muted);
+    color: var(--gray-600);
+    line-height: 1.7;
+    font-size: 1rem;
 }
 
-/* FEATURES */
+/* ============================================
+   FEATURES SECTION - Enhanced Cards
+   ============================================ */
+
 .features-section {
-  background-color: var(--bg-white);
+    background: linear-gradient(180deg, var(--gray-50) 0%, var(--white) 100%);
+    position: relative;
+}
+
+.features-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+        radial-gradient(circle at 90% 20%, rgba(30, 58, 138, 0.03) 0%, transparent 50%),
+        radial-gradient(circle at 10% 80%, rgba(16, 185, 129, 0.03) 0%, transparent 50%);
+    pointer-events: none;
 }
 
 .features-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 2rem;
-  margin-top: 2rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2.5rem;
+    margin-top: 3rem;
 }
 
 .feature-card {
-  background-color: var(--bg-light);
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  padding: 2rem;
-  text-align: center;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+    background: var(--white);
+    border-radius: 20px;
+    padding: 3rem 2.5rem;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    transition: all 0.4s ease;
+    border: 2px solid transparent;
+    position: relative;
+    overflow: hidden;
+}
+
+.feature-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(30, 58, 138, 0.05), rgba(16, 185, 129, 0.05));
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+.feature-card:hover::before {
+    opacity: 1;
+}
+
+.feature-card::after {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(135deg, var(--navy-primary), var(--navy-light), var(--accent-green));
+    border-radius: 20px;
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+.feature-card:hover::after {
+    opacity: 1;
 }
 
 .feature-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+    transform: translateY(-10px) scale(1.02);
+    box-shadow: 0 20px 50px rgba(30, 58, 138, 0.2);
 }
 
 .feature-icon {
-  font-size: 2.5rem;
-  margin-bottom: 1rem;
+    font-size: 4rem;
+    margin-bottom: 1.5rem;
+    display: inline-block;
+    transition: all 0.4s ease;
+    filter: grayscale(0.3);
+}
+
+.feature-card:hover .feature-icon {
+    transform: scale(1.3) rotate(-10deg);
+    filter: grayscale(0);
 }
 
 .feature-title {
-  font-size: 1.2rem;
-  font-weight: 600;
-  color: var(--text-dark);
-  margin-bottom: 0.75rem;
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--navy-primary);
+    margin-bottom: 1rem;
+    position: relative;
+    z-index: 1;
 }
 
 .feature-description {
-  font-size: 0.95rem;
-  color: var(--text-muted);
-  line-height: 1.6;
+    color: var(--gray-600);
+    line-height: 1.8;
+    font-size: 1rem;
+    position: relative;
+    z-index: 1;
 }
 
-/* CTA */
+/* ============================================
+   CALL TO ACTION SECTION - Dramatic Finale
+   ============================================ */
+
 .cta-section {
-  background-color: var(--primary-color);
-  color: #fff;
-  padding: 4rem 0;
-  text-align: center;
+    background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #2563eb 100%);
+    color: var(--white);
+    padding: 6rem 0;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Animated Background Elements */
+.cta-section::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, transparent 70%);
+    border-radius: 50%;
+    animation: float 20s ease-in-out infinite;
+}
+
+.cta-section::after {
+    content: '';
+    position: absolute;
+    bottom: -50%;
+    left: -10%;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(16, 185, 129, 0.2) 0%, transparent 70%);
+    border-radius: 50%;
+    animation: float 25s ease-in-out infinite reverse;
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translate(0, 0) scale(1);
+    }
+    50% {
+        transform: translate(30px, 30px) scale(1.1);
+    }
+}
+
+.cta-section .container {
+    position: relative;
+    z-index: 1;
 }
 
 .cta-section h2 {
-  font-size: 2rem;
-  font-weight: 700;
-  margin-bottom: 2rem;
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 2.5rem;
+    line-height: 1.3;
+    text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .btn-cta {
-  background-color: #fff;
-  color: var(--primary-color);
-  padding: 0.85rem 2.5rem;
-  font-weight: 600;
-  border-radius: 5px;
-  border: none;
-  font-size: 1.1rem;
-  transition: all 0.2s ease;
+    display: inline-block;
+    padding: 1.25rem 4rem;
+    background: var(--white);
+    color: var(--navy-primary);
+    border-radius: 14px;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 1.25rem;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    border: 3px solid transparent;
+}
+
+.btn-cta::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(30, 58, 138, 0.15);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s ease, height 0.6s ease;
+}
+
+.btn-cta:hover::before {
+    width: 400px;
+    height: 400px;
 }
 
 .btn-cta:hover {
-  background-color: #05213a;
-  transform: scale(1.05);
+    transform: translateY(-4px) scale(1.05);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    text-emphasis-color:var(--gray-100);
+    color: var(--navy-dark);
+    border-color: var(--navy-primary);
 }
 
-/* RESPONSIVE */
-@media (max-width: 768px) {
-  .hero-section h1 {
-    font-size: 2rem;
-  }
-  .section-title {
-    font-size: 1.75rem;
-  }
-  .step-container {
-    flex-direction: column;
-    align-items: center;
-  }
-  .features-grid {
-    grid-template-columns: 1fr;
-  }
+/* Decorative Elements */
+.btn-cta::after {
+    content: '→';
+    margin-left: 10px;
+    display: inline-block;
+    transition: transform 0.3s ease;
 }
 
+.btn-cta:hover::after {
+    transform: translateX(8px);
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+
+@media (max-width: 991.98px) {
+    .hero-section {
+        padding: 5rem 0;
+        min-height: 70vh;
+    }
+
+    .hero-section h1 {
+        font-size: 2.5rem;
+    }
+
+    .hero-section p {
+        font-size: 1.125rem;
+    }
+
+    .section-title,
+    .section-title-videowala {
+        font-size: 2.25rem;
+    }
+
+    .step-container,
+    .features-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+
+    .step-container::before {
+        display: none;
+    }
+
+    .section {
+        padding: 4rem 0;
+    }
+
+    .about-section {
+        padding: 5rem 0;
+    }
+
+    .cta-section h2 {
+        font-size: 2rem;
+    }
+
+    .btn-primary-hero,
+    .btn-cta {
+        padding: 1rem 2.5rem;
+        font-size: 1.125rem;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .hero-section {
+        padding: 4rem 0;
+        min-height: 60vh;
+    }
+
+    .hero-section h1 {
+        font-size: 2rem;
+    }
+
+    .hero-section p {
+        font-size: 1rem;
+    }
+
+    .section-title,
+    .section-title-videowala {
+        font-size: 1.875rem;
+    }
+
+    .about-content p {
+        padding: 2rem 1.5rem;
+        font-size: 1rem;
+    }
+
+    .step-card,
+    .feature-card {
+        padding: 2rem 1.5rem;
+    }
+
+    .step-number {
+        width: 70px;
+        height: 70px;
+        font-size: 1.75rem;
+    }
+
+    .cta-section h2 {
+        font-size: 1.75rem;
+    }
+
+    .feature-icon {
+        font-size: 3.5rem;
+    }
+}
+
+/* ============================================
+   ACCESSIBILITY & PERFORMANCE
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+.btn-primary-hero:focus-visible,
+.btn-cta:focus-visible {
+    outline: 3px solid rgba(255, 255, 255, 0.8);
+    outline-offset: 4px;
+}

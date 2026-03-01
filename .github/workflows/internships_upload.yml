@@ -35,6 +35,7 @@ jobs:
           python scrapers/skill_india_inp.py
           python scrapers/remoteOK_inp.py
           python scrapers/linkedin_scraper.py
+          python scrapers/naukri_inp_scraper.py
 
       - name: Bulk upload to Supabase
         env:

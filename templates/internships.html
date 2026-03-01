@@ -157,18 +157,14 @@
   {% else %}
     <p>No internships available at the moment.</p>
   {% endif %}
-
-  <!-- ===============================
-       PAGINATION
-  ================================ -->
-  {% if internships %}
+{% if internships %}
     <nav class="mt-5">
       <ul class="pagination justify-content-center">
 
         {% if page > 1 %}
           <li class="page-item">
             <a class="page-link"
-               href="?page={{ page - 1 }}&location={{ request.args.get('location','') }}&organization={{ request.args.get('organization','') }}">
+               href="{{ url_for('internships', page=page-1, location=request.args.get('location', ''), source=request.args.get('source', '')) }}">
               Previous
             </a>
           </li>
@@ -181,7 +177,7 @@
         {% if internships|length == 12 %}
           <li class="page-item">
             <a class="page-link"
-               href="?page={{ page + 1 }}&location={{ request.args.get('location','') }}&organization={{ request.args.get('organization','') }}">
+               href="{{ url_for('internships', page=page+1, location=request.args.get('location', ''), source=request.args.get('source', '')) }}">
               Next
             </a>
           </li>
@@ -190,9 +186,7 @@
       </ul>
     </nav>
   {% endif %}
-
-</div>
-{% endblock %}
+  {% endblock %}
 {% block extra_js %}
 <script>
 document.addEventListener("click", async (e) => {

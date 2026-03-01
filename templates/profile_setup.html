@@ -251,6 +251,19 @@
                     </select>
                 </div>
 
+                <div class="mb-4"> <label for="academic_score" class="block text-sm font-medium text-gray-700">
+                        Academic Score (CGPA or %)
+                    </label>
+                    <input 
+                        type="text" 
+                        id="academic_score" 
+                        name="academic_score" 
+                        placeholder="e.g. 8.5 CGPA or 85%"
+                        value="{{ profile.academic_score if profile and profile.academic_score else '' }}"
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                    >
+                </div>
+
                 <div class="form-group">
                     <label>Looking For</label>
                     <select name="preferred_type">
@@ -276,12 +289,13 @@
    CONFIG & INITIALIZATION
 ===================================================== */
 
+// ADDED: institution_type and academic_score to make the math correct
 const requiredFields = [
   "full_name", "dob", "gender", "education_level",
   "field_of_study", "graduation_year", "location",
   "experience_level", "preferred_mode", "preferred_type",
   "availability_duration", "skills", "category",
-  "disability_status", "family_income"
+  "disability_status", "family_income", "institution_type", "academic_score"
 ];
 
 const form = document.getElementById("profileForm");
@@ -303,7 +317,7 @@ function updateCompletion() {
   document.getElementById("completionPercent").innerText = percent + "%";
 }
 
-form.querySelectorAll("input, select").forEach(el => {
+form.querySelectorAll("input, select, textarea").forEach(el => {
   el.addEventListener("change", updateCompletion);
   el.addEventListener("input", updateCompletion);
 });
@@ -329,7 +343,6 @@ if (nameInput) {
 
 /* =====================================================
    TOGGLE "OTHER" INPUTS
-   (Requires onchange="toggleOther(this)" in HTML)
 ===================================================== */
 
 function toggleOther(select) {
@@ -350,7 +363,6 @@ function toggleOther(select) {
   updateCompletion();
 }
 
-// Restore "Other" inputs if they were filled (e.g., page reload or edit mode)
 document.querySelectorAll('select').forEach(select => {
     const otherInput = select.parentElement.querySelector(`input[name="${select.name}_other"]`);
     if (otherInput && otherInput.value && otherInput.value.trim() !== "") {
@@ -358,7 +370,6 @@ document.querySelectorAll('select').forEach(select => {
         otherInput.hidden = false;
     }
 });
-
 
 /* =====================================================
    DISABILITY TOGGLE
@@ -368,9 +379,9 @@ const disabilitySelect = form.querySelector('[name="disability_status"]');
 const disabilityBlock = document.getElementById("disabilityTypeBlock");
 
 function toggleDisability() {
-  if (disabilitySelect.value === "Yes") {
+  if (disabilitySelect && disabilitySelect.value === "Yes") {
     disabilityBlock.style.display = "block";
-  } else {
+  } else if (disabilityBlock) {
     disabilityBlock.style.display = "none";
   }
 }
@@ -411,11 +422,14 @@ form.onsubmit = async (e) => {
     preferred_type: form.preferred_type.value,
     availability_duration: form.availability_duration.value,
 
-    category: form.category.value,
-    disability_status: form.disability_status.value,
+    category: form.category ? form.category.value : "",
+    disability_status: form.disability_status ? form.disability_status.value : "",
     disability_type: form.disability_type?.value || null,
-    family_income: form.family_income.value,
-    institution_type: form.institution_type.value,
+    family_income: form.family_income ? form.family_income.value : "",
+    institution_type: form.institution_type ? form.institution_type.value : "",
+    
+    // ADDED: So it actually sends to the Python backend!
+    academic_score: form.academic_score ? form.academic_score.value.trim() : "",
 
     skills: form.skills.value
       .split(",")

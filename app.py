@@ -362,8 +362,8 @@ def internships():
     PER_PAGE = 12
     offset = (page - 1) * PER_PAGE
 
-    location = request.args.get("location")
-    source = request.args.get("source")
+    location = request.args.get("location", "").strip()
+    source = request.args.get("source", "").strip()
 
     conn = None
     internships = []
@@ -373,7 +373,6 @@ def internships():
         conn = get_db()
         cur = conn.cursor(cursor_factory=RealDictCursor)
 
-        # Build SQL dynamically
         sql = "SELECT * FROM internships"
         conditions = []
         params = []
@@ -386,12 +385,17 @@ def internships():
             conditions.append("source ILIKE %s")
             params.append(f"%{source}%")
 
+        # Add WHERE only if filters exist
         if conditions:
             sql += " WHERE " + " AND ".join(conditions)
 
-        sql += " ORDER BY id LIMIT %s OFFSET %s"
-        params.extend([PER_PAGE, offset])
+        # FIX: Changed scraped_at back to created_at (Matches your earlier Supabase logic)
+        sql += " ORDER BY created_at DESC, id DESC"
 
+        # THEN pagination
+        sql += " LIMIT %s OFFSET %s"
+        params.extend([PER_PAGE, offset])
+        
         cur.execute(sql, params)
         internships = cur.fetchall()
 
@@ -419,14 +423,18 @@ def internships():
         "internships.html",
         internships=internships,
         saved_ids=saved_ids,
-        page=page
+        page=page,
+        # PRO TIP: Pass the active filters back to the template so the search bars don't clear out!
+        current_location=location, 
+        current_source=source
     )
-
 
 @app.route("/scholarships")
 def scholarships():
-
     page = request.args.get("page", 1, type=int)
+    search_query = request.args.get("search", "").strip()
+    source_filter = request.args.get("source", "all").strip()
+
     PER_PAGE = 12
     offset = (page - 1) * PER_PAGE
 
@@ -434,13 +442,40 @@ def scholarships():
         conn = get_db()
         cur = conn.cursor(cursor_factory=RealDictCursor)
 
-        cur.execute("""
+        # 1️⃣ Build the dynamic WHERE clause
+        conditions = []
+        params = []
+
+        if search_query:
+            # Assumes your table has 'title' and 'provider' columns. Adjust if needed!
+            conditions.append("(title ILIKE %s OR provider ILIKE %s)")
+            params.extend([f"%{search_query}%", f"%{search_query}%"])
+
+        if source_filter and source_filter != "all":
+            # Assumes your table has a 'source' column
+            conditions.append("source ILIKE %s")
+            params.append(f"%{source_filter}%")
+
+        where_clause = ""
+        if conditions:
+            where_clause = " WHERE " + " AND ".join(conditions)
+
+        # 2️⃣ Get total count (with filters applied!)
+        count_sql = f"SELECT COUNT(*) FROM scholarships {where_clause}"
+        cur.execute(count_sql, params)
+        total_scholarships = cur.fetchone()["count"]
+
+        total_pages = (total_scholarships + PER_PAGE - 1) // PER_PAGE
+
+        # 3️⃣ Get paginated records (with filters applied!)
+        data_sql = f"""
             SELECT *
             FROM scholarships
+            {where_clause}
             ORDER BY created_at DESC
             LIMIT %s OFFSET %s
-        """, (PER_PAGE, offset))
-
+        """
+        cur.execute(data_sql, params + [PER_PAGE, offset])
         scholarships = cur.fetchall()
 
         cur.close()
@@ -449,30 +484,44 @@ def scholarships():
         return render_template(
             "scholarships.html",
             scholarships=scholarships,
-            page=page
+            page=page,
+            total_pages=total_pages,
+            # Send these back so the HTML remembers what the user selected
+            current_search=search_query,
+            current_source=source_filter
         )
 
     except Exception as e:
         print("SCHOLARSHIP ERROR:", e)
         return "Error loading scholarships", 500
-
-
 @app.route("/internships/<int:internship_id>")
 def internship_details(internship_id):
-    internship = (
-        supabase
-        .table("internships")
-        .select("*")
-        .eq("id", internship_id)
-        .single()
-        .execute()
-        .data
-    )
 
-    return render_template(
-        "internship_details.html",
-        internship=internship
-    )
+    try:
+        conn = get_db()
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+
+        cur.execute(
+            "SELECT * FROM internships WHERE id = %s",
+            (internship_id,)
+        )
+
+        internship = cur.fetchone()
+
+        cur.close()
+        conn.close()
+
+        if not internship:
+            return "Internship not found", 404
+
+        return render_template(
+            "internship_details.html",
+            internship=internship
+        )
+
+    except Exception as e:
+        print("INTERNSHIP DETAIL ERROR:", e)
+        return "Error loading internship", 500
 
 @app.route("/scholarships/<int:scholarship_id>")
 def scholarship_details(scholarship_id):
