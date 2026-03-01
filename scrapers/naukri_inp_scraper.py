@@ -5,14 +5,11 @@ import time
 import hashlib
 import os
 from datetime import datetime
-
-# --- NEW: Import stealth ---
-from playwright_stealth import stealth_sync
-
+from playwright_stealth.stealth import stealth_sync
 BASE_URL = "https://www.naukri.com/artificial-intelligence-internship-jobs"
 QUERY = "?k=artificial%20intelligence%20internship&experience=0"
 
-TARGET_COUNT = 250  # Change as needed
+TARGET_COUNT = 260  # Change as needed
 
 def generate_hash(text):
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
@@ -23,33 +20,18 @@ def scrape_naukri():
     page_number = 1
 
     with sync_playwright() as p:
-        # --- MODIFIED: Added extra flags to hide automation ---
         browser = p.chromium.launch(
-            headless=True,
-            args=[
-                "--disable-blink-features=AutomationControlled",
-                "--disable-infobars",
-                "--no-sandbox",
-                "--disable-setuid-sandbox"
-            ]
+            headless=False,
+            args=["--disable-blink-features=AutomationControlled"]
         )
 
-        # --- MODIFIED: Added realistic viewport and headers ---
         context = browser.new_context(
-            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Safari/537.36",
             permissions=["geolocation"],
-            geolocation={"latitude": 19.0760, "longitude": 72.8777},
-            viewport={"width": 1920, "height": 1080},
-            extra_http_headers={
-                "Accept-Language": "en-US,en;q=0.9",
-                "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
-                "Upgrade-Insecure-Requests": "1"
-            }
+            geolocation={"latitude": 19.0760, "longitude": 72.8777}
         )
 
         page = context.new_page()
-        
-        # --- NEW: Apply stealth patches to the page ---
         stealth_sync(page)
 
         while len(all_jobs) < TARGET_COUNT:
@@ -58,19 +40,11 @@ def scrape_naukri():
             print(f"\nScraping Page {page_number}")
             print(url)
 
+                        
             page.goto(url, timeout=60000)
 
-            # --- MODIFIED: Try/Except block to capture the block screen ---
-            try:
-                # Wait for job cards instead of network
-                page.wait_for_selector("div.cust-job-tuple", timeout=30000)
-            except Exception as e:
-                print("\n❌ Timeout waiting for job cards!")
-                print("Taking screenshot to see what Naukri is showing...")
-                page.screenshot(path="naukri_error_screenshot.png", full_page=True)
-                print("Screenshot saved as 'naukri_error_screenshot.png'")
-                print(f"Page Title: {page.title()}")
-                raise e # Re-raise the error to stop the script
+            # Wait for job cards instead of network
+            page.wait_for_selector("div.cust-job-tuple", timeout=30000)
 
             page.wait_for_timeout(3000)
 
@@ -178,6 +152,7 @@ def scrape_naukri():
     print("\n✅ Scraping completed")
     print(f"Total collected: {len(all_jobs)}")
     print(f"Saved to: {file_path}")
+
 
 if __name__ == "__main__":
     scrape_naukri()
