@@ -56,8 +56,7 @@
 
 .scholarship-container {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 25px;
+    grid-template-columns: repeat(3, 1fr);    gap: 25px;
     padding: 30px;
 }
 
