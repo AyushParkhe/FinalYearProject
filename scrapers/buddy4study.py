@@ -1,5 +1,6 @@
 import time
 import pandas as pd
+import os
 from playwright.sync_api import sync_playwright
 
 BASE_URL = "https://www.buddy4study.com"
@@ -7,94 +8,82 @@ LIST_URL = f"{BASE_URL}/scholarships"
 
 def scrape_buddy4study():
     all_data = []
-    
+
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=False) # Keep False so you can see the fix
-        context = browser.new_context(user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+        browser = p.chromium.launch(headless=True)
+        context = browser.new_context(
+            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+        )
         page = context.new_page()
-        
+
         print(f"🚀 Navigating to {LIST_URL}...")
         page.goto(LIST_URL, wait_until="domcontentloaded", timeout=60000)
 
-        for current_page_num in range(1, 6): 
-            print(f"📄 Processing Page {current_page_num}...")
-            
-            # Wait for content and scroll slowly to trigger all lazy-loading
-            page.wait_for_selector(".Listing_categoriesBox__CiGvQ", timeout=20000)
-            for _ in range(10):
-                page.mouse.wheel(0, 1200)
-                time.sleep(0.5)
+        print("📄 Processing First Page...")
 
-            # EXTRACTION
-            cards = page.locator(".Listing_categoriesBox__CiGvQ")
-            count = cards.count()
-            
-            valid_on_page = 0
-            for i in range(count):
-                try:
-                    card = cards.nth(i)
-                    title = card.locator("h4.Listing_scholarshipName__VLFMj p, h4 p").first.inner_text().strip()
-                    
-                    # Filtering Logic (This is why your count decreases)
-                    if not title or "closed" in title.lower(): 
-                        continue
+        page.wait_for_selector(".Listing_categoriesBox__CiGvQ", timeout=20000)
 
-                    award = card.locator(".Listing_awardCont__qnjQK").nth(0).locator("p span").inner_text().strip()
-                    elig = card.locator(".Listing_awardCont__qnjQK").nth(1).locator("p span").inner_text().strip()
-                    deadline = card.locator(".Listing_calendarDate__WCgKV p").last.inner_text().strip()
-                    
-                    href = card.get_attribute("href")
-                    apply_url = BASE_URL + href if href.startswith("/") else href
+        # Scroll to trigger lazy loading
+        for _ in range(12):
+            page.mouse.wheel(0, 1500)
+            time.sleep(0.7)
 
-                    all_data.append({
-                        "title": title, "provider": "Buddy4Study Partner", "source": "Buddy4Study",
-                        "category": "General", "eligibility_text": elig, "amount": f"Rs. {award}",
-                        "deadline": deadline, "apply_url": apply_url
-                    })
-                    valid_on_page += 1
-                except: continue
+        cards = page.locator(".Listing_categoriesBox__CiGvQ")
+        count = cards.count()
 
-            print(f"✅ Extracted {valid_on_page} valid scholarships from Page {current_page_num}.")
+        print(f"🔎 Found {count} listings on first page.")
 
-            # --------- ROBUST PAGINATION FIX ----------
+        for i in range(count):
             try:
-                # Store current URL before clicking
-                current_url = page.url
+                card = cards.nth(i)
 
-                # Target Next button more reliably
-                next_btn = page.get_by_role("button", name="Next").first
+                title = card.locator("h4.Listing_scholarshipName__VLFMj p, h4 p").first.inner_text().strip()
 
-                if next_btn.count() > 0 and next_btn.is_enabled():
-                    print("⏭️ Clicking Next Button...")
+                award = ""
+                elig = ""
+                deadline = ""
 
-                    next_btn.scroll_into_view_if_needed()
-                    next_btn.click()
+                award_locator = card.locator(".Listing_awardCont__qnjQK").nth(0).locator("p span")
+                if award_locator.count() > 0:
+                    award = award_locator.inner_text().strip()
 
-                    # Wait until URL changes OR content refreshes
-                    page.wait_for_function(
-                        "(prevUrl) => window.location.href !== prevUrl",
-                        current_url,
-                        timeout=15000
-                    )
+                elig_locator = card.locator(".Listing_awardCont__qnjQK").nth(1).locator("p span")
+                if elig_locator.count() > 0:
+                    elig = elig_locator.inner_text().strip()
 
-                    # Wait for new cards to load
-                    page.wait_for_selector(".Listing_categoriesBox__CiGvQ", timeout=20000)
+                deadline_locator = card.locator(".Listing_calendarDate__WCgKV p").last
+                if deadline_locator.count() > 0:
+                    deadline = deadline_locator.inner_text().strip()
 
-                    time.sleep(2)  # small stability delay
+                href = card.get_attribute("href")
+                apply_url = BASE_URL + href if href and href.startswith("/") else href
 
-                else:
-                    print("🏁 Next button not clickable. Ending.")
-                    break
+                all_data.append({
+                    "title": title,
+                    "provider": "Buddy4Study Partner",
+                    "source": "Buddy4Study",
+                    "category": "General",
+                    "eligibility_text": elig,
+                    "amount": award,
+                    "deadline": deadline,
+                    "apply_url": apply_url
+                })
 
-            except Exception as e:
-                print(f"🏁 Pagination stopped: {e}")
-                break
+            except:
+                continue
 
         browser.close()
 
+    # Ensure sch_data folder exists in project root
+    os.makedirs("sch_data", exist_ok=True)
+
+    file_path = os.path.join("sch_data", "buddy4study.csv")
+
     df = pd.DataFrame(all_data)
-    df.to_csv("buddy4study_precision.csv", index=False, encoding="utf-8")
-    print(f"\n🎉 SUCCESS! Total unique records saved: {len(df)}")
+    df.to_csv(file_path, index=False, encoding="utf-8")
+
+    print(f"\n🎉 SUCCESS! Total records saved: {len(df)}")
+    print(f"📁 Saved to: {file_path}")
 
 if __name__ == "__main__":
     scrape_buddy4study()

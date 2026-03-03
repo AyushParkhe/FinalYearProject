@@ -26,7 +26,7 @@ jobs:
         run: python -m playwright install chromium
 
       - name: Run scrapers
-        # This ENV variable tells Python: "Look for 'utils' in the main folder"
+        # This ENV variable tells Python: "Look for 'scrapers' in the main folder"
         env:
           PYTHONPATH: ${{ github.workspace }}
         run: |
