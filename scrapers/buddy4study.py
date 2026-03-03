@@ -51,9 +51,22 @@ def scrape_buddy4study():
                 if elig_locator.count() > 0:
                     elig = elig_locator.inner_text().strip()
 
-                deadline_locator = card.locator(".Listing_calendarDate__WCgKV p").last
-                if deadline_locator.count() > 0:
-                    deadline = deadline_locator.inner_text().strip()
+                
+                deadline = ""
+
+                calendar_block = card.locator(".Listing_calendarDate__WCgKV")
+
+                if calendar_block.count() > 0:
+                    # Get all <p> inside the deadline block
+                    p_tags = calendar_block.locator("p")
+                    
+                    for j in range(p_tags.count()):
+                        text = p_tags.nth(j).inner_text().strip()
+                        
+                        # Skip the "Deadline" label and capture actual date
+                        if text and text.lower() != "deadline":
+                            deadline = text
+                            break
 
                 href = card.get_attribute("href")
                 apply_url = BASE_URL + href if href and href.startswith("/") else href
