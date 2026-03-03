@@ -2,8 +2,21 @@ import os
 import pandas as pd
 import psycopg2
 from psycopg2.extras import execute_batch
+from datetime import datetime
 
 CSV_PATH = "sch_data/buddy4study.csv"
+
+def parse_deadline(value):
+    if not value or pd.isna(value):
+        return None
+    try:
+        return datetime.strptime(value.strip(), "%d %b %Y").date()
+    except:
+        try:
+            return datetime.strptime(value.strip(), "%d %B %Y").date()
+        except:
+            return None
+
 
 def import_to_db():
     DATABASE_URL = os.getenv("DATABASE_URL")
@@ -31,6 +44,8 @@ def import_to_db():
     values = []
 
     for _, row in df.iterrows():
+        deadline_date = parse_deadline(row["deadline"])  # ✅ FIX HERE
+
         values.append((
             row["title"],
             row["provider"],
@@ -38,7 +53,7 @@ def import_to_db():
             row["category"],
             row["eligibility_text"],
             row["amount"],
-            None,  # convert deadline later if needed
+            deadline_date,
             row["apply_url"]
         ))
 
