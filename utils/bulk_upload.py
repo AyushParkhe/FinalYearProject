@@ -159,7 +159,7 @@ def sync_skills_after_upload(conn):
         skills_to_insert = []
         for internship_id, skills_string in unprocessed_internships:
             # Split by comma, remove extra spaces, and convert to lowercase
-            skill_list = [s.strip().lower() for s in skills_string.split(',') if s.strip()]
+            skill_list = [s.replace('[', '').replace(']', '').replace("'", "").replace('"', '').strip().lower() for s in skills_string.split(',') if s.strip()]
             
             for skill in skill_list:
                 skills_to_insert.append((internship_id, skill))
