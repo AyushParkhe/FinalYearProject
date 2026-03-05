@@ -41,7 +41,6 @@ def get_csv_files():
 
     return files
 
-
 def clean_dataframe(df):
     # NaN → None (important for psycopg2)
     df = df.where(pd.notnull(df), None)
@@ -53,7 +52,6 @@ def clean_dataframe(df):
         )
 
     return df
-
 
 # -------------------------------------------------
 # Main uploader
@@ -75,6 +73,7 @@ def upload_csv(conn, csv_path):
     for row in records:
         if row.get("extra_data") is not None:
             row["extra_data"] = Json(row["extra_data"])
+        
         cur.execute(
             f"""
             INSERT INTO {TABLE_NAME} (
@@ -132,6 +131,53 @@ def upload_csv(conn, csv_path):
 
     print(f"✅ Uploaded {len(records)} records from {os.path.basename(csv_path)}")
 
+# -------------------------------------------------
+# Post-Upload Skill Synchronizer
+# -------------------------------------------------
+def sync_skills_after_upload(conn):
+    print("\n🔄 Starting post-upload skill synchronization...")
+    cur = conn.cursor()
+
+    try:
+        # Find internships with skills that haven't been added to internship_skills yet
+        cur.execute("""
+            SELECT id, skills_final 
+            FROM internships 
+            WHERE skills_final IS NOT NULL 
+              AND skills_final != ''
+              AND id NOT IN (SELECT DISTINCT internship_id FROM internship_skills)
+        """)
+        
+        unprocessed_internships = cur.fetchall()
+        
+        if not unprocessed_internships:
+            print("✅ All skills are already synced up!")
+            return
+
+        print(f"📌 Found {len(unprocessed_internships)} new internships to process for skills.")
+        
+        skills_to_insert = []
+        for internship_id, skills_string in unprocessed_internships:
+            # Split by comma, remove extra spaces, and convert to lowercase
+            skill_list = [s.strip().lower() for s in skills_string.split(',') if s.strip()]
+            
+            for skill in skill_list:
+                skills_to_insert.append((internship_id, skill))
+
+        if skills_to_insert:
+            # executemany inserts the entire list rapidly
+            cur.executemany(
+                "INSERT INTO internship_skills (internship_id, skill) VALUES (%s, %s)",
+                skills_to_insert
+            )
+            conn.commit()
+            print(f"✅ Successfully inserted {len(skills_to_insert)} individual skills into the database.")
+
+    except Exception as e:
+        conn.rollback()
+        print(f"❌ Error during skill sync: {e}")
+    finally:
+        cur.close()
 
 # -------------------------------------------------
 # Entry point
@@ -145,13 +191,16 @@ def main():
 
     conn = psycopg2.connect(DATABASE_URL, sslmode="require")
 
+    # 1. Upload all CSV files
     for csv_file in csv_files:
         upload_csv(conn, csv_file)
 
+    # 2. Sync the skills immediately after uploading
+    sync_skills_after_upload(conn)
+
     conn.close()
 
-    print("\n🎉 Bulk upload completed for ALL CSV files")
-
+    print("\n🎉 Bulk upload and skill sync completed for ALL CSV files")
 
 if __name__ == "__main__":
     main()
