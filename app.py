@@ -8,7 +8,6 @@ from utils.db import get_db
 from utils.security import validate_password, hash_password, check_password
 from utils.supabase_client import supabase
 from utils.profile_utils import is_profile_complete
-from utils.recommendation_utils import get_internship_recommendations,get_scholarship_recommendations
 from supabase import create_client
 from werkzeug.middleware.proxy_fix import ProxyFix # Add this import
 from werkzeug.exceptions import HTTPException
@@ -108,43 +107,6 @@ def login():
         return redirect(url_for("dashboard"))
 
     return render_template("login.html")
-
-
-# @app.route("/send-otp", methods=["POST"])
-# def send_otp():
-#     email = request.form["email"]
-
-#     supabase.auth.sign_in_with_otp({
-#         "email": email
-#     })
-
-#     session["email"] = email
-#     return redirect("/verify-otp")
-
-# @app.route("/auth-success", methods=["POST"])
-# def auth_success():
-#     data = request.get_json()
-#     session["user_id"] = data["user_id"]
-#     session["email"] = data["email"]
-#     return {"status": "ok"}
-
-
-# @app.route("/verify-otp", methods=["GET", "POST"])
-# def verify_otp():
-#     if request.method == "POST":
-#         otp = request.form["otp"]
-#         email = session.get("email")
-
-#         supabase.auth.verify_otp({
-#             "email": email,
-#             "token": otp,
-#             "type": "email"
-#         })
-
-#         return redirect("/dashboard")
-
-#     return render_template("verify_otp.html")
-
 
 # ---------------- SIGNUP ----------------
 @app.route("/signup", methods=["GET", "POST"])
@@ -717,33 +679,79 @@ def login_required(fn):
     wrapper.__name__ = fn.__name__
     return wrapper
 
+# @app.route("/dashboard")
+# @login_required
+
+# def dashboard():
+#     from utils.recommendation_utils import get_internship_recommendations,get_scholarship_recommendations
+
+
+#     user_id = session["user_id"]
+#     display_name = session.get("display_name", "")
+
+#     # ---------------- PROFILE CHECK ----------------
+#     profile_complete = is_profile_complete(user_id)
+
+#     # ---------------- INTERNSHIPS ----------------
+#     internships = []
+#     if profile_complete:
+#         internships = get_internship_recommendations(user_id,top_n=10)
+
+#     # ---------------- SCHOLARSHIPS ----------------
+#     scholarships = get_scholarship_recommendations(user_id,top_n=10)
+
+
+
+#     return render_template(
+#         "dashboard.html",
+#         profile_complete=profile_complete,
+#         internships=internships,
+#         scholarships=scholarships,
+#         display_name=display_name
+#     )
+
+from flask import jsonify
+
+# 1. THE LIGHTNING-FAST PAGE LOAD
 @app.route("/dashboard")
 @login_required
 def dashboard():
-
     user_id = session["user_id"]
     display_name = session.get("display_name", "")
 
-    # ---------------- PROFILE CHECK ----------------
+    # We only check if the profile is complete so we know whether to show the "Setup Profile" warning
     profile_complete = is_profile_complete(user_id)
 
-    # ---------------- INTERNSHIPS ----------------
-    internships = []
-    if profile_complete:
-        internships = get_internship_recommendations(user_id,top_n=10)
-
-    # ---------------- SCHOLARSHIPS ----------------
-    scholarships = get_scholarship_recommendations(user_id,top_n=10)
-
-
-
+    # We render the page IMMEDIATELY. No AI algorithms run here!
     return render_template(
         "dashboard.html",
         profile_complete=profile_complete,
-        internships=internships,
-        scholarships=scholarships,
         display_name=display_name
     )
+
+# 2. THE BACKGROUND AI API
+@app.route("/api/recommendations")
+@login_required
+def api_recommendations():
+    """This route is called silently by JavaScript after the page loads."""
+    user_id = session["user_id"]
+    profile_complete = is_profile_complete(user_id)
+
+    # Run the heavy AI algorithms here
+    internships = []
+    if profile_complete:
+        # Note: Ensure these imports are at the top of app.py or inside this function
+        from utils.recommendation_utils import get_internship_recommendations
+        internships = get_internship_recommendations(user_id, top_n=10)
+
+    from utils.recommendation_utils import get_scholarship_recommendations
+    scholarships = get_scholarship_recommendations(user_id, top_n=10)
+
+    # Send the data back as a pure JSON object
+    return jsonify({
+        "internships": internships,
+        "scholarships": scholarships
+    })
 
 
 @app.route("/internships")

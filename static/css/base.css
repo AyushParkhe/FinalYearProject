@@ -50,6 +50,143 @@ body:not(.landing-page) {
 }
 
 /* ============================================
+   NAVBAR BRAND — Logo Image + Text Combined
+   ============================================ */
+/* ============================================
+   NAVBAR BRAND — Floating Badge Style
+   ============================================ */
+
+.navbar-brand {
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+/* ── Logo Image — Floating Badge ── */
+.site-logo {
+    width: 38px;
+    height: 38px;
+    object-fit: contain;
+    border-radius: 10px;
+
+    /* Layered shadows — creates floating depth, no ring */
+    box-shadow:
+        0 2px 4px rgba(0, 0, 0, 0.08),
+        0 6px 16px rgba(30, 58, 138, 0.18),
+        0 12px 28px rgba(30, 58, 138, 0.1);
+
+    transform: rotate(0deg) translateY(0px);
+
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+                box-shadow 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Hover — floats up with a slight tilt, shadow deepens */
+.navbar-brand:hover .site-logo {
+    transform: rotate(-4deg) translateY(-3px) scale(1.05);
+
+    box-shadow:
+        0 4px 8px rgba(0, 0, 0, 0.1),
+        0 12px 28px rgba(30, 58, 138, 0.28),
+        0 20px 40px rgba(30, 58, 138, 0.14);
+}
+
+/* Logo text animates in sync */
+.navbar-brand:hover .logo-text {
+    background-position: center center;
+    letter-spacing: 4px;
+    filter: drop-shadow(0 2px 16px rgba(37, 99, 235, 0.4));
+}
+
+.navbar-brand:hover .logo-text::after {
+    width: 100%;
+}
+
+/* ============================================
+   LOGO TEXT — Light Navbar, Ultra Premium Final
+   ============================================ */
+
+.logo-text {
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    line-height: 1;
+    text-decoration: none;
+    display: inline-block;
+    position: relative;
+
+    /* Deep, saturated gradient — always bold on light bg */
+    background: linear-gradient(
+        110deg,
+        #0f2167 0%,
+        #1e3a8a 20%,
+        #2563eb 45%,
+        #1d4ed8 65%,
+        #1e3a8a 80%,
+        #0f2167 100%
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    background-size: 300% auto;
+    background-position: left center;
+
+    filter: drop-shadow(0 1px 6px rgba(30, 58, 138, 0.2));
+
+    transition: background-position 0.7s cubic-bezier(0.4, 0, 0.2, 1),
+                filter 0.4s ease,
+                letter-spacing 0.3s ease;
+}
+
+/* Hover — shimmer sweeps through electric blue center, stays dark & vivid */
+.logo-text:hover {
+    background-position: center center;
+    letter-spacing: 4px;
+    filter: drop-shadow(0 2px 16px rgba(37, 99, 235, 0.4));
+}
+
+/* Gloss underline sweep */
+.logo-text::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #0f2167, #2563eb, #1e3a8a);
+    border-radius: 100px;
+    box-shadow: 0 0 6px rgba(37, 99, 235, 0.35);
+    transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.logo-text:hover::after {
+    width: 100%;
+}
+
+/* ── Dark mode override ── */
+[data-theme="dark"] .logo-text {
+    background: linear-gradient(
+        110deg,
+        #ffffff 0%,
+        #93c5fd 25%,
+        #60a5fa 50%,
+        #38bdf8 75%,
+        #ffffff 100%
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    background-size: 300% auto;
+    background-position: left center;
+    filter: drop-shadow(0 0 12px rgba(96, 165, 250, 0.4));
+}
+
+
+
+
+/* ============================================
    NAVIGATION BAR STYLES (Scoped to .navbar)
    ============================================ */
 

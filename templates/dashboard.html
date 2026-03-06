@@ -4,166 +4,101 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+<style>
+/* Skeleton shimmer animation */
+@keyframes shimmer {
+    0% { background-position: -1000px 0; }
+    100% { background-position: 1000px 0; }
+}
+
+.skeleton-card {
+    background: #f6f7f8;
+    background: linear-gradient(to right, #eeeeee 8%, #dddddd 18%, #eeeeee 33%);
+    background-size: 1000px 100%;
+    animation: shimmer 2s infinite linear;
+    border-radius: 20px;  /* matches .internship-card border-radius */
+    height: 220px;
+    width: 100%;
+}
+
+/* Skeleton wrapper — matches .internship-card slot in the grid */
+.skeleton-wrapper {
+    display: contents; /* lets the skeleton-card sit directly in the CSS grid */
+}
+</style>
 {% endblock %}
 
 {% block content %}
 
-<div class="container dashboard">
+<div class="container dashboard my-4">
 
-  <!-- WELCOME -->
-  <div class="user-greeting">
-    <h2>Welcome {{ display_name or "User" }}... <span>👋</span></h2>
+  <div class="user-greeting mb-4">
+    <h2 class="fw-bold">Welcome {{ display_name or "User" }}... <span>👋</span></h2>
     <p class="text-muted">
       <strong>Hope you are doing well... Here are the best opportunities based on our Personalized RS.</strong>
     </p>
   </div>
 
-  <!-- SMART INTERN PERSONALIZED SECTION -->
   <section class="smartintern mb-5">
 
     {% if not profile_complete %}
 
-    <!-- 🔒 LOCKED STATE -->
-    <div class="locked-box p-4 border rounded bg-light">
+    <div class="locked-box">
       <h3>🔒 Personalized Recommendations</h3>
-      <p class="mt-2">
-        Complete your profile to unlock personalized internship and
-        scholarship recommendations.
+      <p>
+        Complete your profile to unlock personalized internship and scholarship recommendations.
       </p>
-      <a href="/profile/setup" class="btn btn-primary mt-2">
+      <a href="/profile/setup" class="btn btn-primary mt-3">
         Complete Profile
       </a>
     </div>
 
     {% else %}
 
-    <!-- ✅ UNLOCKED STATE -->
     <h3>SmartIntern Recommendations</h3>
 
-    <!-- TAB BUTTONS -->
-<div class="tabs mt-3">
-
-  <button id="internships-btn"
-          class="btn btn-primary btn-sm me-2"
-          onclick="showTab('internships')">
-    Internships
-  </button>
-
-  <button id="scholarships-btn"
-          class="btn btn-outline-primary btn-sm me-2"
-          onclick="showTab('scholarships')">
-    Scholarships
-  </button>
-
-</div>
-
-    <!-- ================= INTERNSHIPS ================= -->
-    <div id="internships-tab">
-
-      <h3 class="mt-4">Recommended Internships</h3>
-
-      <div class="internship-grid">
-
-        {% for i in internships %}
-        <div class="internship-card">
-
-          <div class="card-header">
-            <h4 class="role">
-              <a href="/internships/{{ i.id }}" class="role-link">
-                {{ i.title }}
-              </a>
-            </h4>
-
-            <span class="match-badge">
-              {{ i.match_score }} skill match
-            </span>
-          </div>
-
-          <p class="company">
-            {{ i.organization }}
-            <span class="hiring">Actively hiring</span>
-          </p>
-
-          <div class="meta">
-            <span class="location">📍 {{ i.location }}</span>
-          </div>
-
-          <button class="save-btn outline"
-                  data-id="{{ i.id }}"
-                  data-type="internship">
-            Save
-          </button>
-
-        </div>
-        {% endfor %}
-
-      </div>
-
+    <div class="tabs mt-4">
+      <button id="internships-btn" class="btn btn-primary" onclick="showTab('internships')">
+        Internships
+      </button>
+      <button id="scholarships-btn" class="btn btn-outline-primary" onclick="showTab('scholarships')">
+        Scholarships
+      </button>
     </div>
 
-
-    <!-- ================= SCHOLARSHIPS ================= -->
-    <div id="scholarships-tab" style="display:none;">
-
-      <h3 class="mt-4">Recommended Scholarships</h3>
-
-      <div class="internship-grid">
-
-        {% for s in scholarships %}
-        <div class="internship-card">
-
-          <div class="card-header">
-            <h4 class="role">
-              <a href="/scholarships/{{ s.id }}"  class="role-link">
-                {{ s.title }}
-              </a>
-            </h4>
-          </div>
-
-          <p class="company">
-            {{ s.provider }}
-          </p>
-
-          {% if s.amount %}
-          <div class="meta">
-            <span>💰 {{ s.amount }}</span>
-          </div>
-          {% endif %}
-
-          {% if s.deadline %}
-          <div class="meta">
-            <span>⏳ Deadline: {{ s.deadline }}</span>
-          </div>
-          {% endif %}
-
-         <a href="{% if s.apply_url and not s.apply_url.startswith('http') %}https://{{ s.apply_url }}{% else %}{{ s.apply_url }}{% endif %}"
-   target="_blank" 
-   rel="noopener noreferrer" 
-   class="btn btn-sm btn-success mt-2">
-   Apply
-</a>
-
-        </div>
-        {% endfor %}
-
+    <!-- INTERNSHIPS TAB -->
+    <div id="internships-tab">
+      <h3>Matched Internships</h3>
+      <!-- internship-grid is a CSS Grid — no Bootstrap .row inside -->
+      <div class="internship-grid" id="internships-container">
+        <!-- Skeleton placeholders: 4 cards matching the 2-col grid -->
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
       </div>
+    </div>
 
+    <!-- SCHOLARSHIPS TAB -->
+    <div id="scholarships-tab" style="display:none;">
+      <h3>Matched Scholarships</h3>
+      <div class="internship-grid" id="scholarships-container">
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+      </div>
     </div>
 
     {% endif %}
 
   </section>
 
-
- 
-
-
-  <!-- QUICK NAV -->
-  <div class="d-flex gap-3">
+  <div class="d-flex gap-3 mt-4">
+    <!-- changed btn-outline-dark → btn-outline-primary so CSS styles apply -->
     <a href="/internships" class="btn btn-outline-primary">
       View All Internships
     </a>
-
     <a href="{{ url_for('scholarships') }}" class="btn btn-outline-primary">
       View All Scholarships
     </a>
@@ -174,71 +109,167 @@
 {% endblock %}
 
 
-
 {% block extra_js %}
-
 <script>
-
-/* SAVE BUTTON */
+/* =====================================================
+    SAVE BUTTON LOGIC
+===================================================== */
 document.addEventListener("click", async (e) => {
-
   if (!e.target.classList.contains("save-btn")) return;
 
   const btn = e.target;
+  const originalText = btn.innerText;
+  btn.innerText = "Saving...";
+  btn.disabled = true;
 
-  const res = await fetch("/save", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      opportunity_id: btn.dataset.id,
-      opportunity_type: btn.dataset.type
-    })
-  });
+  try {
+      const res = await fetch("/save", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          opportunity_id: btn.dataset.id,
+          opportunity_type: btn.dataset.type
+        })
+      });
 
-  if (res.ok) {
-    btn.innerText = "Saved";
-    btn.disabled = true;
+      if (res.ok) {
+        btn.innerText = "Saved";
+      } else {
+        btn.innerText = originalText;
+        btn.disabled = false;
+        alert("Failed to save. Please try again.");
+      }
+  } catch(err) {
+      console.error(err);
+      btn.innerText = originalText;
+      btn.disabled = false;
   }
-
 });
 
 
-/* TAB SWITCHING */
-function showTab(tab){
-
-  const internships = document.getElementById("internships-tab");
-  const scholarships = document.getElementById("scholarships-tab");
-
+/* =====================================================
+    TAB SWITCHING LOGIC
+===================================================== */
+function showTab(tab) {
+  const internships    = document.getElementById("internships-tab");
+  const scholarships   = document.getElementById("scholarships-tab");
   const internshipsBtn = document.getElementById("internships-btn");
   const scholarshipsBtn = document.getElementById("scholarships-btn");
 
-  if(tab === "internships"){
-
-    internships.style.display = "block";
+  if (tab === "internships") {
+    internships.style.display  = "block";
     scholarships.style.display = "none";
-
-    internshipsBtn.classList.remove("btn-outline-primary");
-    internshipsBtn.classList.add("btn-primary");
-
-    scholarshipsBtn.classList.remove("btn-primary");
-    scholarshipsBtn.classList.add("btn-outline-primary");
-
+    internshipsBtn.classList.replace("btn-outline-primary", "btn-primary");
+    scholarshipsBtn.classList.replace("btn-primary", "btn-outline-primary");
   }
 
-  if(tab === "scholarships"){
-
-    internships.style.display = "none";
+  if (tab === "scholarships") {
+    internships.style.display  = "none";
     scholarships.style.display = "block";
-
-    scholarshipsBtn.classList.remove("btn-outline-primary");
-    scholarshipsBtn.classList.add("btn-primary");
-
-    internshipsBtn.classList.remove("btn-primary");
-    internshipsBtn.classList.add("btn-outline-primary");
-
+    scholarshipsBtn.classList.replace("btn-outline-primary", "btn-primary");
+    internshipsBtn.classList.replace("btn-primary", "btn-outline-primary");
   }
-
 }
-</script>
 
+
+/* =====================================================
+    ASYNC DATA FETCHING — skeleton → real cards
+    Cards use .internship-card so CSS styles apply
+===================================================== */
+document.addEventListener("DOMContentLoaded", function () {
+
+  const internContainer = document.getElementById('internships-container');
+  const scholContainer  = document.getElementById('scholarships-container');
+
+  if (!internContainer || !scholContainer) return;
+
+  fetch('/api/recommendations')
+    .then(response => {
+      if (!response.ok) throw new Error("Network response was not ok");
+      return response.json();
+    })
+    .then(data => {
+
+      /* ---- INTERNSHIPS ---- */
+      internContainer.innerHTML = '';
+
+      if (data.internships && data.internships.length > 0) {
+        data.internships.forEach(job => {
+          internContainer.innerHTML += `
+            <div class="internship-card">
+              <div class="card-header">
+                <h3 class="role">
+                  <a href="/internships/${job.id}" class="role-link">${job.title || 'Internship'}</a>
+                </h3>
+                <span class="match-badge">Match</span>
+              </div>
+
+              <p class="company">
+                ${job.organization || job.company || 'Company Name'}
+                <span class="hiring">Hiring</span>
+              </p>
+
+              <div class="meta">
+                <span class="location">📍 ${job.location || 'Remote'}</span>
+              </div>
+
+              <button class="save-btn" data-id="${job.id}" data-type="internship">
+                Save
+              </button>
+            </div>
+          `;
+        });
+      } else {
+        internContainer.innerHTML = `
+          <p class="text-muted p-3 border rounded bg-light" style="grid-column:1/-1">
+            No perfectly matched internships found at the moment. Check back soon!
+          </p>`;
+      }
+
+      /* ---- SCHOLARSHIPS ---- */
+      scholContainer.innerHTML = '';
+
+      if (data.scholarships && data.scholarships.length > 0) {
+        data.scholarships.forEach(sch => {
+          scholContainer.innerHTML += `
+            <div class="internship-card">
+              <div class="card-header">
+                <h3 class="role">
+                  <a href="/scholarships/${sch.id}" class="role-link">${sch.title || 'Scholarship'}</a>
+                </h3>
+                <span class="match-badge">Match</span>
+              </div>
+
+              <p class="company">
+                🎓 ${sch.provider || sch.organization || 'Provider Name'}
+              </p>
+
+              <div class="meta"></div>
+
+              <button class="save-btn" data-id="${sch.id}" data-type="scholarship">
+                Save
+              </button>
+            </div>
+          `;
+        });
+      } else {
+        scholContainer.innerHTML = `
+          <p class="text-muted p-3 border rounded bg-light" style="grid-column:1/-1">
+            No matching scholarships found right now. Keep your profile updated!
+          </p>`;
+      }
+    })
+    .catch(error => {
+      console.error("Error loading recommendations:", error);
+      internContainer.innerHTML = `
+        <p class="text-danger" style="grid-column:1/-1">
+          Failed to load internship recommendations. Please refresh the page.
+        </p>`;
+      scholContainer.innerHTML = `
+        <p class="text-danger" style="grid-column:1/-1">
+          Failed to load scholarship recommendations. Please refresh the page.
+        </p>`;
+    });
+});
+</script>
 {% endblock %}
