@@ -1,464 +1,610 @@
+/* ============================================
+   DASHBOARD.CSS - MODERN & ELEGANT
+   Latest CSS Trends - Clean & Professional
+   ============================================ */
+
+:root {
+    --navy-primary: #1e3a8a;
+    --navy-dark: #1e40af;
+    --navy-light: #3b82f6;
+    --white: #ffffff;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-600: #4b5563;
+    --gray-700: #374151;
+    --gray-900: #111827;
+}
+
+/* Dark Mode Colors */
+[data-theme="dark"] {
+    --navy-primary: #60a5fa;
+    --navy-dark: #3b82f6;
+    --navy-light: #93c5fd;
+    --white: #1f2937;
+    --gray-50: #111827;
+    --gray-100: #1f2937;
+    --gray-200: #374151;
+    --gray-600: #9ca3af;
+    --gray-700: #d1d5db;
+    --gray-900: #f3f4f6;
+}
+
+/* ============================================
+   LAYOUT
+   ============================================ */
+
 .dashboard {
-    padding-top: 120px;
-    padding-bottom: 90px;
-    background-color: #f8fafc; /* subtle light background */
-    min-height: 100vh;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 3rem 2rem;
+    background: var(--gray-50);
 }
 
-/* .user-greeting{
-  display:grid;
-  place-items: center;
-  height: 100%; 
-  border: radius 15px;
-  transition: 0.5s ease-in-out;
-  background-color: rgb(61, 200, 255);
-  box-sizing: content-box;
-  background:scroll;
-} */
+/* ============================================
+   USER GREETING
+   ============================================ */
 
-/* ===============================
-   USER GREETING REFINEMENT
-   ================================ */
 .user-greeting {
-  padding: 2rem 0;
-  margin-bottom: 2.5rem;
-  border-left: 4px solid #05213a; /* Subtle brand-colored accent */
-  padding-left: 1.5rem;
-  animation:fadeInSlide 0.8s ease-in;
-}
-@keyframes handWaver {
-  0%, 100% { transform: rotate(0deg); }
-  25% { transform: rotate(-10deg); }
-  75% { transform: rotate(10deg); }
-}
-
-.user-greeting h2 span { /* Wrap your emoji in a span */
-  display: inline-block;
-  animation: handWaver 1.5s ease-in-out infinite;
-  transform-origin: bottom center;
+    background: var(--navy-primary);
+    color: var(--white);
+    padding: 2.5rem;
+    border-radius: 16px;
+    margin-bottom: 2.5rem;
 }
 
 .user-greeting h2 {
-  font-size: 2.25rem;
-  font-weight: 800;
-  color: #05213a; /* Your core theme color */
-  margin-bottom: 0.5rem;
-  letter-spacing: -0.02em;
+    font-size: 1.875rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
 }
 
-.user-greeting p.text-muted {
-  font-size: 1.05rem;
-  color: #64748b; /* Soft slate gray for readability */
-  line-height: 1.6;
-  max-width: 600px;
+.user-greeting p {
+    font-size: 1rem;
+    margin: 0;
+    opacity: 0.95;
 }
 
-.user-greeting p strong {
-  font-weight: 500;
-  color: #475569; /* Slightly darker than the muted text */
+.user-greeting .text-muted {
+    color: rgba(255, 255, 255, 0.9) !important;
 }
 
-/* Optional: Subtle entrance animation */
-@keyframes fadeInSlide {
-  from {
-    opacity: 0;
-    transform: translateX(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
+/* ============================================
+   LOCKED STATE
+   ============================================ */
 
-/* Responsive adjustment */
-@media (max-width: 768px) {
-  .user-greeting {
-    padding-top: 1rem;
-    padding-bottom: 1rem;
-  }
-  .user-greeting h2 {
-    font-size: 1.75rem;
-  }
-}
-
-/* ===================================
-   SECTION HEADERS
-   =================================== */
-.smartintern h3 {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #05213a;
-  margin-top: 2rem;
-  margin-bottom: 1rem;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-/* ===================================
-   🔒 LOCKED STATE (Clean & Soft)
-   =================================== */
 .locked-box {
-  background: #ffffff !important;
-  border: 1px solid #e2e8f0 !important;
-  border-radius: 16px !important;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
-  text-align: center;
-  padding: 3rem 2rem !important;
-  transition: transform 0.3s ease;
+    background: var(--white) !important;
+    border: 1px solid var(--gray-200) !important;
+    border-radius: 16px !important;
+    padding: 3rem !important;
+    text-align: center;
 }
 
 .locked-box h3 {
-  justify-content: center;
-  margin-top: 0;
-  color: #475569;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--navy-primary);
+    margin-bottom: 1rem;
 }
 
 .locked-box p {
-  color: #64748b;
-  font-size: 1rem;
-  max-width: 500px;
-  margin: 0 auto 1.5rem !important;
+    font-size: 1rem;
+    color: var(--gray-700);
+    max-width: 500px;
+    margin: 1rem auto;
+    line-height: 1.7;
 }
 
 .locked-box .btn-primary {
-  background-color: #05213a;
-  border: none;
-  padding: 10px 25px;
-  font-weight: 600;
-  border-radius: 8px;
-  transition: all 0.2s ease;
+    padding: 0.875rem 2.5rem;
+    font-weight: 600;
+    border-radius: 10px;
+    background: var(--navy-primary);
+    border: none;
 }
 
 .locked-box .btn-primary:hover {
-  background-color: #0a2e50;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(5, 33, 58, 0.2);
+    background: var(--navy-dark);
 }
 
-/* ===================================
-   ✅ TABS (Modern Segmented Control)
-   =================================== */
+/* ============================================
+   SECTION HEADERS
+   ============================================ */
+
+.smartintern > h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--gray-900);
+    margin-bottom: 1.5rem;
+}
+
+/* ============================================
+   TAB BUTTONS
+   ============================================ */
+
 .tabs {
-  background: #f1f5f9;
-  padding: 6px;
-  border-radius: 12px;
-  display: inline-flex;
-  gap: 4px;
-  margin-bottom: 2rem;
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    border-bottom: 2px solid var(--gray-200);
 }
 
 .tabs .btn {
-  border: none !important;
-  border-radius: 8px !important;
-  padding: 8px 20px !important;
-  font-weight: 600 !important;
-  font-size: 0.9rem !important;
-  transition: all 0.2s ease;
+    padding: 0.875rem 2rem;
+    font-weight: 600;
+    border-radius: 10px 10px 0 0;
+    border: none;
+    background: transparent;
+    color: var(--gray-600);
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
 }
 
-/* Active Tab Style (Primary) */
+.tabs .btn-primary {
+    color: var(--navy-primary);
+    border-bottom-color: var(--navy-primary);
+}
+
 .tabs .btn-outline-primary {
-  background-color: #ffffff !important;
-  color: #05213a !important;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    color: var(--gray-600);
 }
 
-/* Inactive Tab Style (Secondary) */
-.tabs .btn-outline-secondary {
-  background-color: transparent !important;
-  color: #64748b !important;
+.tabs .btn-outline-primary:hover {
+    color: var(--navy-primary);
+    background: var(--gray-50);
 }
 
-.tabs .btn-outline-secondary:hover {
-  color: #05213a !important;
-  background-color: rgba(255, 255, 255, 0.5) !important;
-}
+/* ============================================
+   TAB CONTENT
+   ============================================ */
 
-/* ===================================
-   SECTION TRANSITION
-   =================================== */
-.smartintern {
-  animation: fadeIn 0.5s ease-in-out;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.recommend-card {
-    background: #ffffff;
-    border-radius: 14px;
-    padding: 22px;
-    border: 1px solid #e5e7eb;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.06);
-    height: 100%;
-    transition: all 0.25s ease;
-    position: relative;
-    overflow: hidden;
-}
-
-
-.recommend-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 16px 35px rgba(0,0,0,0.10);
-}
-
-.recommend-card h6 {
+#internships-tab h3,
+#scholarships-tab h3 {
+    font-size: 1.25rem;
     font-weight: 600;
-    font-size: 1.05rem;
-    margin-bottom: 4px;
+    color: var(--gray-700);
+    margin-bottom: 1.5rem;
 }
 
-
-.recommend-card p {
-    margin-bottom: 6px;
-    font-size: 0.9rem;
-    color: #475569;
-}
-
-.recommend-card strong {
-    color: #0f172a;
-}
-
-.recommend-card .btn {
-    font-size: 0.85rem;
-    padding: 6px 14px;
-    border-radius: 8px;
-}
-
-.info-box {
-    background: #ffffff;
-    border-radius: 14px;
-    padding: 26px;
-    border: 1px solid #e5e7eb;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.06);
-    height: 100%;
-}
-
-.info-box h5 {
-    font-weight: 600;
-    margin-bottom: 12px;
-    color: #0f172a;
-}
-
-.info-box ul {
-    padding-left: 18px;
-    margin-bottom: 0;
-}
-
-.info-box li {
-    font-size: 0.9rem;
-    color: #475569;
-    margin-bottom: 6px;
-}
-
-.profile-progress {
-    font-weight: 600;
-    color: #16a34a; /* success green */
-}
-
-
-.dashboard h4 {
-    font-weight: 600;
-    margin-bottom: 18px;
-    color: #0f172a;
-}
-
-/* ---- Internship Cards ---- */
+/* ============================================
+   INTERNSHIP GRID - 2 COLUMNS
+   ============================================ */
 
 .internship-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
-  gap: 18px;
-  margin-top: 16px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
 }
 
+/* ============================================
+   MODERN CARDS - LATEST TRENDS
+   ============================================ */
+
 .internship-card {
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 14px;
-  padding: 18px 20px;
-  transition: all 0.2s ease;
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 20px;
+    padding: 0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+/* Modern accent stripe at top */
+.internship-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--navy-primary), var(--navy-light));
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.internship-card:hover::before {
+    opacity: 1;
 }
 
 .internship-card:hover {
-  border-color: #2563eb;
-  box-shadow: 0 12px 28px rgba(0,0,0,0.08);
-  transform: translateY(-2px);
+    border-color: var(--navy-light);
+    box-shadow: 0 8px 24px rgba(30, 58, 138, 0.12);
+    transform: translateY(-4px);
 }
 
-/* Header row */
+/* Card Content Container */
+.internship-card > * {
+    padding-left: 1.75rem;
+    padding-right: 1.75rem;
+}
+
+.internship-card .card-header {
+    padding-top: 1.75rem;
+}
+
+.internship-card .save-btn,
+.internship-card .btn-success {
+    margin-left: 1.75rem;
+    margin-right: 1.75rem;
+    margin-bottom: 1.75rem;
+    width: calc(100% - 3.5rem);
+}
+
+/* Card Header - Bento Box Style */
 .card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 12px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 1rem;
+    align-items: start;
+    margin-bottom: 1rem;
 }
 
 .role {
-  font-size: 18px;
-  font-weight: 600;
-  color: #111827;
-  margin: 0;
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin: 0;
+    line-height: 1.4;
 }
 
-/* Match badge */
-.match-badge {
-  background: #ecfeff;
-  color: #0369a1;
-  font-size: 12px;
-  padding: 4px 10px;
-  border-radius: 999px;
-  font-weight: 500;
-  white-space: nowrap;
-}
-
-/* Company */
-.company {
-  margin: 8px 0 10px;
-  font-size: 14px;
-  color: #374151;
-}
-
-.hiring {
-  color: #16a34a;
-  font-weight: 500;
-  margin-left: 6px;
-}
-
-/* Meta */
-.meta {
-  display: flex;
-  gap: 16px;
-  font-size: 13px;
-  color: #6b7280;
-}
 .role-link {
-  color: #111827;
-  text-decoration: none;
+    color: var(--gray-900);
+    text-decoration: none;
+    transition: color 0.2s ease;
 }
 
 .role-link:hover {
-  text-decoration: underline;
-  color: #2563eb;
+    color: var(--navy-primary);
 }
 
-/* ===============================
-   SAVE BUTTON (LISTING CARDS)
-================================ */
+/* Modern Pill Badge */
+.match-badge {
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+    color: var(--navy-primary);
+    padding: 0.375rem 0.875rem;
+    border-radius: 100px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    white-space: nowrap;
+    border: 1px solid rgba(30, 58, 138, 0.1);
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.match-badge::before {
+    content: '✓';
+    font-size: 0.875rem;
+}
+
+/* Company Info - Clean Typography */
+.company {
+    font-size: 0.95rem;
+    color: var(--gray-700);
+    font-weight: 500;
+    margin: 0 0 1rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.hiring {
+    background: linear-gradient(135deg, #dcfce7 0%, #d1fae5 100%);
+    color: #15803d;
+    padding: 0.25rem 0.75rem;
+    border-radius: 100px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    border: 1px solid rgba(21, 128, 61, 0.1);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Meta Information - Glassmorphism Style */
+.meta {
+    margin: 0 0 1.25rem 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.meta span {
+    font-size: 0.875rem;
+    color: var(--gray-600);
+    font-weight: 500;
+}
+
+.location {
+    background: var(--gray-50);
+    padding: 0.5rem 1rem;
+    border-radius: 100px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    border: 1px solid var(--gray-200);
+}
+
+/* Modern Button Styles - Neumorphism Inspired */
 .save-btn {
-  /* Layout & Typography */
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 8px 20px;
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: 0.01em;
-  
-  /* Styling */
-  border-radius: 10px;
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) ease;
-  border: none;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    width: 100%;
+    padding: 0.875rem;
+    background: var(--white);
+    color: var(--navy-primary);
+    border: 2px solid var(--gray-200);
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
 }
 
-/* Primary Outline/Action State */
-.save-btn.outline {
-  background: linear-gradient(135deg, #67a4ff 0%, #308ee0 100%);
-  color: #ffffff;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+.save-btn:hover {
+    background: var(--gray-50);
+    border-color: var(--navy-primary);
+    color: var(--navy-primary);
+    transform: scale(0.98);
 }
 
-.save-btn.outline:hover {
-  background: #1e4bdf;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(5, 33, 58, 0.25);
+.save-btn:active {
+    transform: scale(0.96);
 }
 
-/* Active "Click" Animation */
-.save-btn.outline:active {
-  transform: translateY(1px);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+.save-btn::after {
+    content: '🔖';
+    font-size: 1rem;
 }
 
-/* Saved (Disabled) State - Refined for success */
 .save-btn:disabled {
-  background: #f0fdf4; /* Very light success green */
-  border: 1px solid #bbf7d0; /* Soft green border */
-  color: #166534; /* Deep forest green for readability */
-  cursor: default;
-  box-shadow: none;
-  opacity: 0.9;
+    background: var(--gray-100);
+    color: var(--gray-600);
+    border-color: var(--gray-200);
+    cursor: not-allowed;
+    transform: none;
 }
 
-/* Adding a checkmark icon via CSS (optional enhancement) */
-.save-btn:disabled::before {
-  content: '✓';
-  font-weight: 800;
-}
-.card-actions {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-}
-/* ===================================
-   QUICK NAVIGATION BUTTONS
-   =================================== */
-.d-flex.gap-3 {
-  margin-top: 3rem;
-  padding: 2rem 0;
-  border-top: 1px solid #f1f5f9; /* Subtle separator from the content above */
+.save-btn:disabled::after {
+    content: '✓';
 }
 
-.btn-outline-primary, 
-.btn-outline-dark {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 12px 24px;
-  font-size: 0.95rem;
-  font-weight: 600;
-  border-radius: 10px;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  text-decoration: none;
+/* Apply Button - Modern Gradient */
+.internship-card .btn-success {
+    width: 100%;
+    background: linear-gradient(135deg, var(--navy-primary) 0%, var(--navy-dark) 100%);
+    border: none;
+    padding: 0.875rem;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: var(--white);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 14px rgba(30, 58, 138, 0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
 }
 
-/* View All Internships - Light & Themed */
-.btn-outline-primary {
-  color: #05213a;
-  background-color: #ffffff;
-  border: 1.5px solid #05213a;
+.internship-card .btn-success:hover {
+    background: linear-gradient(135deg, var(--navy-dark) 0%, var(--navy-primary) 100%);
+    box-shadow: 0 6px 20px rgba(30, 58, 138, 0.35);
+    transform: translateY(-2px);
 }
 
-.btn-outline-primary:hover {
-  background-color: #05213a;
-  color: #ffffff;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(5, 33, 58, 0.15);
+.internship-card .btn-success:active {
+    transform: translateY(0);
 }
 
-/* View All Scholarships - Neutral & Elegant */
-.btn-outline-dark {
-  color: #475569;
-  background-color: #ffffff;
-  border: 1.5px solid #e2e8f0;
+.internship-card .btn-success::after {
+    content: '→';
+    font-size: 1.125rem;
+    transition: transform 0.3s ease;
 }
 
-.btn-outline-dark:hover {
-  background-color: #f8fafc;
-  border-color: #94a3b8;
-  color: #1e293b;
-  transform: translateY(-2px);
+.internship-card .btn-success:hover::after {
+    transform: translateX(4px);
 }
 
-/* Active "Press" State */
-.btn-outline-primary:active, 
-.btn-outline-dark:active {
-  transform: scale(0.97);
+/* ============================================
+   DEADLINES SECTION
+   ============================================ */
+
+.deadlines {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 16px;
+    padding: 2rem;
+    margin-top: 2rem;
 }
 
+.deadlines h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--gray-900);
+    margin-bottom: 1.25rem;
+}
+
+.deadlines ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.deadlines li {
+    padding: 1rem;
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: 10px;
+    margin-bottom: 0.75rem;
+    font-size: 0.95rem;
+    color: var(--gray-700);
+    font-weight: 500;
+}
+
+.deadlines li:last-child {
+    margin-bottom: 0;
+}
+
+/* ============================================
+   QUICK NAV BUTTONS - ENHANCED
+   ============================================ */
+
+.dashboard .d-flex {
+    margin-top: 3rem;
+    gap: 1.5rem;
+}
+
+.dashboard .btn-outline-primary {
+    position: relative;
+    padding: 1rem 2.5rem;
+    font-weight: 600;
+    font-size: 1rem;
+    border-radius: 12px;
+    border: 2px solid var(--navy-primary);
+    color: var(--navy-primary);
+    background: var(--white);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.dashboard .btn-outline-primary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 100%;
+    background: var(--navy-primary);
+    transition: width 0.3s ease;
+    z-index: -1;
+}
+
+.dashboard .btn-outline-primary:hover::before {
+    width: 100%;
+}
+
+.dashboard .btn-outline-primary:hover {
+    color: var(--white);
+    border-color: var(--navy-primary);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(30, 58, 138, 0.25);
+}
+
+.dashboard .btn-outline-primary::after {
+    content: '→';
+    font-size: 1.25rem;
+    transition: transform 0.3s ease;
+}
+
+.dashboard .btn-outline-primary:hover::after {
+    transform: translateX(4px);
+}
+
+/* Different gradient for each button */
+.dashboard .d-flex .btn-outline-primary:first-child::before {
+    background: linear-gradient(135deg, var(--navy-primary), var(--navy-dark));
+}
+
+.dashboard .d-flex .btn-outline-primary:last-child::before {
+    background: linear-gradient(135deg, var(--navy-dark), var(--navy-light));
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+
+@media (max-width: 991.98px) {
+    .dashboard {
+        padding: 2rem 1rem;
+    }
+
+    .internship-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .user-greeting {
+        padding: 2rem;
+    }
+
+    .user-greeting h2 {
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .tabs {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .tabs .btn {
+        flex-shrink: 0;
+    }
+
+    .card-header {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+
+    .match-badge {
+        justify-self: start;
+    }
+
+    .dashboard .d-flex {
+        flex-direction: column;
+    }
+
+    .dashboard .btn-outline-primary {
+        width: 100%;
+    }
+
+    .dashboard .btn-outline-primary::after {
+        position: absolute;
+        right: 1.5rem;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .locked-box {
+        padding: 2rem !important;
+    }
+
+    .user-greeting h2 {
+        font-size: 1.25rem;
+    }
+
+    .internship-card > * {
+        padding-left: 1.25rem;
+        padding-right: 1.25rem;
+    }
+
+    .internship-card .save-btn,
+    .internship-card .btn-success {
+        margin-left: 1.25rem;
+        margin-right: 1.25rem;
+        width: calc(100% - 2.5rem);
+    }
+}
+
+/* ============================================
+   ACCESSIBILITY
+   ============================================ */
+
+.role-link:focus-visible,
+.save-btn:focus-visible,
+.tabs .btn:focus-visible {
+    outline: 2px solid var(--navy-primary);
+    outline-offset: 2px;
+}

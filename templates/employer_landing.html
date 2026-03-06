@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}For Employers | SmartIntern{% endblock %}
+
+{% block content %}
+<div class="bg-dark text-white py-5">
+    <div class="container text-center py-5">
+        <h1 class="display-4 fw-bold text-warning">Hire Top Student Talent</h1>
+        <p class="lead w-75 mx-auto mt-3">
+            SmartIntern connects your company with highly motivated, pre-screened students using our AI-driven Recommendation Engine. Post your internships and find your perfect match today.
+        </p>
+        <div class="mt-4 gap-3 d-flex justify-content-center">
+            <a href="{{ url_for('employer_register') }}" class="btn btn-warning btn-lg fw-bold px-4">Register Your Company</a>
+            <a href="{{ url_for('employer_login') }}" class="btn btn-outline-light btn-lg px-4">Employer Login</a>
+        </div>
+    </div>
+</div>
+
+<div class="container py-5">
+    <h2 class="text-center fw-bold mb-5">How SmartIntern Works for Employers</h2>
+    
+    <div class="row g-4 text-center">
+        <div class="col-md-3">
+            <div class="card h-100 border-0 shadow-sm p-4">
+                <div class="display-4 text-primary mb-3">1</div>
+                <h5 class="fw-bold">Register</h5>
+                <p class="text-muted text-sm">Create an employer account by providing your basic details and corporate email.</p>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card h-100 border-0 shadow-sm p-4 bg-light border-primary border-bottom border-3">
+                <div class="display-4 text-warning mb-3">2</div>
+                <h5 class="fw-bold">Verification</h5>
+                <p class="text-muted text-sm">To ensure student safety, our admin team verifies your Company Identification Number (CIN) before approving your account.</p>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card h-100 border-0 shadow-sm p-4">
+                <div class="display-4 text-success mb-3">3</div>
+                <h5 class="fw-bold">Post Internships</h5>
+                <p class="text-muted text-sm">Once approved, publish your internship opportunities, detailing the exact skills and stipends you offer.</p>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card h-100 border-0 shadow-sm p-4">
+                <div class="display-4 text-info mb-3">4</div>
+                <h5 class="fw-bold">Get Matched</h5>
+                <p class="text-muted text-sm">Our intelligent Recommender System automatically pushes your listing to the most qualified students.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="bg-light py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h3 class="fw-bold mb-4">Why do we have a Verification Process?</h3>
+                <p>At SmartIntern, the security and trust of our students are our top priorities. We manually vet every company that joins our platform.</p>
+                <ul class="list-group list-group-flush bg-transparent">
+                    <li class="list-group-item bg-transparent border-0 px-0">
+                        ✅ <strong>CIN Verification:</strong> We cross-check your Company Identification Number to ensure legitimacy.
+                    </li>
+                    <li class="list-group-item bg-transparent border-0 px-0">
+                        ✅ <strong>Quality Control:</strong> We ensure all posted internships offer genuine learning experiences.
+                    </li>
+                    <li class="list-group-item bg-transparent border-0 px-0">
+                        ✅ <strong>Spam Prevention:</strong> Keeping the platform clean from fake listings guarantees high engagement from top-tier students.
+                    </li>
+                </ul>
+                <p class="mt-4 text-muted fst-italic">Note: The approval process typically takes 24-48 hours. You will receive an email once your account is activated to post jobs.</p>
+            </div>
+            <div class="col-md-5 offset-md-1 text-center">
+                <div class="bg-white p-5 rounded shadow-sm border">
+                    <h4 class="text-primary fw-bold">Ready to start?</h4>
+                    <p class="text-muted mb-4">Join hundreds of companies recruiting from our platform.</p>
+                    <a href="{{ url_for('employer_register') }}" class="btn btn-primary w-100">Create Employer Account</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

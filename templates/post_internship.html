@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            
+            <div class="card shadow-sm mb-5" style="border-radius: 12px;">
+                <div class="card-header bg-white pt-4 pb-3 border-bottom-0">
+                    <h3 class="mb-0">Post a New Internship</h3>
+                    <p class="text-muted mt-1">Fill out the details below to reach thousands of students.</p>
+                </div>
+                <div class="card-body p-4 pt-0">
+
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                      {% if messages %}
+                        {% for category, message in messages %}
+                          <div class="alert alert-{{ category }}">{{ message }}</div>
+                        {% endfor %}
+                      {% endif %}
+                    {% endwith %}
+
+                    <form method="POST" action="{{ url_for('post_internship') }}">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Job Title / Role</label>
+                                <input type="text" name="title" class="form-control" placeholder="e.g. Machine Learning Intern" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Location</label>
+                                <input type="text" name="location" class="form-control" placeholder="e.g. Remote, Mumbai, etc." required>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Duration</label>
+                                <input type="text" name="duration" class="form-control" placeholder="e.g. 3 Months, 6 Months">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Stipend</label>
+                                <input type="text" name="stipend" class="form-control" placeholder="e.g. ₹15,000/month or Unpaid">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Required Skills (Comma separated)</label>
+                            <input type="text" name="skills_final" class="form-control" placeholder="e.g. Python, SQL, React" required>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Application Link or Contact Email</label>
+                            <input type="text" name="apply_link" class="form-control" placeholder="Where should students apply?" required>
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="{{ url_for('employer_dashboard') }}" class="btn btn-outline-secondary px-4">Cancel</a>
+                            <button type="submit" class="btn btn-success px-4">Publish Internship</button>
+                        </div>
+                    </form>
+                    
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Admin Control Panel</h2>
+        <!-- <a href="{{ url_for('admin_logout') }}" class="btn btn-outline-danger">Logout Admin</a> -->
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <div class="card shadow-sm border-primary">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0 pt-2 pb-2">Pending Employer Approvals</h5>
+        </div>
+        <div class="card-body p-0">
+            {% if employers %}
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Company Name</th>
+                            <th>Email</th>
+                            <th>CIN Number</th>
+                            <th>Registered On</th>
+                            <th class="text-end">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for emp in employers %}
+                        <tr>
+                            <td class="fw-bold align-middle">{{ emp[1] }}</td>
+                            <td class="align-middle">{{ emp[2] }}</td>
+                            <td class="align-middle text-muted font-monospace">{{ emp[3] }}</td>
+                            <td class="align-middle">{{ emp[4].strftime('%Y-%m-%d') if emp[4] else 'N/A' }}</td>
+                            <td class="text-end align-middle">
+                            <form method="POST" action="{{ url_for('admin_approve', employer_id=emp[0]) }}" class="d-inline">
+                                <button type="submit" class="btn btn-sm btn-success fw-bold me-2">
+                                    ✓ Approve
+                                </button>
+                            </form>
+                            
+                            <form method="POST" action="{{ url_for('admin_reject', employer_id=emp[0]) }}" class="d-inline" onsubmit="return confirm('Are you sure you want to completely delete this company application? This cannot be undone.');">
+                                <button type="submit" class="btn btn-sm btn-danger fw-bold">
+                                    ✗ Reject
+                                </button>
+                            </form>
+                        </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <div class="text-center p-5">
+                    <h5 class="text-muted">All caught up!</h5>
+                    <p class="text-muted mb-0">There are no pending employers waiting for approval.</p>
+                </div>
+            {% endif %}
+            <h4 class="mt-5 mb-3 text-secondary">Active Employers</h4>
+    
+    <div class="card shadow-sm border-success mb-5">
+        <div class="card-header bg-success text-white">
+            <h5 class="mb-0 pt-2 pb-2">Approved Companies</h5>
+        </div>
+        <div class="card-body p-0">
+            {% if approved_employers %}
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Company Name</th>
+                            <th>Email</th>
+                            <th>CIN Number</th>
+                            <th>Registered On</th>
+                            <th class="text-end">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for emp in approved_employers %}
+                        <tr>
+                            <td class="fw-bold align-middle">{{ emp[1] }}</td>
+                            <td class="align-middle">{{ emp[2] }}</td>
+                            <td class="align-middle text-muted font-monospace">{{ emp[3] }}</td>
+                            <td class="align-middle">{{ emp[4].strftime('%Y-%m-%d') if emp[4] else 'N/A' }}</td>
+                            <td class="text-end align-middle">
+                                <form method="POST" action="{{ url_for('admin_reject', employer_id=emp[0]) }}" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this company? This will also permanently delete all the internships they have posted!');">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger fw-bold">
+                                        Revoke Access
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <div class="text-center p-5">
+                    <p class="text-muted mb-0">You don't have any approved employers yet.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+        </div>
+        
+    </div>
+</div>
+{% endblock %}

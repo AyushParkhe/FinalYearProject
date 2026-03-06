@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Admin Login | SmartIntern{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-4">
+            
+            <div class="card shadow-sm border-dark mt-5">
+                <div class="card-header bg-dark text-white text-center pt-3 pb-3">
+                    <h4 class="mb-0">System Admin</h4>
+                </div>
+                <div class="card-body p-4">
+
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                      {% if messages %}
+                        {% for category, message in messages %}
+                          <div class="alert alert-{{ category }}">{{ message }}</div>
+                        {% endfor %}
+                      {% endif %}
+                    {% endwith %}
+
+                    <form method="POST" action="{{ url_for('admin_login') }}">
+                        <div class="mb-4">
+                            <label class="form-label text-muted fw-bold">Master Password</label>
+                            <input type="password" name="password" class="form-control" required>
+                        </div>
+
+                        <button type="submit" class="btn btn-dark w-100">Access Dashboard</button>
+                    </form>
+                    
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+{% endblock %}

@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import csv
 from datetime import datetime
 import hashlib
+from utils.skills.factory import get_skill_extractor
 
 KEYWORDS = [
     "software intern",
@@ -27,7 +28,7 @@ def scrape_keyword(page, keyword):
     page.goto(BASE_URL.format(keyword.replace(" ", "%20")), timeout=60000)
     page.wait_for_selector("div.base-search-card")
 
-    # Increased scrolling
+    # scrolling
     for _ in range(10):
         page.mouse.wheel(0, 3000)
         page.wait_for_timeout(2000)
@@ -37,39 +38,56 @@ def scrape_keyword(page, keyword):
 
     data = []
 
+    extractor = get_skill_extractor("linkedin")
+
     for job in jobs:
+
         title = job.select_one("h3.base-search-card__title")
         company = job.select_one("h4.base-search-card__subtitle a")
         location = job.select_one("span.job-search-card__location")
         date = job.select_one("time")
         link = job.select_one("a.base-card__full-link")
 
-        job_title = title.text.strip() if title else "None"
-        organization = company.text.strip() if company else "None"
-        job_location = location.text.strip() if location else "None"
-        posted_on = date.text.strip() if date else "None"
-        apply_link = link["href"] if link else "None"
+        job_title = title.text.strip() if title else None
+        organization = company.text.strip() if company else None
+        job_location = location.text.strip() if location else None
+        posted_on = date.text.strip() if date else None
+        apply_link = link["href"] if link else None
 
         scraped_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-        content_string = job_title + organization + apply_link
+        # -------- SKILLS EXTRACTION --------
+        text_blob = " ".join(filter(None, [
+            job_title,
+            job_title,
+            organization,
+            job_location
+        ]))
+
+
+        skills_list = extractor.extract(text_blob) if extractor else []
+
+        skills_final = str(skills_list) if skills_list else None
+        # -----------------------------------
+
+        content_string = (job_title or "") + (organization or "") + (apply_link or "")
         content_hash = generate_hash(content_string)
 
         data.append([
-            job_title,          # title
-            organization,       # organization
-            job_location,       # location
-            "None",             # duration
-            "None",             # stipend
-            "None",             # skills_final
-            posted_on,          # posted_on
-            "None",             # start_date
-            "internship",       # type
-            "LinkedIn",         # source
-            apply_link,         # apply_link
-            scraped_at,         # scraped_at
-            content_hash,       # content_hash
-            "None"              # extra_data
+            job_title,
+            organization,
+            job_location,
+            None,          # duration
+            None,          # stipend
+            skills_final,  # skills_final
+            posted_on,
+            None,          # start_date
+            "internship",
+            "LinkedIn",
+            apply_link,
+            scraped_at,
+            content_hash,
+            None           # extra_data
         ])
 
     print(f" Collected {len(data)} jobs")
@@ -81,7 +99,7 @@ def remove_duplicates(data):
     final = []
 
     for row in data:
-        if row[12] not in seen:  # content_hash index
+        if row[12] not in seen:
             seen.add(row[12])
             final.append(row)
 
@@ -89,6 +107,7 @@ def remove_duplicates(data):
 
 
 def main():
+
     all_jobs = []
 
     with sync_playwright() as p:
@@ -105,7 +124,6 @@ def main():
     with open("data/linkedin_internships.csv", "w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
 
-        # Exact Internshala Schema
         writer.writerow([
             "title",
             "organization",

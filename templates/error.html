@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Oops! | SmartIntern{% endblock %}
+
+{% block content %}
+<div class="container d-flex flex-column align-items-center justify-content-center py-5 text-center" style="min-height: 60vh;">
+    
+    <h1 class="display-1 fw-bold text-primary">{{ error_code|default('Error') }}</h1>
+    
+    <h2 class="mb-4">{{ error_message|default('Something went wrong.') }}</h2>
+    
+    <p class="text-muted mb-5 w-50">
+        We are sorry, but we could not process your request. The page you are looking for might have been removed, had its name changed, or is temporarily unavailable.
+    </p>
+    
+    <a href="{{ url_for('home') }}" class="btn btn-primary btn-lg px-4 shadow-sm">
+        Return to Homepage
+    </a>
+
+</div>
+{% endblock %}

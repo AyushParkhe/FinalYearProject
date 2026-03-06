@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, session, flash, url_for,send_from_directory
+from flask import Flask, render_template, request, redirect, session, flash, url_for,send_from_directory,abort
 from psycopg2.extras import RealDictCursor
 from authlib.integrations.flask_client import OAuth,OAuthError
 from dotenv import load_dotenv
@@ -8,22 +8,15 @@ from utils.db import get_db
 from utils.security import validate_password, hash_password, check_password
 from utils.supabase_client import supabase
 from utils.profile_utils import is_profile_complete
-from utils.recommendation_utils import get_internship_recommendations
+from utils.recommendation_utils import get_internship_recommendations,get_scholarship_recommendations
 from supabase import create_client
 from werkzeug.middleware.proxy_fix import ProxyFix # Add this import
+from werkzeug.exceptions import HTTPException
 
 
 
 
-# def fetch_all_internships():
-#     response = (
-#         supabase
-#         .table("internships")
-#         .select("*")
-#         .order("created_at", desc=True)
-#         .execute()
-#     )
-#     return response.data
+
 
 
 # ---------------- LOAD ENV ----------------
@@ -299,6 +292,421 @@ def google_callback():
         if conn:
             conn.close()
 
+@app.route("/employer/info")
+def employer_landing():
+    # If an employer is already logged in, you might want to just send them to their dashboard
+    if "employer_id" in session:
+        return redirect(url_for("employer_dashboard"))
+        
+    return render_template("employer_landing.html")
+
+@app.route("/employer/register", methods=["GET", "POST"])
+def employer_register():
+    if request.method == "POST":
+        company_name = request.form.get("company_name", "").strip()
+        email = request.form.get("email", "").strip()
+        password = request.form.get("password", "")
+        cin_number = request.form.get("cin_number", "").strip()
+
+        # Optional: If your validate_password function returns a boolean and an error message, 
+        # you can use it here to enforce strong passwords for employers!
+        # is_valid, error_msg = validate_password(password)
+        # if not is_valid:
+        #     flash(error_msg, "danger")
+        #     return redirect(url_for("employer_register"))
+
+        # Use YOUR custom hash function instead of Werkzeug's
+        hashed_password = hash_password(password)
+
+        try:
+            conn = get_db()
+            cur = conn.cursor()
+            
+            cur.execute(
+                """
+                INSERT INTO employers (company_name, email, password_hash, cin_number)
+                VALUES (%s, %s, %s, %s)
+                """,
+                (company_name, email, hashed_password, cin_number)
+            )
+            
+            conn.commit()
+            cur.close()
+            conn.close()
+
+            flash("Registration successful! Your account is pending admin approval.", "success")
+            
+            # Redirecting to home for now until we build the employer login page
+            return redirect(url_for("home")) 
+
+        except Exception as e:
+            print("EMPLOYER REGISTRATION ERROR:", e)
+            flash("Error: Email might already be registered.", "danger")
+            return redirect(url_for("employer_register"))
+
+    # GET request: show the form
+    return render_template("employer_register.html")
+
+@app.route("/employer/login", methods=["GET", "POST"])
+def employer_login():
+    if request.method == "POST":
+        email = request.form.get("email", "").strip()
+        password = request.form.get("password", "")
+
+        try:
+            conn = get_db()
+            cur = conn.cursor()
+            
+            # Fetch the employer by email
+            cur.execute(
+                "SELECT id, company_name, password_hash, status FROM employers WHERE email = %s", 
+                (email,)
+            )
+            employer = cur.fetchone()
+            cur.close()
+            conn.close()
+
+            # employer tuple indexes: 0=id, 1=company_name, 2=password_hash, 3=status
+            if employer:
+                # Use YOUR custom check_password function
+                # Note: Adjust the parameter order if your function expects (hash, password) instead
+                if check_password(password, employer[2]): 
+                    
+                    # Set the employer session variables
+                    session["employer_id"] = employer[0]
+                    session["employer_name"] = employer[1]
+                    session["employer_status"] = employer[3] # We'll use this to block unapproved posts!
+
+                    flash(f"Welcome back, {employer[1]}!", "success")
+                    return redirect(url_for("employer_dashboard"))
+                else:
+                    flash("Invalid email or password.", "danger")
+            else:
+                flash("No employer account found with that email.", "danger")
+
+        except Exception as e:
+            print("EMPLOYER LOGIN ERROR:", e)
+            flash("An error occurred during login. Please try again.", "danger")
+
+    # If it's a GET request, just show the login form
+    return render_template("employer_login.html")
+
+@app.route("/employer/dashboard")
+def employer_dashboard():
+    # Security check: Kick them out if they aren't logged in as an employer
+    if "employer_id" not in session:
+        flash("Please log in to access the employer dashboard.", "warning")
+        return redirect(url_for("employer_login"))
+
+    employer_id = session["employer_id"]
+    employer_status = session.get("employer_status", "pending")
+    employer_name = session.get("employer_name", "Company")
+
+    posted_jobs = []
+
+    # Only query the database for jobs if the employer is approved
+    if employer_status == "approved":
+        try:
+            conn = get_db()
+            cur = conn.cursor() 
+            
+            # Fetch the jobs posted by THIS specific employer
+            cur.execute(
+                """
+                SELECT id, title, location, posted_on 
+                FROM internships WHERE employer_id = %s 
+                ORDER BY posted_on DESC
+                """,
+                (employer_id,)
+            )
+            posted_jobs = cur.fetchall()
+            
+            cur.close()
+            conn.close()
+        except Exception as e:
+            print("DASHBOARD ERROR:", e)
+            flash("Could not load your posted jobs.", "danger")
+
+    return render_template(
+        "employer_dashboard.html", 
+        status=employer_status, 
+        company_name=employer_name,
+        jobs=posted_jobs
+    )
+
+from datetime import datetime
+import hashlib
+
+@app.route("/employer/post-internship", methods=["GET", "POST"])
+def post_internship():
+    # 1. SECURITY CHECK: Must be logged in AND approved
+    if "employer_id" not in session:
+        flash("Please log in first.", "warning")
+        return redirect(url_for("employer_login"))
+        
+    if session.get("employer_status") != "approved":
+        flash("Your account must be approved before posting.", "danger")
+        return redirect(url_for("employer_dashboard"))
+
+    # 2. HANDLE FORM SUBMISSION
+    if request.method == "POST":
+        title = request.form.get("title", "").strip()
+        location = request.form.get("location", "").strip()
+        duration = request.form.get("duration", "").strip()
+        stipend = request.form.get("stipend", "").strip()
+        skills = request.form.get("skills_final", "").strip()
+        apply_link = request.form.get("apply_link", "").strip()
+        # Force absolute URL if the employer forgot http:// or https://
+        if apply_link and not apply_link.startswith(('http://', 'https://')):
+            apply_link = 'https://' + apply_link
+        
+        employer_id = session["employer_id"]
+        company_name = session.get("employer_name", "Unknown Company")
+        posted_on = datetime.today().strftime('%Y-%m-%d')
+        
+        # Generate a content hash just like the scraper does to prevent duplicates
+        hash_input = f"{title}_{company_name}_{location}"
+        content_hash = hashlib.sha256(hash_input.encode('utf-8')).hexdigest()
+
+        try:
+            conn = get_db()
+            cur = conn.cursor()
+            
+            cur.execute(
+                """
+                INSERT INTO internships (
+                    title, organization, location, duration, stipend, 
+                    skills_final, posted_on, type, source, apply_link, 
+                    content_hash, employer_id
+                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                """,
+                (
+                    title, company_name, location, duration, stipend, 
+                    skills, posted_on, "Internship", "SmartIntern Direct", 
+                    apply_link, content_hash, employer_id
+                )
+            )
+            
+            conn.commit()
+            cur.close()
+            conn.close()
+
+            flash("Internship posted successfully!", "success")
+            return redirect(url_for("employer_dashboard"))
+
+        except Exception as e:
+            print("POST INTERNSHIP ERROR:", e)
+            flash("An error occurred while posting. Please try again.", "danger")
+
+    # 3. IF GET REQUEST: Show the form
+    return render_template("post_internship.html")
+
+# --- UPDATE (EDIT) INTERNSHIP ---
+@app.route("/employer/edit-internship/<int:job_id>", methods=["GET", "POST"])
+def edit_internship(job_id):
+    if "employer_id" not in session:
+        return redirect(url_for("employer_login"))
+        
+    employer_id = session["employer_id"]
+
+    if request.method == "POST":
+        title = request.form.get("title", "").strip()
+        location = request.form.get("location", "").strip()
+        duration = request.form.get("duration", "").strip()
+        stipend = request.form.get("stipend", "").strip()
+        skills = request.form.get("skills_final", "").strip()
+        apply_link = request.form.get("apply_link", "").strip()
+        # Force absolute URL if the employer forgot http:// or https://
+        if apply_link and not apply_link.startswith(('http://', 'https://')):
+            apply_link = 'https://' + apply_link
+
+        try:
+            conn = get_db()
+            cur = conn.cursor()
+            # Update the specific job, making sure it belongs to this employer
+            cur.execute("""
+                UPDATE internships 
+                SET title = %s, location = %s, duration = %s, stipend = %s, skills_final = %s, apply_link = %s
+                WHERE id = %s AND employer_id = %s
+            """, (title, location, duration, stipend, skills, apply_link, job_id, employer_id))
+            
+            conn.commit()
+            cur.close()
+            conn.close()
+            
+            flash("Internship updated successfully!", "success")
+            return redirect(url_for("employer_dashboard"))
+        except Exception as e:
+            print("EDIT ERROR:", e)
+            flash("Error updating internship.", "danger")
+
+    # If GET request: Fetch the existing job details to pre-fill the form
+    try:
+        conn = get_db()
+        cur = conn.cursor()
+        cur.execute("""
+            SELECT id, title, location, duration, stipend, skills_final, apply_link 
+            FROM internships WHERE id = %s AND employer_id = %s
+        """, (job_id, employer_id))
+        job = cur.fetchone()
+        cur.close()
+        conn.close()
+
+        if not job:
+            flash("Job not found or unauthorized.", "danger")
+            return redirect(url_for("employer_dashboard"))
+
+        return render_template("edit_internship.html", job=job)
+    except Exception as e:
+        print("FETCH EDIT ERROR:", e)
+        flash("Error loading job details.", "danger")
+        return redirect(url_for("employer_dashboard"))
+
+
+# --- DELETE INTERNSHIP ---
+@app.route("/employer/delete-internship/<int:job_id>", methods=["POST"])
+def delete_internship(job_id):
+    if "employer_id" not in session:
+        return redirect(url_for("employer_login"))
+
+    try:
+        conn = get_db()
+        cur = conn.cursor()
+        # Delete only if the job ID and employer ID match
+        cur.execute("DELETE FROM internships WHERE id = %s AND employer_id = %s", (job_id, session["employer_id"]))
+        conn.commit()
+        cur.close()
+        conn.close()
+        
+        flash("Internship deleted permanently.", "info")
+    except Exception as e:
+        print("DELETE ERROR:", e)
+        flash("Error deleting internship.", "danger")
+
+    return redirect(url_for("employer_dashboard"))
+
+# --- 1. ADMIN LOGIN ---
+@app.route("/admin/login", methods=["GET", "POST"])
+def admin_login():
+    if request.method == "POST":
+        password = request.form.get("password")
+        
+        correct_password = os.environ.get("ADMIN_PASSWORD")
+        if correct_password and password == correct_password:
+            session["is_admin"] = True
+            flash("Admin access granted.", "success")
+            return redirect(url_for("admin_dashboard"))
+        else:
+            flash("Invalid admin password.", "danger")            
+            # Note: We removed the render_template from here so it falls through to the bottom
+
+    # THIS handles both the GET request (showing the form for the first time) 
+    # AND the failed POST request (showing the form again after a wrong password)
+    return render_template("admin_login.html")
+
+
+# --- 2. ADMIN DASHBOARD ---
+@app.route("/admin/dashboard")
+def admin_dashboard():
+    # Security: Kick out anyone who isn't the admin
+    if not session.get("is_admin"):
+        flash("Unauthorized access. Please log in as admin.", "danger")
+        return redirect(url_for("admin_login"))
+
+    pending_employers = []
+    approved_employers = []
+    
+    try:
+        conn = get_db()
+        cur = conn.cursor()
+        
+        # 1. Fetch PENDING employers
+        cur.execute("""
+            SELECT id, company_name, email, cin_number, created_at 
+            FROM employers 
+            WHERE status = 'pending' 
+            ORDER BY created_at ASC
+        """)
+        pending_employers = cur.fetchall()
+
+        # 2. Fetch APPROVED (Existing) employers
+        cur.execute("""
+            SELECT id, company_name, email, cin_number, created_at 
+            FROM employers 
+            WHERE status = 'approved' 
+            ORDER BY created_at DESC
+        """)
+        approved_employers = cur.fetchall()
+        
+        cur.close()
+        conn.close()
+    except Exception as e:
+        print("ADMIN DASHBOARD ERROR:", e)
+        flash("Could not load employer data.", "danger")
+
+    # Pass BOTH lists to the template
+    return render_template(
+        "admin_dashboard.html", 
+        employers=pending_employers,
+        approved_employers=approved_employers
+    )
+# --- 3. APPROVE ACTION ---
+@app.route("/admin/approve/<int:employer_id>", methods=["POST"])
+def admin_approve(employer_id):
+    # Security check again
+    if not session.get("is_admin"):
+        return redirect(url_for("admin_login"))
+
+    try:
+        conn = get_db()
+        cur = conn.cursor()
+        
+        # Change their status to approved!
+        cur.execute("UPDATE employers SET status = 'approved' WHERE id = %s", (employer_id,))
+        
+        conn.commit()
+        cur.close()
+        conn.close()
+        
+        flash("Employer approved successfully! They can now post jobs.", "success")
+    except Exception as e:
+        print("ADMIN APPROVE ERROR:", e)
+        flash("Error approving employer.", "danger")
+
+    return redirect(url_for("admin_dashboard"))
+
+# --- 4. REJECT ACTION ---
+@app.route("/admin/reject/<int:employer_id>", methods=["POST"])
+def admin_reject(employer_id):
+    # Security check: Must be admin
+    if not session.get("is_admin"):
+        return redirect(url_for("admin_login"))
+
+    try:
+        conn = get_db()
+        cur = conn.cursor()
+        
+        # Completely remove the fake/rejected employer from the database
+        cur.execute("DELETE FROM employers WHERE id = %s", (employer_id,))
+        
+        conn.commit()
+        cur.close()
+        conn.close()
+        
+        flash("Employer application rejected and permanently deleted.", "info")
+    except Exception as e:
+        print("ADMIN REJECT ERROR:", e)
+        flash("Error rejecting employer.", "danger")
+
+    return redirect(url_for("admin_dashboard"))
+
+# --- Optional: ADMIN LOGOUT ---
+@app.route("/admin/logout")
+def admin_logout():
+    session.pop("is_admin", None)
+    flash("Admin logged out successfully.", "info")
+    return redirect(url_for("home"))
+
 # ---------------- DASHBOARD ----------------
 
 def login_required(fn):
@@ -312,50 +720,32 @@ def login_required(fn):
 @app.route("/dashboard")
 @login_required
 def dashboard():
-    
-    user_id = session["user_id"]
-    # FIX: Get display_name from session (set in login/signup)
-    display_name = session.get("display_name", "")
-    # # print(user_id)
-    # print(display_name)
 
-    # 🔐 REAL PROFILE CHECK
+    user_id = session["user_id"]
+    display_name = session.get("display_name", "")
+
+    # ---------------- PROFILE CHECK ----------------
     profile_complete = is_profile_complete(user_id)
 
+    # ---------------- INTERNSHIPS ----------------
     internships = []
     if profile_complete:
-        internships = get_internship_recommendations(user_id)
-    # print("RECOMMENDED INTERNSHIPS:", internships)
+        internships = get_internship_recommendations(user_id,top_n=10)
 
-    # ---------------- UPCOMING DEADLINES (ALWAYS SHOWN) ----------------
-    deadlines = [
-        "Software Development Intern — 25 Jan",
-        "Merit Scholarship — 28 Jan",
-        "Backend Intern — 2 Feb"
-    ]
+    # ---------------- SCHOLARSHIPS ----------------
+    scholarships = get_scholarship_recommendations(user_id,top_n=10)
+
+
 
     return render_template(
         "dashboard.html",
         profile_complete=profile_complete,
         internships=internships,
-        deadlines=deadlines,
+        scholarships=scholarships,
         display_name=display_name
     )
 
-# View all internships
-# @app.route("/internships")
-# def internships():
-#     # Only fetch the first 12 internships, no sorting, no filtering
-#     try:
-#         # We removed .order() and .ilike() to make it fast
-#         response = supabase.table("internships").select("*").limit(12).execute()
-#         internships = response.data
-#     except Exception as e:
-#         print(f"Error: {e}")
-#         internships = []
 
-    # Keep the rest simple
-    # return render_template("internships.html", internships=internships, saved_ids=set(), page=1)
 @app.route("/internships")
 def internships():
     page = request.args.get("page", 1, type=int)
@@ -512,7 +902,8 @@ def internship_details(internship_id):
         conn.close()
 
         if not internship:
-            return "Internship not found", 404
+            # This instantly stops the code and triggers your custom 404 error.html!
+            abort(404)
 
         return render_template(
             "internship_details.html",
@@ -520,8 +911,9 @@ def internship_details(internship_id):
         )
 
     except Exception as e:
-        print("INTERNSHIP DETAIL ERROR:", e)
-        return "Error loading internship", 500
+            print("ERROR:", e)
+            # If the database actually breaks, trigger a 500 error
+            abort(500)
 
 @app.route("/scholarships/<int:scholarship_id>")
 def scholarship_details(scholarship_id):
@@ -541,18 +933,19 @@ def scholarship_details(scholarship_id):
         conn.close()
 
         if not scholarship:
-            return "Scholarship not found", 404
+            # This instantly stops the code and triggers your custom 404 error.html!
+            abort(404)
 
         return render_template(
             "scholarship_details.html",
             scholarship=scholarship
         )
 
-    
+        
     except Exception as e:
-        import traceback
-        traceback.print_exc()
-        return str(e), 500
+            print("ERROR:", e)
+            # If the database actually breaks, trigger a 500 error
+            abort(500)
 
 @app.route("/profile/setup", methods=["GET", "POST"])
 @login_required
@@ -865,8 +1258,44 @@ def logout():
     session.clear()
     return redirect("/")
 
+# ==========================================
+# GLOBAL ERROR SAFETY NET
+# ==========================================
 
+# 1. Catch ALL Standard Web Errors (404 Not Found, 403 Forbidden, 405 Bad Method, etc.)
+@app.errorhandler(HTTPException)
+def handle_http_exception(e):
+    """Handles all standard HTTP routing and access errors dynamically."""
+    return render_template(
+        "error.html", 
+        error_code=e.code, 
+        error_message=e.name
+    ), e.code
 
+# 2. Catch ALL Unknown Python/Database Crashes (The Ultimate 500 Catch-All)
+@app.errorhandler(Exception)
+def handle_unknown_exception(e):
+    """
+    Catches ANY unhandled Python error, database crash, or logic failure.
+    Prevents the app from showing raw code to the user.
+    """
+    # 1. Print the actual error to your terminal so YOU can fix it later
+    print(f"🚨 CRITICAL UNHANDLED ERROR: {e}")
+    
+    # 2. Rollback the database just in case a transaction got stuck
+    try:
+        conn = get_db()
+        conn.rollback()
+        conn.close()
+    except:
+        pass # If the DB is completely dead, just ignore and show the error page
+
+    # 3. Show the user a safe, generic error page
+    return render_template(
+        "error.html", 
+        error_code=500, 
+        error_message="Internal Server Error"
+    ), 500
 # ---------------- RUN ----------------
 if __name__ == "__main__":
     app.run(debug=True)

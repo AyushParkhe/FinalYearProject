@@ -2,6 +2,7 @@ from playwright.sync_api import sync_playwright
 import pandas as pd
 from datetime import datetime
 import time
+from utils.skills.factory import get_skill_extractor
 
 # ---------------- CONFIG ---------------- #
 URL = "https://remoteok.com"
@@ -25,8 +26,8 @@ def main():
         browser = p.chromium.launch(headless=True)
         page = browser.new_page()
 
-        page.goto(URL, timeout=60_000)
-        page.wait_for_selector("tr.job", timeout=60_000)
+        page.goto(URL, timeout=60000)
+        page.wait_for_selector("tr.job", timeout=60000)
 
         auto_scroll(page)
 
@@ -45,28 +46,58 @@ def main():
                 if not title_el or not company_el:
                     continue
 
-                # Location (NULL if not fetched)
+                title = title_el.inner_text().strip()
+                organization = company_el.inner_text().strip()
+
+                # Location
                 location_el = company_cell.query_selector(".location")
                 location = (
                     location_el.inner_text().strip()
                     if location_el else None
                 )
 
-                # Job URL (NULL if not fetched)
+                # Job URL
                 link = row.get_attribute("data-href")
-                job_url = (
-                    f"https://remoteok.com{link}"
-                    if link else None
-                )
+                job_url = f"https://remoteok.com{link}" if link else None
+
+                # ---------- SKILLS EXTRACTION (FIXED) ----------
+
+                # RemoteOK provides skill tags
+                tag_elements = row.query_selector_all(".tag")
+
+                tag_skills = []
+                for tag in tag_elements:
+                    try:
+                        tag_skills.append(tag.inner_text().strip())
+                    except:
+                        pass
+
+                # fallback unified extractor
+                extractor = get_skill_extractor("remoteok")
+
+                text_blob = " ".join(filter(None, [
+                    title,
+                    organization,
+                    location,
+                    " ".join(tag_skills)
+                ]))
+
+                extracted_skills = extractor.extract(text_blob)
+
+                # combine both sources
+                skills = list(set(tag_skills + extracted_skills))
+
+                skills_final = str(skills) if skills else None
+
+                # -----------------------------------------------
 
                 data.append({
-                    # ---- fetched fields ----
-                    "title": title_el.inner_text().strip(),
-                    "organization": company_el.inner_text().strip(),
-                    "location": location,  
+                    "title": title,
+                    "organization": organization,
+                    "location": location,
                     "duration": None,
                     "stipend": None,
-                    "skills_final": None,
+                    "skills_final": skills_final,
                     "posted_on": None,
                     "start_date": None,
                     "type": "Remote",
@@ -74,8 +105,11 @@ def main():
                     "apply_link": job_url,
                     "scraped_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                     "content_hash": None,
-                    "extra_data": None,         
+                    "extra_data": None,
                 })
+
+                if len(data) >= TARGET_JOBS:
+                    break
 
             except Exception:
                 continue
@@ -85,13 +119,10 @@ def main():
     # ---------------- DATAFRAME CLEANUP ---------------- #
     df = pd.DataFrame(data)
 
-    # Empty string → NULL
     df.replace("", pd.NA, inplace=True)
 
-    # Remove duplicates safely
     df.drop_duplicates(subset=["apply_link"], inplace=True)
 
-    # Save AICTE INP file
     df.to_csv(OUTPUT_FILE, index=False)
 
     print("\n✅ SUCCESS")

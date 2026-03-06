@@ -3,7 +3,28 @@
 {% block title %}SmartIntern | My Profile{% endblock %}
 
 {% block extra_css %}
+<link href="https://cdn.jsdelivr.net/npm/@yaireo/tagify/dist/tagify.css" rel="stylesheet" type="text/css" />
 <link rel="stylesheet" href="{{ url_for('static', filename='css/profile_setup.css') }}">
+
+<style>
+    .error-shake {
+        animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
+        border: 2px solid #dc3545 !important;
+        border-radius: 4px;
+    }
+    @keyframes shake {
+        10%, 90% { transform: translate3d(-2px, 0, 0); }
+        20%, 80% { transform: translate3d(4px, 0, 0); }
+        30%, 50%, 70% { transform: translate3d(-6px, 0, 0); }
+        40%, 60% { transform: translate3d(6px, 0, 0); }
+    }
+    .tagify {
+        width: 100%;
+        border-radius: 0.375rem;
+        padding: 0.2rem;
+        background: white;
+    }
+</style>
 {% endblock %}
 
 {% block content %}
@@ -14,7 +35,6 @@
             <h2>Complete Your Profile</h2>
             <p>This helps us personalize internships and scholarships for you.</p>
         </div>
-
 
         <div class="profile-avatar">
             <div class="avatar-circle">
@@ -95,7 +115,6 @@
                         {% endfor %}
                         <option value="OTHER">Other</option>
                     </select>
-                   
                 </div>
 
                 <div class="form-group">
@@ -177,14 +196,18 @@
                     </select>
                 </div>
 
-                <div class="form-group full">
-                    <label>Skills</label>
-                    <input name="skills" required value="{{ skills }}" placeholder="e.g. Python, Java, SQL (comma separated)">
+                <div class="form-group full mb-2">
+                    <label class="fw-bold">Skills <span class="text-danger">*</span></label>
+                    <p class="text-muted small mb-1" style="font-size: 0.85rem;">Select or type at least 3 skills</p>
+                    <input id="skillsInput" name="skills" required value="{{ skills }}" placeholder="e.g. Python, Java, SQL">
+                    <div id="skillsWarning" class="text-danger small mt-1 fw-bold d-none">
+                        ⚠️ Please add at least 3 skills to submit your profile.
+                    </div>
                 </div>
 
-                <div class="form-group full">
-                    <label>Interests</label>
-                    <input name="interests" value="{{ interests }}" placeholder="e.g. AI, Web Development, Data Science">
+                <div class="form-group full mt-3">
+                    <label class="fw-bold">Interests</label>
+                    <input id="interestsInput" name="interests" value="{{ interests }}" placeholder="e.g. AI, Web Development, Data Science">
                 </div>
 
                 <div class="section-block">
@@ -251,7 +274,8 @@
                     </select>
                 </div>
 
-                <div class="mb-4"> <label for="academic_score" class="block text-sm font-medium text-gray-700">
+                <div class="mb-4"> 
+                    <label for="academic_score" class="block text-sm font-medium text-gray-700">
                         Academic Score (CGPA or %)
                     </label>
                     <input 
@@ -276,205 +300,370 @@
                     </select>
                 </div>
 
-            </div> <button type="submit">Save & Continue</button>
+            </div> 
+            
+            <button type="submit">Save & Continue</button>
+            
             <div id="loading-overlay" class="loading-overlay" style="display: none;">
-    <div class="loader-content">
-        <div class="spinner"></div>
-        <p>Updating your academic profile...</p>
-    </div>
-</div>
+                <div class="loader-content">
+                    <div class="spinner"></div>
+                    <p>Updating your academic profile...</p>
+                </div>
+            </div>
         </form>
 
     </div>
 </div>
 {% endblock %}
+
 {% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/@yaireo/tagify"></script>
+
 <script>
-/* =====================================================
-    CONFIG & INITIALIZATION
-===================================================== */
-const requiredFields = [
-  "full_name", "dob", "gender", "education_level",
-  "field_of_study", "graduation_year", "location",
-  "experience_level", "preferred_mode", "preferred_type",
-  "availability_duration", "skills", "category",
-  "disability_status", "family_income", "institution_type", "academic_score"
-];
+document.addEventListener("DOMContentLoaded", function() {
+    /* =====================================================
+        CONFIG & INITIALIZATION
+    ===================================================== */
+    const requiredFields = [
+        "full_name", "dob", "gender", "education_level",
+        "field_of_study", "graduation_year", "location",
+        "experience_level", "preferred_mode", "preferred_type",
+        "availability_duration", "skills", "category",
+        "disability_status", "family_income", "institution_type", "academic_score"
+    ];
 
-const form = document.getElementById("profileForm");
-const loadingOverlay = document.getElementById('loading-overlay');
+    const form = document.getElementById("profileForm");
+    const loadingOverlay = document.getElementById('loading-overlay');
 
-/* =====================================================
-    PROFILE COMPLETION BAR
-===================================================== */
-function updateCompletion() {
-  let filled = 0;
-  requiredFields.forEach(name => {
-    const el = form.querySelector(`[name="${name}"]`);
-    if (el && el.value && el.value.trim() !== "") {
-      filled++;
-    }
-  });
-  const percent = Math.round((filled / requiredFields.length) * 100);
-  document.getElementById("completionFill").style.width = percent + "%";
-  document.getElementById("completionPercent").innerText = percent + "%";
-}
+    /* =====================================================
+        TAGIFY SETUP (Skills & Interests)
+    ===================================================== */
+    const predefinedSkills = [
+        // Programming Languages
+        "Python", "Java", "JavaScript", "TypeScript", "C++", "C#", "C", "Go", "Rust", 
+        "Ruby", "PHP", "Swift", "Kotlin", "Dart", "Scala", "R", "MATLAB", "Perl", 
+        "Shell Scripting", "Bash", "PowerShell",
+        
+        // Web Development - Frontend
+        "HTML", "CSS", "HTML5", "CSS3", "Sass", "LESS", "Tailwind CSS", "Bootstrap", 
+        "Material UI", "Chakra UI", "React.js", "Next.js", "Vue.js", "Nuxt.js", 
+        "Angular", "Svelte", "jQuery", "Redux", "Zustand", "MobX", "Webpack", 
+        "Vite", "Parcel", "Babel",
+        
+        // Web Development - Backend
+        "Node.js", "Express.js", "Nest.js", "Django", "Flask", "FastAPI", "Spring Boot", 
+        "ASP.NET", "Ruby on Rails", "Laravel", "Symfony", "GraphQL", "REST API", 
+        "gRPC", "WebSockets", "Microservices", "Serverless",
+        
+        // Mobile Development
+        "React Native", "Flutter", "iOS Development", "Android Development", "Xamarin", 
+        "Ionic", "Cordova", "SwiftUI", "Jetpack Compose",
+        
+        // Databases
+        "SQL", "MySQL", "PostgreSQL", "MongoDB", "Redis", "Cassandra", "DynamoDB", 
+        "Firebase", "Supabase", "SQLite", "Oracle DB", "Microsoft SQL Server", 
+        "MariaDB", "Neo4j", "Elasticsearch", "InfluxDB",
+        
+        // AI/ML & Data Science
+        "Machine Learning", "Deep Learning", "Natural Language Processing", "NLP", 
+        "Computer Vision", "Generative AI", "LLMs", "Large Language Models", 
+        "TensorFlow", "PyTorch", "Keras", "Scikit-learn", "OpenCV", "YOLO", 
+        "Transformers", "Hugging Face", "LangChain", "OpenAI API", "Stable Diffusion", 
+        "GPT", "BERT", "RAG", "Reinforcement Learning", "Neural Networks", 
+        "Data Analysis", "Data Visualization", "Pandas", "NumPy", "Matplotlib", 
+        "Seaborn", "Plotly", "Tableau", "Power BI", "Jupyter", "Google Colab",
+        
+        // Cloud & DevOps
+        "AWS", "Amazon Web Services", "Azure", "Google Cloud Platform", "GCP", 
+        "Docker", "Kubernetes", "CI/CD", "Jenkins", "GitHub Actions", "GitLab CI", 
+        "Terraform", "Ansible", "Chef", "Puppet", "Prometheus", "Grafana", 
+        "Linux", "Ubuntu", "CentOS", "Nginx", "Apache", "Load Balancing",
+        
+        // Version Control & Collaboration
+        "Git", "GitHub", "GitLab", "Bitbucket", "SVN", "Jira", "Confluence", 
+        "Trello", "Slack", "Notion",
+        
+        // Testing & QA
+        "Unit Testing", "Integration Testing", "Test Automation", "Selenium", 
+        "Cypress", "Jest", "Mocha", "Chai", "PyTest", "JUnit", "TestNG", 
+        "Postman", "API Testing",
+        
+        // Cybersecurity
+        "Ethical Hacking", "Penetration Testing", "Network Security", "Web Security", 
+        "OWASP", "Cryptography", "Security Auditing", "Kali Linux", "Metasploit", 
+        "Wireshark", "Burp Suite",
+        
+        // Design & UI/UX
+        "Figma", "Adobe XD", "Sketch", "Photoshop", "Illustrator", "InVision", 
+        "Wireframing", "Prototyping", "User Research", "Responsive Design", 
+        "Accessibility", "WCAG",
+        
+        // Blockchain & Web3
+        "Blockchain", "Ethereum", "Solidity", "Smart Contracts", "Web3.js", 
+        "NFT", "DeFi", "Cryptocurrency",
+        
+        // Game Development
+        "Unity", "Unreal Engine", "Godot", "Game Design", "3D Modeling", "Blender",
+        
+        // Business & Soft Skills
+        "Agile", "Scrum", "Kanban", "Project Management", "Communication", 
+        "Leadership", "Problem Solving", "Critical Thinking", "Time Management", 
+        "Teamwork", "Presentation Skills", "Technical Writing", "Documentation",
+        
+        // Other Technologies
+        "IoT", "Arduino", "Raspberry Pi", "Embedded Systems", "5G", "Edge Computing", 
+        "Quantum Computing", "AR/VR", "Augmented Reality", "Virtual Reality"
+    ];
 
-form.querySelectorAll("input, select, textarea").forEach(el => {
-  el.addEventListener("change", updateCompletion);
-  el.addEventListener("input", updateCompletion);
-});
+    const predefinedInterests = [
+        // AI & Advanced Tech
+        "Artificial Intelligence", "Machine Learning", "Deep Learning", 
+        "Natural Language Processing", "Computer Vision", "Generative AI", 
+        "Large Language Models", "AI Ethics", "AI Research", "Reinforcement Learning",
+        
+        // Development Domains
+        "Web Development", "Full Stack Development", "Frontend Development", 
+        "Backend Development", "Mobile App Development", "Desktop Application Development",
+        "Game Development", "Embedded Systems Development",
+        
+        // Cloud & Infrastructure
+        "Cloud Computing", "DevOps", "Site Reliability Engineering", "Platform Engineering",
+        "Infrastructure as Code", "Cloud Architecture", "Serverless Computing",
+        
+        // Data & Analytics
+        "Data Science", "Data Engineering", "Data Analytics", "Big Data", 
+        "Business Intelligence", "Data Visualization", "Predictive Analytics",
+        "Statistical Analysis",
+        
+        // Security & Privacy
+        "Cybersecurity", "Information Security", "Network Security", "Application Security",
+        "Ethical Hacking", "Digital Forensics", "Privacy Engineering",
+        
+        // Specialized Fields
+        "Blockchain Technology", "Cryptocurrency", "Web3", "Quantum Computing",
+        "Edge Computing", "Internet of Things", "5G Technology", "AR/VR Development",
+        
+        // Design & User Experience
+        "UI/UX Design", "Product Design", "Interaction Design", "User Research",
+        "Design Systems", "Accessibility", "Human-Computer Interaction",
+        
+        // Business & Product
+        "Product Management", "Technical Product Management", "Business Analysis",
+        "Digital Marketing", "Growth Hacking", "Startup Ecosystem", "Entrepreneurship",
+        "SaaS Products", "E-commerce", "FinTech", "EdTech", "HealthTech",
+        
+        // Emerging Technologies
+        "Robotics", "Autonomous Vehicles", "Drone Technology", "3D Printing",
+        "Biotechnology", "Space Technology", "Clean Energy", "Smart Cities"
+    ];
 
-updateCompletion();
-
-/* =====================================================
-    AVATAR INITIAL
-===================================================== */
-const nameInput = form.querySelector('input[name="full_name"]');
-const avatarInitial = document.getElementById("avatarInitial");
-
-if (nameInput) {
-  nameInput.addEventListener("input", () => {
-    const v = nameInput.value.trim();
-    if (v.length > 0) {
-      avatarInitial.innerText = v[0].toUpperCase();
-    }
-  });
-}
-
-/* =====================================================
-    TOGGLE "OTHER" INPUTS
-===================================================== */
-function toggleOther(select) {
-  const otherInput = select.parentElement.querySelector(`input[name="${select.name}_other"]`);
-  if (!otherInput) return;
-
-  if (select.value === "OTHER") {
-    otherInput.hidden = false;
-    otherInput.required = true;
-    otherInput.focus();
-  } else {
-    otherInput.hidden = true;
-    otherInput.required = false;
-    otherInput.value = "";
-  }
-  updateCompletion();
-}
-
-/* =====================================================
-    DISABILITY TOGGLE
-===================================================== */
-const disabilitySelect = form.querySelector('[name="disability_status"]');
-const disabilityBlock = document.getElementById("disabilityTypeBlock");
-
-function toggleDisability() {
-  if (disabilitySelect && disabilitySelect.value === "Yes") {
-    disabilityBlock.style.display = "block";
-  } else if (disabilityBlock) {
-    disabilityBlock.style.display = "none";
-  }
-}
-
-if (disabilitySelect) {
-  disabilitySelect.addEventListener("change", toggleDisability);
-  toggleDisability();
-}
-
-/* =====================================================
-    FORM SUBMIT (Unified with Loader)
-===================================================== */
-form.onsubmit = async (e) => {
-  e.preventDefault();
-
-  // 1. SHOW LOADER & DISABLE BUTTON
-  if (loadingOverlay) loadingOverlay.style.display = 'flex';
-  const submitBtn = form.querySelector('button[type="submit"]');
-  if (submitBtn) {
-    submitBtn.disabled = true;
-    submitBtn.innerText = "Processing...";
-  }
-
-  function valueOrOther(name) {
-    const el = form[name];
-    if (!el) return null;
-    return el.value === "OTHER" ? form[`${name}_other`]?.value.trim() : el.value.trim();
-  }
-
-  const data = {
-    full_name: form.full_name.value.trim(),
-    dob: form.dob.value,
-    gender: form.gender.value,
-    email: form.email ? form.email.value.trim() : null,
-    education_level: valueOrOther("education_level"),
-    field_of_study: valueOrOther("field_of_study"),
-    graduation_year: form.graduation_year.value,
-    location: valueOrOther("location"),
-    experience_level: form.experience_level.value,
-    preferred_mode: form.preferred_mode.value,
-    preferred_type: form.preferred_type.value,
-    availability_duration: form.availability_duration.value,
-    category: form.category ? form.category.value : "",
-    disability_status: form.disability_status ? form.disability_status.value : "",
-    disability_type: form.disability_type?.value || null,
-    family_income: form.family_income ? form.family_income.value : "",
-    institution_type: form.institution_type ? form.institution_type.value : "",
-    academic_score: form.academic_score ? form.academic_score.value.trim() : "",
-    skills: form.skills.value.split(",").map(s => s.trim()).filter(Boolean),
-    interests: form.interests.value.split(",").map(i => i.trim()).filter(Boolean)
-  };
-
-  try {
-    const res = await fetch("/profile/setup", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data)
+    const skillsElement = document.querySelector('#skillsInput');
+    const tagifySkills = new Tagify(skillsElement, {
+        whitelist: predefinedSkills,
+        maxTags: 15,
+        dropdown: { maxItems: 500, classname: "tags-look", enabled: 0, closeOnSelect: false },
+        originalInputValueFormat: valuesArr => valuesArr.map(item => item.value).join(', ')
     });
 
-    if (!res.ok) {
-      const err = await res.json();
-      showFlash(err.message || err.error || "Error saving profile");
-      
-      // HIDE LOADER ON ERROR
-      if (loadingOverlay) loadingOverlay.style.display = 'none';
-      if (submitBtn) { submitBtn.disabled = false; submitBtn.innerText = "Save & Continue"; }
-      return;
+    const interestsElement = document.querySelector('#interestsInput');
+    const tagifyInterests = new Tagify(interestsElement, {
+        whitelist: predefinedInterests,
+        dropdown: { maxItems: 500, enabled: 0, closeOnSelect: false },
+        originalInputValueFormat: valuesArr => valuesArr.map(item => item.value).join(', ')
+    });
+
+    /* =====================================================
+        PROFILE COMPLETION BAR
+    ===================================================== */
+    function updateCompletion() {
+        let filled = 0;
+        requiredFields.forEach(name => {
+            const el = form.querySelector(`[name="${name}"]`);
+            if (el && el.value && el.value.trim() !== "") {
+                filled++;
+            }
+        });
+        const percent = Math.round((filled / requiredFields.length) * 100);
+        document.getElementById("completionFill").style.width = percent + "%";
+        document.getElementById("completionPercent").innerText = percent + "%";
     }
 
-    showSuccessPopup();
+    // Standard inputs trigger update
+    form.querySelectorAll("input, select, textarea").forEach(el => {
+        el.addEventListener("change", updateCompletion);
+        el.addEventListener("input", updateCompletion);
+    });
+
+    // Tagify triggers update
+    tagifySkills.on('add', updateCompletion);
+    tagifySkills.on('remove', updateCompletion);
+    tagifyInterests.on('add', updateCompletion);
+    tagifyInterests.on('remove', updateCompletion);
+
+    updateCompletion();
+
+    /* =====================================================
+        AVATAR INITIAL
+    ===================================================== */
+    const nameInput = form.querySelector('input[name="full_name"]');
+    const avatarInitial = document.getElementById("avatarInitial");
+
+    if (nameInput) {
+        nameInput.addEventListener("input", () => {
+            const v = nameInput.value.trim();
+            if (v.length > 0) {
+                avatarInitial.innerText = v[0].toUpperCase();
+            }
+        });
+    }
+
+    /* =====================================================
+        TOGGLE "OTHER" INPUTS
+    ===================================================== */
+    window.toggleOther = function(select) {
+        const otherInput = select.parentElement.querySelector(`input[name="${select.name}_other"]`);
+        if (!otherInput) return;
+
+        if (select.value === "OTHER") {
+            otherInput.hidden = false;
+            otherInput.required = true;
+            otherInput.focus();
+        } else {
+            otherInput.hidden = true;
+            otherInput.required = false;
+            otherInput.value = "";
+        }
+        updateCompletion();
+    };
+
+    /* =====================================================
+        DISABILITY TOGGLE
+    ===================================================== */
+    const disabilitySelect = form.querySelector('[name="disability_status"]');
+    const disabilityBlock = document.getElementById("disabilityTypeBlock");
+
+    function toggleDisability() {
+        if (disabilitySelect && disabilitySelect.value === "Yes") {
+            disabilityBlock.style.display = "block";
+        } else if (disabilityBlock) {
+            disabilityBlock.style.display = "none";
+        }
+    }
+
+    if (disabilitySelect) {
+        disabilitySelect.addEventListener("change", toggleDisability);
+        toggleDisability();
+    }
+
+    /* =====================================================
+        FORM SUBMIT & SKILLS VALIDATION
+    ===================================================== */
+    form.onsubmit = async (e) => {
+        e.preventDefault();
+
+        // 1. SKILLS VALIDATION CHECK
+        if (tagifySkills.value.length < 3) {
+            document.getElementById('skillsWarning').classList.remove('d-none');
+            // Tagify UI container is stored here
+            const tagifyDOM = tagifySkills.DOM.scope;
+            tagifyDOM.classList.add('error-shake');
+            
+            setTimeout(() => { tagifyDOM.classList.remove('error-shake'); }, 400);
+            tagifyDOM.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            return; // Stop submission immediately
+        }
+        document.getElementById('skillsWarning').classList.add('d-none');
+
+        // 2. SHOW LOADER & DISABLE BUTTON
+        if (loadingOverlay) loadingOverlay.style.display = 'flex';
+        const submitBtn = form.querySelector('button[type="submit"]');
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.innerText = "Processing...";
+        }
+
+        function valueOrOther(name) {
+            const el = form[name];
+            if (!el) return null;
+            return el.value === "OTHER" ? form[`${name}_other`]?.value.trim() : el.value.trim();
+        }
+
+        // Tagify auto-formats the value as a comma string now, so split(",") works perfectly!
+        const data = {
+            full_name: form.full_name.value.trim(),
+            dob: form.dob.value,
+            gender: form.gender.value,
+            email: form.email ? form.email.value.trim() : null,
+            education_level: valueOrOther("education_level"),
+            field_of_study: valueOrOther("field_of_study"),
+            graduation_year: form.graduation_year.value,
+            location: valueOrOther("location"),
+            experience_level: form.experience_level.value,
+            preferred_mode: form.preferred_mode.value,
+            preferred_type: form.preferred_type.value,
+            availability_duration: form.availability_duration.value,
+            category: form.category ? form.category.value : "",
+            disability_status: form.disability_status ? form.disability_status.value : "",
+            disability_type: form.disability_type?.value || null,
+            family_income: form.family_income ? form.family_income.value : "",
+            institution_type: form.institution_type ? form.institution_type.value : "",
+            academic_score: form.academic_score ? form.academic_score.value.trim() : "",
+            skills: form.skills.value.split(",").map(s => s.trim()).filter(Boolean),
+            interests: form.interests.value.split(",").map(i => i.trim()).filter(Boolean)
+        };
+
+        try {
+            const res = await fetch("/profile/setup", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data)
+            });
+
+            if (!res.ok) {
+                const err = await res.json();
+                showFlash(err.message || err.error || "Error saving profile");
+                
+                if (loadingOverlay) loadingOverlay.style.display = 'none';
+                if (submitBtn) { submitBtn.disabled = false; submitBtn.innerText = "Save & Continue"; }
+                return;
+            }
+
+            showSuccessPopup();
+            setTimeout(() => {
+                window.location.href = "/dashboard";
+            }, 1500);
+
+        } catch (err) {
+            showFlash("Network error. Please try again.");
+            if (loadingOverlay) loadingOverlay.style.display = 'none';
+            if (submitBtn) { submitBtn.disabled = false; submitBtn.innerText = "Save & Continue"; }
+        }
+    };
+
+    /* =====================================================
+        UI FEEDBACK
+    ===================================================== */
+    function showSuccessPopup() {
+        const popup = document.createElement("div");
+        popup.className = "success-popup";
+        popup.innerText = "✅ Profile updated successfully";
+        document.body.appendChild(popup);
+        setTimeout(() => popup.remove(), 1400);
+    }
+
+    function showFlash(msg) {
+        const flash = document.createElement("div");
+        flash.className = "flash-error";
+        flash.innerText = msg;
+        document.body.appendChild(flash);
+        setTimeout(() => flash.remove(), 3000);
+    }
+
+    // Clear initial flash messages
     setTimeout(() => {
-      window.location.href = "/dashboard";
-    }, 1500);
-
-  } catch (err) {
-    showFlash("Network error. Please try again.");
-    if (loadingOverlay) loadingOverlay.style.display = 'none';
-    if (submitBtn) { submitBtn.disabled = false; submitBtn.innerText = "Save & Continue"; }
-  }
-};
-
-/* =====================================================
-    UI FEEDBACK
-===================================================== */
-function showSuccessPopup() {
-  const popup = document.createElement("div");
-  popup.className = "success-popup";
-  popup.innerText = "✅ Profile updated successfully";
-  document.body.appendChild(popup);
-  setTimeout(() => popup.remove(), 1400);
-}
-
-function showFlash(msg) {
-  const flash = document.createElement("div");
-  flash.className = "flash-error";
-  flash.innerText = msg;
-  document.body.appendChild(flash);
-  setTimeout(() => flash.remove(), 3000);
-}
-
-// Clear initial flash messages
-setTimeout(() => {
-  const flash = document.querySelector(".flash");
-  if (flash) { flash.style.opacity = "0"; }
-}, 3000);
+        const flash = document.querySelector(".flash");
+        if (flash) { flash.style.opacity = "0"; }
+    }, 3000);
+});
 </script>
 {% endblock %}

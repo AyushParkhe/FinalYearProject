@@ -12,10 +12,9 @@
 
   <!-- WELCOME -->
   <div class="user-greeting">
-    <h2>Welcome {{ display_name or "Error" }}... <span>👋</span></h2>
+    <h2>Welcome {{ display_name or "User" }}... <span>👋</span></h2>
     <p class="text-muted">
-      <strong>Hope you are doing well...
-      Here are the best opportunities based on Our Personalized RS...</strong>
+      <strong>Hope you are doing well... Here are the best opportunities based on our Personalized RS.</strong>
     </p>
   </div>
 
@@ -23,107 +22,166 @@
   <section class="smartintern mb-5">
 
     {% if not profile_complete %}
-      <!-- 🔒 LOCKED STATE -->
-      <div class="locked-box p-4 border rounded bg-light">
-        <h3>🔒 Personalized Recommendations</h3>
-        <p class="mt-2">
-          Complete your profile to unlock personalized internship and
-          scholarship recommendations.
-        </p>
-        <a href="/profile/setup" class="btn btn-primary mt-2">
-          Complete Profile
-        </a>
-      </div>
+
+    <!-- 🔒 LOCKED STATE -->
+    <div class="locked-box p-4 border rounded bg-light">
+      <h3>🔒 Personalized Recommendations</h3>
+      <p class="mt-2">
+        Complete your profile to unlock personalized internship and
+        scholarship recommendations.
+      </p>
+      <a href="/profile/setup" class="btn btn-primary mt-2">
+        Complete Profile
+      </a>
+    </div>
 
     {% else %}
-      <!-- ✅ UNLOCKED STATE -->
-      <h3>SmartIntern Recommendations</h3>
 
-      <div class="tabs mt-3">
-        <button class="btn btn-outline-primary btn-sm me-2">
-          Internships
-        </button>
-        <button class="btn btn-outline-secondary btn-sm">
-          Scholarships
-        </button>
-      </div>
+    <!-- ✅ UNLOCKED STATE -->
+    <h3>SmartIntern Recommendations</h3>
 
-      <!-- Real recommendations will be rendered here next -->
+    <!-- TAB BUTTONS -->
+<div class="tabs mt-3">
 
-      {% if profile_complete %}
-  <h3>Recommended Internships</h3>
+  <button id="internships-btn"
+          class="btn btn-primary btn-sm me-2"
+          onclick="showTab('internships')">
+    Internships
+  </button>
 
+  <button id="scholarships-btn"
+          class="btn btn-outline-primary btn-sm me-2"
+          onclick="showTab('scholarships')">
+    Scholarships
+  </button>
 
- <div class="internship-grid">
-  {% for i in internships %}
-    <div class="internship-card">
-      
-      <div class="card-header">
-        <h4 class="role">
-  <a href="/internships/{{ i.id }}" class="role-link">
-    {{ i.title }}
-  </a>
-</h4>
-
-        <span class="match-badge">
-          {{ i.match_score }} skill match
-        </span>
-      </div>
-
-      <p class="company">
-        {{ i.organization }}
-        <span class="hiring">Actively hiring</span>
-      </p>
-
-      <div class="meta">
-        <span class="location">📍 {{ i.location }}</span>
-      </div>
-
-     <button class="save-btn outline"
-                          data-id="{{ i.id }}"
-                          data-type="internship">
-                    Save
-                  </button>
-
-
-    </div>
-  {% endfor %}
 </div>
 
-{% endif %}
+    <!-- ================= INTERNSHIPS ================= -->
+    <div id="internships-tab">
 
+      <h3 class="mt-4">Recommended Internships</h3>
+
+      <div class="internship-grid">
+
+        {% for i in internships %}
+        <div class="internship-card">
+
+          <div class="card-header">
+            <h4 class="role">
+              <a href="/internships/{{ i.id }}" class="role-link">
+                {{ i.title }}
+              </a>
+            </h4>
+
+            <span class="match-badge">
+              {{ i.match_score }} skill match
+            </span>
+          </div>
+
+          <p class="company">
+            {{ i.organization }}
+            <span class="hiring">Actively hiring</span>
+          </p>
+
+          <div class="meta">
+            <span class="location">📍 {{ i.location }}</span>
+          </div>
+
+          <button class="save-btn outline"
+                  data-id="{{ i.id }}"
+                  data-type="internship">
+            Save
+          </button>
+
+        </div>
+        {% endfor %}
+
+      </div>
+
+    </div>
+
+
+    <!-- ================= SCHOLARSHIPS ================= -->
+    <div id="scholarships-tab" style="display:none;">
+
+      <h3 class="mt-4">Recommended Scholarships</h3>
+
+      <div class="internship-grid">
+
+        {% for s in scholarships %}
+        <div class="internship-card">
+
+          <div class="card-header">
+            <h4 class="role">
+              <a href="/scholarships/{{ s.id }}"  class="role-link">
+                {{ s.title }}
+              </a>
+            </h4>
+          </div>
+
+          <p class="company">
+            {{ s.provider }}
+          </p>
+
+          {% if s.amount %}
+          <div class="meta">
+            <span>💰 {{ s.amount }}</span>
+          </div>
+          {% endif %}
+
+          {% if s.deadline %}
+          <div class="meta">
+            <span>⏳ Deadline: {{ s.deadline }}</span>
+          </div>
+          {% endif %}
+
+         <a href="{% if s.apply_url and not s.apply_url.startswith('http') %}https://{{ s.apply_url }}{% else %}{{ s.apply_url }}{% endif %}"
+   target="_blank" 
+   rel="noopener noreferrer" 
+   class="btn btn-sm btn-success mt-2">
+   Apply
+</a>
+
+        </div>
+        {% endfor %}
+
+      </div>
+
+    </div>
 
     {% endif %}
 
   </section>
 
-  <!-- UPCOMING DEADLINES -->
-  <section class="deadlines mb-5">
-    <h3>📅 Upcoming Deadlines</h3>
-    <ul class="mt-2">
-      {% for d in deadlines %}
-        <li>{{ d }}</li>
-      {% endfor %}
-    </ul>
-  </section>
+
+ 
+
 
   <!-- QUICK NAV -->
   <div class="d-flex gap-3">
     <a href="/internships" class="btn btn-outline-primary">
       View All Internships
     </a>
-   <a href="{{ url_for('scholarships') }}" class="btn btn-outline-primary">
-    View All Scholarships
-</a>
+
+    <a href="{{ url_for('scholarships') }}" class="btn btn-outline-primary">
+      View All Scholarships
+    </a>
   </div>
 
 </div>
 
 {% endblock %}
 
+
+
 {% block extra_js %}
+
 <script>
+
+/* SAVE BUTTON */
 document.addEventListener("click", async (e) => {
+
   if (!e.target.classList.contains("save-btn")) return;
 
   const btn = e.target;
@@ -141,7 +199,46 @@ document.addEventListener("click", async (e) => {
     btn.innerText = "Saved";
     btn.disabled = true;
   }
+
 });
+
+
+/* TAB SWITCHING */
+function showTab(tab){
+
+  const internships = document.getElementById("internships-tab");
+  const scholarships = document.getElementById("scholarships-tab");
+
+  const internshipsBtn = document.getElementById("internships-btn");
+  const scholarshipsBtn = document.getElementById("scholarships-btn");
+
+  if(tab === "internships"){
+
+    internships.style.display = "block";
+    scholarships.style.display = "none";
+
+    internshipsBtn.classList.remove("btn-outline-primary");
+    internshipsBtn.classList.add("btn-primary");
+
+    scholarshipsBtn.classList.remove("btn-primary");
+    scholarshipsBtn.classList.add("btn-outline-primary");
+
+  }
+
+  if(tab === "scholarships"){
+
+    internships.style.display = "none";
+    scholarships.style.display = "block";
+
+    scholarshipsBtn.classList.remove("btn-outline-primary");
+    scholarshipsBtn.classList.add("btn-primary");
+
+    internshipsBtn.classList.remove("btn-primary");
+    internshipsBtn.classList.add("btn-outline-primary");
+
+  }
+
+}
 </script>
 
 {% endblock %}

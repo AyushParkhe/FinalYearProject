@@ -6,6 +6,7 @@ import hashlib
 import os
 from datetime import datetime
 from playwright_stealth.stealth import stealth_sync
+from utils.skills.factory import get_skill_extractor
 BASE_URL = "https://www.naukri.com/artificial-intelligence-internship-jobs"
 QUERY = "?k=artificial%20intelligence%20internship&experience=0"
 
@@ -21,7 +22,7 @@ def scrape_naukri():
 
     with sync_playwright() as p:
         browser = p.chromium.launch(
-            headless=True,
+            headless=False,
             args=["--disable-blink-features=AutomationControlled"]
         )
 
@@ -33,6 +34,7 @@ def scrape_naukri():
 
         page = context.new_page()
         stealth_sync(page)
+        extractor = get_skill_extractor("naukri")
 
         while len(all_jobs) < TARGET_COUNT:
 
@@ -94,23 +96,33 @@ def scrape_naukri():
                     continue
 
                 seen_hashes.add(content_hash)
+                # -------- SKILL EXTRACTION --------
+                text_blob = " ".join(filter(None, [
+                    title,
+                    company,
+                    location
+                ]))
+
+                skills = extractor.extract(text_blob)
+
+                skills_final = str(skills) if skills else None
 
                 job_record = [
-                    title,                        # title
-                    company,                      # organization
-                    location,                     # location
-                    None,                         # duration
-                    None,                         # stipend
-                    None,                         # skills_final
-                    posted_on,                    # posted_on
-                    None,                         # start_date
-                    "Internship",                 # type
-                    "naukri.com",                 # source
-                    link,                         # apply_link
-                    datetime.utcnow().isoformat(),# scraped_at
-                    content_hash,                 # content_hash
-                    None                          # extra_data
-                ]
+                title,                         # title
+                company,                       # organization
+                location,                      # location
+                None,                          # duration
+                None,                          # stipend
+                skills_final,                  # skills_final
+                posted_on,                     # posted_on
+                None,                          # start_date
+                "Internship",                  # type
+                "naukri.com",                  # source
+                link,                          # apply_link
+                datetime.utcnow().isoformat(), # scraped_at
+                content_hash,                  # content_hash
+                None                           # extra_data
+            ]
 
                 all_jobs.append(job_record)
 
