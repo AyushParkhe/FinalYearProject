@@ -4,7 +4,7 @@ import time
 import json
 from datetime import datetime, timezone
 from playwright.sync_api import sync_playwright
-from utils.skills.factory import get_extractor
+from utils.skills.factory import get_skill_extractor
 
 # ❌ DB imports kept but commented (as requested)
 # from utils.insert_supabase import insert_internship_supabase
@@ -51,7 +51,7 @@ def save_to_csv(data):
 
     print(f"\n✅ Saved {len(data)} records to {file_path}")
 
-extractor = get_extractor("AICTE")
+extractor = get_skill_extractor("AICTE")
 
 def scrape_aicte():
     all_internships = []
@@ -132,25 +132,7 @@ def scrape_aicte():
 
                 all_internships.append(record)
 
-                # ❌ OLD DB LOGIC — COMMENTED, NOT REMOVED
-                # row = {
-                #     "title": record["title"],
-                #     "organization": record["organization"],
-                #     "location": record["location"],
-                #     "duration": record["duration"],
-                #     "stipend": record["stipend"],
-                #     "skills_final": "",
-                #     "posted_on": record["posted_on"],
-                #     "type": "Internship",
-                #     "source": "AICTE",
-                #     "apply_link": apply_link,
-                #     "scraped_at": record["scraped_at"],
-                #     "extra_data": record["extra_data"],
-                # }
-                #
-                # row["content_hash"] = row_hash(row)
-                # insert_internship_supabase(row)
-
+                
             # -------- PAGINATION (unchanged) -------- #
             try:
                 next_page = current_page + 1

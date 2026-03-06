@@ -4,7 +4,7 @@ import time
 import json
 from datetime import datetime, timezone
 import os
-from utils.skills.factory import get_extractor
+from utils.skills.factory import get_skill_extractor
 
 
 
@@ -16,7 +16,7 @@ OUTPUT_FILE = "skill-india_inp.csv"
 def ensure_output_dir():
     os.makedirs(OUTPUT_FOLDER, exist_ok=True)
 
-extractor = get_extractor("Skill India")
+extractor = get_skill_extractor("Skill India")
 
 
 def run_complex_scraper():

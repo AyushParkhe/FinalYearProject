@@ -1,7 +1,7 @@
 from .base import BaseSkillExtractor
 
 #AICTE SKills Extractor
-class AICTEExtractor(BaseSkillExtractor):
+class AICTESkillExtractor(BaseSkillExtractor):
     MAX_SKILLS = 4
 
     KEYWORD_MAP = {
