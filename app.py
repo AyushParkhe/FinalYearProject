@@ -1251,6 +1251,52 @@ def download_documentation():
     directory = os.path.join(app.root_path, 'static', 'docs')
     return send_from_directory(directory, 'Documentation.pdf')
 
+from flask import make_response
+from datetime import datetime
+
+@app.route('/sitemap.xml', methods=['GET'])
+def sitemap():
+    """Generates a dynamic XML sitemap for Google Search Console."""
+    
+    # IMPORTANT: Change this to your actual production domain when you deploy!
+    base_url = "https://smartintern-portal.onrender.com" 
+    
+    # 1. Define your public static routes
+    # Notice we do NOT include /dashboard, /profile, or /admin because Google shouldn't see those!
+    static_urls = [
+        "/", 
+        "/about", 
+        "/contact", 
+        "/faqs", 
+        "/privacy", 
+        "/internships", 
+        "/scholarships", 
+        "/employer/info",
+        "/login",
+        "/signup"
+    ]
+    
+    # 2. Start building the XML string
+    xml = '<?xml version="1.0" encoding="UTF-8"?>\n'
+    xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+    
+    # 3. Loop through static routes and add them to the XML
+    today = datetime.today().strftime('%Y-%m-%d')
+    for url in static_urls:
+        xml += '  <url>\n'
+        xml += f'    <loc>{base_url}{url}</loc>\n'
+        xml += f'    <lastmod>{today}</lastmod>\n'
+        xml += '    <changefreq>weekly</changefreq>\n'
+        xml += '    <priority>0.8</priority>\n'
+        xml += '  </url>\n'
+        
+    xml += '</urlset>'
+    
+    # 4. Return as a proper XML file
+    response = make_response(xml)
+    response.headers["Content-Type"] = "application/xml"
+    
+    return response
 
 # ---------------- LOGOUT ----------------
 @app.route("/logout")
