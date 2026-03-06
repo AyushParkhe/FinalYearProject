@@ -58,11 +58,14 @@ def _calculate_text_similarity(user_text, item_texts):
         return np.zeros(len(item_texts))
 
 
-def get_internship_recommendations(user_id, top_n=5):
+def get_internship_recommendations(user_id, top_n=10):
     """
     Core Recommender Engine: 
     Weights: 50% Interests, 35% Skills, 15% Location
     """
+    conn = None
+    cur = None
+    
     try:
         conn = get_db()
         cur = conn.cursor()
@@ -87,6 +90,8 @@ def get_internship_recommendations(user_id, top_n=5):
         user_loc = user_data[0] or ""
         user_skills = user_data[1] or ""
         user_interests = user_data[2] or ""
+        
+        # Ensure expand_keywords is imported/defined in this file
         user_skills = expand_keywords(user_skills)
         user_interests = expand_keywords(user_interests)
 
@@ -103,8 +108,11 @@ def get_internship_recommendations(user_id, top_n=5):
         """, (user_id,))
         
         internships = cur.fetchall()
-        cur.close()
-        conn.close()
+
+        # ---------------------------------------------------------
+        # ⚠️ WE REMOVED THE .close() CALLS FROM HERE! 
+        # They now safely live in the 'finally' block below.
+        # ---------------------------------------------------------
 
         if not internships:
             return []
@@ -115,20 +123,14 @@ def get_internship_recommendations(user_id, top_n=5):
         ])
 
         # ---------------------------------------------------------
-        # ---------------------------------------------------------
         # 3. CALCULATE THE 3 SEPARATE SIMILARITY SCORES
         # ---------------------------------------------------------
         
-        # ---> THE FIX: Combine Title and Skills so Interests can find "hidden" matches
         df['rich_content'] = df['title'].fillna('') + " " + df['skills_final'].fillna('')
         
-        # A. Interest Score (Now compares User Interests vs Title + Skills)
+        # Ensure _calculate_text_similarity is imported/defined in this file
         interest_scores = _calculate_text_similarity(user_interests, df['rich_content'].tolist())
-        
-        # B. Skill Score (Strictly compares User Skills vs Job Skills)
         skill_scores = _calculate_text_similarity(user_skills, df['skills_final'].tolist())
-        
-        # C. Location Score (Compares User Location vs Job Location)
         location_scores = _calculate_text_similarity(user_loc, df['location'].tolist())
 
         # ---------------------------------------------------------
@@ -147,13 +149,8 @@ def get_internship_recommendations(user_id, top_n=5):
         # ---------------------------------------------------------
         # 5. SORT, FILTER, AND RETURN
         # ---------------------------------------------------------
-        # Sort by the highest score
         recommended_df = df.sort_values(by='final_score', ascending=False)
-        
-        # Optional: Filter out jobs that have a score of exactly 0.0 (no match at all)
         recommended_df = recommended_df[recommended_df['final_score'] > 0.01]
-        
-        # Grab the top N results
         top_matches = recommended_df.head(top_n)
         
         return top_matches.to_dict(orient='records')
@@ -161,7 +158,14 @@ def get_internship_recommendations(user_id, top_n=5):
     except Exception as e:
         print(f"❌ RECOMMENDATION ENGINE ERROR: {e}")
         return []
-
+        
+    finally:
+        # THE ULTIMATE SAFETY NET: This ALWAYS runs, even if a user has no profile
+        # or if Pandas crashes mid-calculation.
+        if cur:
+            cur.close()
+        if conn:
+            conn.close()
 
 #*******Scholarship Recommendation Logic**********
 import re
@@ -172,6 +176,9 @@ def get_scholarship_recommendations(user_id, top_n=5):
     Rule-Based & Heuristic Scoring for Scholarships.
     Matches user demographics to scholarship eligibility text.
     """
+    conn = None
+    cur = None
+    
     try:
         conn = get_db()
         cur = conn.cursor()
@@ -208,8 +215,10 @@ def get_scholarship_recommendations(user_id, top_n=5):
         """, (user_id,))
         
         scholarships = cur.fetchall()
-        cur.close()
-        conn.close()
+
+        # ---------------------------------------------------------
+        # ⚠️ REMOVED cur.close() AND conn.close() FROM HERE
+        # ---------------------------------------------------------
 
         if not scholarships:
             return []
@@ -238,7 +247,6 @@ def get_scholarship_recommendations(user_id, top_n=5):
                 is_eligible = False # Strict filter: Male applying to Female-only
             
             # --- Rule B: Category Matching ---
-            # If the scholarship specifies a category, boost if it matches, filter if it contradicts
             if u_category != 'open':
                 if u_category in elig_text_lower or u_category in sch_category_lower:
                     score += 50
@@ -277,3 +285,10 @@ def get_scholarship_recommendations(user_id, top_n=5):
     except Exception as e:
         print(f"❌ SCHOLARSHIP RS ERROR: {e}")
         return []
+        
+    finally:
+        # THE ULTIMATE SAFETY NET: Always releases the connection back to Supabase!
+        if cur:
+            cur.close()
+        if conn:
+            conn.close()
