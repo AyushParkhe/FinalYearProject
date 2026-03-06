@@ -10,5 +10,6 @@ def get_db():
         dbname=os.getenv("DB_NAME"),
         user=os.getenv("DB_USER"),
         password=os.getenv("DB_PASSWORD"),
-        port=os.getenv("DB_PORT")
+        port=os.getenv("DB_PORT"),
+        sslmode="require"  # This is the magic line that fixes the timeout!
     )
