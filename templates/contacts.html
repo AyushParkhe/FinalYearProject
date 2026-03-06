@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Contact Us |SmartIntern{% endblock %}
+{% block title %}Contact Us | SmartIntern{% endblock %}
 {% block extra_css %}
 
 <style>
@@ -279,12 +279,12 @@ button:hover{
 
             <div class="form-group">
                 <label>Full Name</label>
-                <input type="text" name="name" placeholder="Enter your name" required>
+                <input type="text" name="name" placeholder="Enter your name" value="{{ prefill_name }}" required>
             </div>
 
             <div class="form-group">
                 <label>Email Address</label>
-                <input type="email" name="email" placeholder="Enter your email" required>
+                <input type="email" name="email" placeholder="Enter your email" value="{{ prefill_email }}" required>
             </div>
 
             <div class="form-group">

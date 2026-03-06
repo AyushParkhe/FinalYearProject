@@ -19,11 +19,12 @@ from supabase import create_client
 # ---------------- LOAD ENV ----------------
 load_dotenv()
 app = Flask(__name__)
-app.secret_key = "dev-secret"
+app.secret_key = os.getenv("SECRET_KEY")
 
 app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 app.config['SESSION_COOKIE_SECURE'] = True
-
+app.config["SESSION_COOKIE_SAMESITE"] = "None"
+app.config["PREFERRED_URL_SCHEME"] = "https"
 # ---------------- OAUTH SETUP ----------------
 oauth = OAuth(app)
 
@@ -34,6 +35,7 @@ google = oauth.register(
     server_metadata_url="https://accounts.google.com/.well-known/openid-configuration",
     client_kwargs={"scope": "openid email profile"}
 )
+
 
 
 # ---------------- LOGIN REQUIRED DECORATOR ----------------
@@ -563,6 +565,10 @@ def delete_internship(job_id):
 
     return redirect(url_for("employer_dashboard"))
 
+@app.route("/employer/logout")
+def employer_logout():
+    session.pop("employer_id", None)
+    return redirect(url_for("employer_login"))
 
 # ---------------- ADMIN LOGIN ----------------
 @app.route("/admin/login", methods=["GET", "POST"])
@@ -1106,7 +1112,13 @@ def privacy():
 
 @app.route("/feedback")
 def feedback():
-    return render_template("feedback.html")
+    user_name = session.get("display_name", "")
+    user_email = session.get("email", "")
+    return render_template(
+        "feedback.html", 
+        prefill_name=user_name, 
+        prefill_email=user_email
+    )
 
 
 # ---------------- SUBMIT FEEDBACK ----------------
@@ -1162,7 +1174,13 @@ def submit_feedback():
 # ---------------- CONTACT ----------------
 @app.route("/contact")
 def contacts():
-    return render_template("contacts.html")
+    user_name = session.get("display_name", "")
+    user_email = session.get("email", "")
+    return render_template(
+        "contacts.html", 
+        prefill_name=user_name, 
+        prefill_email=user_email
+    )
 
 
 @app.route("/send-message", methods=["POST"])
