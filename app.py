@@ -188,12 +188,11 @@ def login_google():
     redirect_uri = url_for("google_callback", _external=True)
     return google.authorize_redirect(redirect_uri)
 
-
 @app.route("/auth/google/callback")
 def google_callback():
     try:
         token = google.authorize_access_token()
-    except OAuthError as e:
+    except Exception as e:
         print(f"⚠️ OAuth Error: {e}")
         flash("Session expired or invalid. Please try logging in again.")
         return redirect(url_for('login'))
@@ -206,54 +205,50 @@ def google_callback():
     raw_name = user_info.get("name") or email.split("@")[0]
     display_name = raw_name.split()[0]
 
-    conn = None
-    cur = None
     try:
+        # Initialize Supabase Client
         supabase = create_client(os.getenv("SUPABASE_URL"), os.getenv("SUPABASE_KEY"))
 
-# Inside your callback function:
-        user_data = supabase.table("users").select("*").eq("email", email).execute()
+        # 1. Check if user exists using SDK
+        # .data returns a list of results
+        response = supabase.table("users").select("*").eq("email", email).execute()
+        existing_users = response.data 
 
-        if user_data:
-            user_id, display_name,email = user_data
+        if existing_users:
+            # User exists - Take the first result
+            user = existing_users[0]
+            user_id = user["id"]
+            final_display_name = user.get("display_name") or display_name
             print(f"✅ Existing user logged in: {email}")
         else:
-            try:
-                cur.execute(
-                    """
-                    INSERT INTO users (email, display_name, auth_provider)
-                    VALUES (%s, %s, 'google')
-                    RETURNING id, display_name
-                    """,
-                    (email, display_name)
-                )
-                user_id, display_name = cur.fetchone()
-                conn.commit()
+            # 2. Create new user using SDK if they don't exist
+            new_user = {
+                "email": email,
+                "display_name": display_name,
+                "auth_provider": "google"
+            }
+            insert_response = supabase.table("users").insert(new_user).execute()
+            
+            if insert_response.data:
+                user = insert_response.data[0]
+                user_id = user["id"]
+                final_display_name = user["display_name"]
                 print(f"🎉 New user created: {email}")
-            except psycopg2.IntegrityError:
-                conn.rollback()
-                cur.execute("SELECT id, display_name FROM users WHERE email = %s", (email,))
-                user_id, display_name = cur.fetchone()
+            else:
+                raise Exception("Failed to insert user into database")
 
+        # 3. Set Session variables
         session.permanent = True
         session["user_id"] = str(user_id)
-        session["display_name"] = display_name.split()[0].capitalize()
-        session["email"]=email
+        session["display_name"] = final_display_name.capitalize()
+        session["email"] = email
 
         return redirect("/dashboard")
 
     except Exception as e:
         print(f"❌ Google Callback DB Error: {e}")
-        if conn:
-            conn.rollback()
-        flash("An error occurred during login.")
-        return redirect(url_for('login_google'))
-    finally:
-        if cur:
-            cur.close()
-        if conn:
-            conn.close()
-
+        flash("An error occurred during login. Please try again.")
+        return redirect(url_for('login'))
 
 # ---------------- EMPLOYER LANDING ----------------
 @app.route("/employer/info")
