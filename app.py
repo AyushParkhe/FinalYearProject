@@ -239,6 +239,7 @@ def google_callback():
         session.permanent = True
         session["user_id"] = str(user_id)
         session["display_name"] = display_name.split()[0].capitalize()
+        session["email"]=email
 
         return redirect("/dashboard")
 
