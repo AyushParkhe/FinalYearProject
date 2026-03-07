@@ -209,14 +209,13 @@ def google_callback():
     conn = None
     cur = None
     try:
-        conn = get_db()
-        cur = conn.cursor()
+        supabase = create_client(os.getenv("SUPABASE_URL"), os.getenv("SUPABASE_KEY"))
 
-        cur.execute("SELECT id, display_name FROM users WHERE email = %s", (email,))
-        row = cur.fetchone()
+# Inside your callback function:
+        user_data = supabase.table("users").select("*").eq("email", email).execute()
 
-        if row:
-            user_id, display_name = row
+        if user_data:
+            user_id, display_name,email = user_data
             print(f"✅ Existing user logged in: {email}")
         else:
             try:
