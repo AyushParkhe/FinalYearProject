@@ -1000,18 +1000,22 @@ def saved_page():
     scholarships = []
 
     try:
-        # Join saved_opportunities with internships to get full details
-        response = supabase.table("saved_opportunities") \
-            .select("internships(*)") \
+        # Step 1: Get the saved internship IDs for this user
+        saved_response = supabase.table("saved_opportunities") \
+            .select("opportunity_id") \
             .eq("user_id", user_id) \
             .eq("opportunity_type", "internship") \
             .execute()
 
-        # Unwrap the nested join result
-        internships = [
-            row["internships"] for row in (response.data or [])
-            if row.get("internships")
-        ]
+        saved_ids = [row["opportunity_id"] for row in (saved_response.data or [])]
+
+        # Step 2: Fetch the full internship details for those IDs
+        if saved_ids:
+            internships_response = supabase.table("internships") \
+                .select("*") \
+                .in_("id", saved_ids) \
+                .execute()
+            internships = internships_response.data or []
 
     except Exception as e:
         print(f"SAVED PAGE ERROR: {e}")
@@ -1044,6 +1048,7 @@ def unsave_opportunity():
         return {"status": "ERROR"}, 500
 
     return {"status": "UNSAVED"}, 200
+
 
 
 # ============================================================
