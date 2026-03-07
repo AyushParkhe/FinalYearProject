@@ -1,10 +1,10 @@
-from dotenv import load_dotenv
-import os
 from supabase import create_client
+from httpx import Timeout
+import os
 
-load_dotenv()
-
-SUPABASE_URL = os.getenv("SUPABASE_URL")
-SUPABASE_KEY = os.getenv("SUPABASE_SERVICE_KEY")
-
-supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
+# Increase timeout to 60s to handle the 800+ entries without crashing
+supabase = create_client(
+    os.getenv("SUPABASE_URL"), 
+    os.getenv("SUPABASE_SERVICE_KEY"),
+    options={"timeout": Timeout(60.0)}
+)
