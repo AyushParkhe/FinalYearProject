@@ -301,7 +301,7 @@ def employer_register():
             }).execute()
 
             flash("Registration successful! Your account is pending admin approval.", "success")
-            return redirect(url_for("home"))
+            return redirect(url_for("employer_register.html"))
 
         except Exception as e:
             print(f"EMPLOYER REGISTRATION ERROR: {e}")

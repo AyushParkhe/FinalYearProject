@@ -2,19 +2,322 @@
 {% block title %}Oops! | SmartIntern{% endblock %}
 
 {% block content %}
-<div class="container d-flex flex-column align-items-center justify-content-center py-5 text-center" style="min-height: 60vh;">
-    
-    <h1 class="display-1 fw-bold text-primary">{{ error_code|default('Error') }}</h1>
-    
-    <h2 class="mb-4">{{ error_message|default('Something went wrong.') }}</h2>
-    
-    <p class="text-muted mb-5 w-50">
-        We are sorry, but we could not process your request. The page you are looking for might have been removed, had its name changed, or is temporarily unavailable.
-    </p>
-    
-    <a href="{{ url_for('home') }}" class="btn btn-primary btn-lg px-4 shadow-sm">
-        Return to Homepage
-    </a>
+<style>
+    /* ── Google Font ── */
+    @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap');
 
+    /* ══════════════════════════════════════════
+       ERROR PAGE — Scene Setup
+    ══════════════════════════════════════════ */
+    .error-scene {
+        min-height: 80vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 4rem 1.5rem;
+        position: relative;
+        overflow: hidden;
+        font-family: 'DM Sans', sans-serif;
+        background: #f8faff;
+    }
+
+    /* ── Layered background ── */
+    .error-scene::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background:
+            radial-gradient(ellipse 70% 50% at 10% 20%,  rgba(30,58,138,0.06) 0%, transparent 60%),
+            radial-gradient(ellipse 50% 60% at 90% 80%,  rgba(16,185,129,0.05) 0%, transparent 60%),
+            radial-gradient(ellipse 40% 40% at 50% 50%,  rgba(59,130,246,0.04) 0%, transparent 70%);
+        pointer-events: none;
+    }
+
+    /* ── Floating grid dots ── */
+    .error-scene::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background-image: radial-gradient(circle, rgba(30,58,138,0.12) 1px, transparent 1px);
+        background-size: 36px 36px;
+        mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
+        pointer-events: none;
+    }
+
+    /* ══════════════════════════════════════════
+       CARD
+    ══════════════════════════════════════════ */
+    .error-card {
+        position: relative;
+        z-index: 2;
+        max-width: 560px;
+        width: 100%;
+        text-align: center;
+        animation: cardRise 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+
+    @keyframes cardRise {
+        from { opacity: 0; transform: translateY(32px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ══════════════════════════════════════════
+       BIG ERROR CODE
+    ══════════════════════════════════════════ */
+    .error-code-wrap {
+        position: relative;
+        display: inline-block;
+        margin-bottom: 0.25rem;
+        animation: cardRise 0.7s 0.05s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+
+    /* Ghost digit behind the real number */
+    .error-code-wrap::before {
+        content: attr(data-code);
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-family: 'Syne', sans-serif;
+        font-size: clamp(9rem, 22vw, 14rem);
+        font-weight: 800;
+        color: transparent;
+        -webkit-text-stroke: 2px rgba(30,58,138,0.08);
+        letter-spacing: -0.04em;
+        white-space: nowrap;
+        pointer-events: none;
+        user-select: none;
+    }
+
+    .error-code {
+        font-family: 'Syne', sans-serif;
+        font-size: clamp(5rem, 14vw, 8.5rem);
+        font-weight: 800;
+        line-height: 1;
+        letter-spacing: -0.04em;
+        background: linear-gradient(135deg, #0f2167 0%, #1e3a8a 35%, #2563eb 65%, #1d4ed8 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        position: relative;
+        z-index: 1;
+        filter: drop-shadow(0 4px 24px rgba(30,58,138,0.18));
+    }
+
+    /* ══════════════════════════════════════════
+       ICON BADGE
+    ══════════════════════════════════════════ */
+    .error-icon-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 64px;
+        height: 64px;
+        border-radius: 20px;
+        background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+        box-shadow: 0 8px 32px rgba(30,58,138,0.28), 0 2px 8px rgba(30,58,138,0.14);
+        margin-bottom: 1.5rem;
+        animation: badgePop 0.6s 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    }
+
+    @keyframes badgePop {
+        from { opacity: 0; transform: scale(0.5) rotate(-10deg); }
+        to   { opacity: 1; transform: scale(1) rotate(0deg); }
+    }
+
+    .error-icon-badge svg {
+        width: 30px;
+        height: 30px;
+        stroke: #ffffff;
+        stroke-width: 2.2;
+        fill: none;
+    }
+
+    /* ══════════════════════════════════════════
+       TYPOGRAPHY
+    ══════════════════════════════════════════ */
+    .error-title {
+        font-family: 'Syne', sans-serif;
+        font-size: clamp(1.4rem, 3.5vw, 1.9rem);
+        font-weight: 700;
+        color: #0f172a;
+        margin-bottom: 0.75rem;
+        line-height: 1.2;
+        animation: cardRise 0.6s 0.2s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+
+    .error-body {
+        font-size: 1.05rem;
+        color: #64748b;
+        line-height: 1.7;
+        max-width: 440px;
+        margin: 0 auto 2.25rem;
+        animation: cardRise 0.6s 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+
+    /* ══════════════════════════════════════════
+       DIVIDER ORNAMENT
+    ══════════════════════════════════════════ */
+    .error-divider {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        justify-content: center;
+        margin-bottom: 2.25rem;
+        animation: cardRise 0.6s 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+
+    .error-divider span {
+        display: block;
+        height: 2px;
+        width: 48px;
+        border-radius: 2px;
+        background: linear-gradient(90deg, transparent, rgba(30,58,138,0.25));
+    }
+
+    .error-divider span:last-child {
+        background: linear-gradient(90deg, rgba(30,58,138,0.25), transparent);
+    }
+
+    .error-divider-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+        box-shadow: 0 0 8px rgba(59,130,246,0.5);
+    }
+
+    /* ══════════════════════════════════════════
+       CTA BUTTON
+    ══════════════════════════════════════════ */
+    .error-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.6rem;
+        padding: 0.9rem 2rem;
+        border-radius: 14px;
+        background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+        color: #ffffff !important;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 1rem;
+        font-weight: 600;
+        text-decoration: none;
+        border: none;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 4px 20px rgba(30,58,138,0.3), 0 1px 4px rgba(30,58,138,0.2);
+        transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
+                    box-shadow 0.25s ease;
+        animation: cardRise 0.6s 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+
+    /* Shimmer sweep */
+    .error-btn::before {
+        content: '';
+        position: absolute;
+        top: 0; left: -100%;
+        width: 100%; height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
+        transition: left 0.5s ease;
+    }
+
+    .error-btn:hover::before { left: 100%; }
+
+    .error-btn:hover {
+        transform: translateY(-3px) scale(1.02);
+        box-shadow: 0 10px 30px rgba(30,58,138,0.38), 0 2px 8px rgba(30,58,138,0.2);
+        color: #ffffff !important;
+        text-decoration: none;
+    }
+
+    .error-btn svg {
+        width: 18px;
+        height: 18px;
+        stroke: currentColor;
+        stroke-width: 2.2;
+        fill: none;
+        transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+        flex-shrink: 0;
+    }
+
+    .error-btn:hover svg { transform: translateX(-3px); }
+
+    /* ══════════════════════════════════════════
+       FLOATING ORBS (decorative, aria-hidden)
+    ══════════════════════════════════════════ */
+    .error-orb {
+        position: absolute;
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 1;
+    }
+
+    .error-orb-1 {
+        width: 300px; height: 300px;
+        top: -80px; right: -80px;
+        background: radial-gradient(circle, rgba(30,58,138,0.07) 0%, transparent 70%);
+        animation: orbDrift 8s ease-in-out infinite alternate;
+    }
+
+    .error-orb-2 {
+        width: 200px; height: 200px;
+        bottom: -40px; left: -60px;
+        background: radial-gradient(circle, rgba(16,185,129,0.07) 0%, transparent 70%);
+        animation: orbDrift 10s 2s ease-in-out infinite alternate-reverse;
+    }
+
+    @keyframes orbDrift {
+        from { transform: translate(0, 0) scale(1); }
+        to   { transform: translate(20px, 20px) scale(1.08); }
+    }
+</style>
+
+<div class="error-scene" aria-label="Error page">
+
+    <!-- Decorative orbs -->
+    <div class="error-orb error-orb-1" aria-hidden="true"></div>
+    <div class="error-orb error-orb-2" aria-hidden="true"></div>
+
+    <div class="error-card">
+
+        <!-- Icon badge -->
+        <div class="error-icon-badge" aria-hidden="true">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="8" x2="12" y2="12"/>
+                <line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+        </div>
+
+        <!-- Big error code with ghost behind -->
+        <div class="error-code-wrap" data-code="{{ error_code|default('Err') }}" aria-hidden="true">
+            <span class="error-code">{{ error_code|default('Error') }}</span>
+        </div>
+
+        <!-- Heading -->
+        <h1 class="error-title">{{ error_message|default('Something went wrong.') }}</h1>
+
+        <!-- Ornament -->
+        <div class="error-divider" aria-hidden="true">
+            <span></span>
+            <span class="error-divider-dot"></span>
+            <span></span>
+        </div>
+
+        <!-- Body copy -->
+        <p class="error-body">
+            We're sorry, but we couldn't process your request. The page you're looking for may have been removed, renamed, or is temporarily unavailable.
+        </p>
+
+        <!-- CTA -->
+        <a href="{{ url_for('home') }}" class="error-btn">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <polyline points="15 18 9 12 15 6"/>
+            </svg>
+            Return to Homepage
+        </a>
+
+    </div>
 </div>
 {% endblock %}
