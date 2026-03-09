@@ -1243,4 +1243,5 @@ def handle_unknown_exception(e):
 # RUN  (dev server only — use gunicorn/uwsgi in production)
 # ============================================================
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))  # default 5000 locally
+    app.run(host="0.0.0.0", port=port)
