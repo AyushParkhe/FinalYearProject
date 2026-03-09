@@ -18,13 +18,38 @@ from utils.profile_utils import is_profile_complete
 load_dotenv()
 
 app = Flask(__name__)
-app.secret_key = os.getenv("SECRET_KEY")
 
-# Trust proxy headers (needed for HTTPS on Render / reverse proxies)
-app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
-app.config['SESSION_COOKIE_SECURE'] = True
-app.config["SESSION_COOKIE_SAMESITE"] = "None"
+# 1. Security Key
+app.secret_key = os.getenv("SECRET_KEY", "your-dev-fallback-secret")
+
+# 2. Render Proxy Fix (Expanded for Render's specific load balancer headers)
+app.wsgi_app = ProxyFix(
+    app.wsgi_app, 
+    x_for=1, 
+    x_proto=1, 
+    x_host=1, 
+    x_prefix=1
+)
+
+# 3. Secure OAuth Cookie Settings
 app.config["PREFERRED_URL_SCHEME"] = "https"
+app.config["SESSION_COOKIE_SECURE"] = True
+
+from flask import request
+
+@app.after_request
+def add_header(response):
+    """
+    Forces the browser to never cache HTML pages (prevents Back-button logout bypass).
+    Leaves static files (CSS/JS/Images) alone so the app stays lightning fast!
+    """
+    # Only apply the no-cache rules if the response is an HTML web page
+    if 'text/html' in response.headers.get('Content-Type', ''):
+        response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0, max-age=0'
+        response.headers['Pragma'] = 'no-cache'
+        response.headers['Expires'] = '-1'
+        
+    return response
 
 
 # ============================================================
@@ -722,6 +747,8 @@ def api_recommendations():
 # Also fetches which IDs the logged-in user has saved.
 # ============================================================
 @app.route("/internships")
+@login_required
+
 def internships():
     page = request.args.get("page", 1, type=int)
     PER_PAGE = 12
@@ -779,6 +806,8 @@ def internships():
 # Paginated list with optional search and source filters.
 # ============================================================
 @app.route("/scholarships")
+@login_required
+
 def scholarships():
     page = request.args.get("page", 1, type=int)
     search_query = request.args.get("search", "").strip()
@@ -839,6 +868,8 @@ def scholarships():
 # Fetches a single internship by its ID.
 # ============================================================
 @app.route("/internships/<int:internship_id>")
+@login_required
+
 def internship_details(internship_id):
     try:
         response = supabase.table("internships") \
@@ -865,6 +896,8 @@ def internship_details(internship_id):
 # Fetches a single scholarship by its ID.
 # ============================================================
 @app.route("/scholarships/<int:scholarship_id>")
+@login_required
+
 def scholarship_details(scholarship_id):
     try:
         response = supabase.table("scholarships") \
@@ -966,6 +999,7 @@ def profile_setup():
 # Inserts a record into saved_opportunities (idempotent).
 # ============================================================
 @app.route("/save", methods=["POST"])
+
 @login_required
 def save_opportunity():
     user_id = session["user_id"]
