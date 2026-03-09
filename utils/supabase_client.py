@@ -1,10 +1,16 @@
-from supabase import create_client
-from httpx import Timeout
 import os
+from supabase import create_client, ClientOptions
+from dotenv import load_dotenv
 
-# Increase timeout to 60s to handle the 800+ entries without crashing
+# Ensure environment variables are loaded immediately 
+load_dotenv()
+
+# Use the official ClientOptions class to set the 60-second timeout
+opts = ClientOptions(postgrest_client_timeout=60.0)
+
+# Create the stateless HTTP client
 supabase = create_client(
     os.getenv("SUPABASE_URL"), 
     os.getenv("SUPABASE_SERVICE_KEY"),
-    options={"timeout": Timeout(60.0)}
+    options=opts
 )

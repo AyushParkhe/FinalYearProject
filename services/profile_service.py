@@ -1,113 +1,47 @@
-from utils.db import get_db
+# Make sure this import matches exactly where you saved supabase_client.py
+from utils.supabase_client import supabase 
 
 def upsert_profile(user_id, profile, skills, interests, email=None):
-    conn = None
-    cur = None
-    
     try:
-        conn = get_db()
-        cur = conn.cursor()
-
         # ---------- UPDATE EMAIL IF PROVIDED ----------
         if email:
-            cur.execute(
-                """
-                UPDATE users
-                SET email = %s
-                WHERE id = %s
-                """,
-                (email, user_id)
-            )
+            supabase.table("users").update({"email": email}).eq("id", user_id).execute()
 
         # ---------- UPSERT PROFILE ----------
-        cur.execute(
-            """
-            INSERT INTO user_profiles (
-                user_id, full_name, dob, gender,
-                education_level, field_of_study, graduation_year,
-                location, experience_level, preferred_mode,
-                preferred_type, availability_duration,
-                category, disability_status, disability_type,
-                family_income, institution_type, academic_score
-            )
-            VALUES (
-                %s, %s, %s, %s,
-                %s, %s, %s,
-                %s, %s, %s,
-                %s, %s,
-                %s, %s, %s,
-                %s, %s, %s
-            )
-            ON CONFLICT (user_id) DO UPDATE SET
-                full_name = EXCLUDED.full_name,
-                dob = EXCLUDED.dob,
-                gender = EXCLUDED.gender,
-                education_level = EXCLUDED.education_level,
-                field_of_study = EXCLUDED.field_of_study,
-                graduation_year = EXCLUDED.graduation_year,
-                location = EXCLUDED.location,
-                experience_level = EXCLUDED.experience_level,
-                preferred_mode = EXCLUDED.preferred_mode,
-                preferred_type = EXCLUDED.preferred_type,
-                availability_duration = EXCLUDED.availability_duration,
-                category = EXCLUDED.category,
-                disability_status = EXCLUDED.disability_status,
-                disability_type = EXCLUDED.disability_type,
-                family_income = EXCLUDED.family_income,
-                institution_type = EXCLUDED.institution_type,
-                academic_score = EXCLUDED.academic_score
-            """,
-            (
-                user_id,
-                profile["full_name"],
-                profile["dob"],
-                profile["gender"],
-                profile["education_level"],
-                profile["field_of_study"],
-                profile["graduation_year"],
-                profile["location"],
-                profile["experience_level"],
-                profile["preferred_mode"],
-                profile["preferred_type"],
-                profile["availability_duration"],
-                profile.get("category"),
-                profile.get("disability_status"),
-                profile.get("disability_type"),
-                profile.get("family_income"),
-                profile.get("institution_type"),
-                profile.get("academic_score"),
-            )
-        )
+        profile_data = {
+            "user_id": user_id,
+            "full_name": profile.get("full_name"),
+            "dob": profile.get("dob"),
+            "gender": profile.get("gender"),
+            "education_level": profile.get("education_level"),
+            "field_of_study": profile.get("field_of_study"),
+            "graduation_year": profile.get("graduation_year"),
+            "location": profile.get("location"),
+            "experience_level": profile.get("experience_level"),
+            "preferred_mode": profile.get("preferred_mode"),
+            "preferred_type": profile.get("preferred_type"),
+            "availability_duration": profile.get("availability_duration"),
+            "category": profile.get("category"),
+            "disability_status": profile.get("disability_status"),
+            "disability_type": profile.get("disability_type"),
+            "family_income": profile.get("family_income"),
+            "institution_type": profile.get("institution_type"),
+            "academic_score": profile.get("academic_score")
+        }
+        supabase.table("user_profiles").upsert(profile_data).execute()
 
         # ---------- SKILLS ----------
-        cur.execute("DELETE FROM user_skills WHERE user_id = %s", (user_id,))
-        for skill in skills:
-            cur.execute(
-                "INSERT INTO user_skills (user_id, skill) VALUES (%s, %s)",
-                (user_id, skill)
-            )
+        supabase.table("user_skills").delete().eq("user_id", user_id).execute()
+        if skills:
+            skills_data = [{"user_id": user_id, "skill": skill} for skill in skills]
+            supabase.table("user_skills").insert(skills_data).execute()
 
         # ---------- INTERESTS ----------
-        cur.execute("DELETE FROM user_interests WHERE user_id = %s", (user_id,))
-        for interest in interests:
-            cur.execute(
-                "INSERT INTO user_interests (user_id, interest) VALUES (%s, %s)",
-                (user_id, interest)
-            )
-
-        # Save all the changes!
-        conn.commit()
+        supabase.table("user_interests").delete().eq("user_id", user_id).execute()
+        if interests:
+            interests_data = [{"user_id": user_id, "interest": interest} for interest in interests]
+            supabase.table("user_interests").insert(interests_data).execute()
 
     except Exception as e:
-        # If ANYTHING fails, undo the changes so the database doesn't lock up
-        if conn:
-            conn.rollback()
         print(f"❌ PROFILE UPSERT ERROR: {e}")
-        raise e  # We still want the route to know an error happened
-
-    finally:
-        # The ultimate safety net to release the connection slot
-        if cur:
-            cur.close()
-        if conn:
-            conn.close()
+        raise e

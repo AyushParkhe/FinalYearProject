@@ -1,4 +1,4 @@
-from utils.db import get_db
+from utils.supabase_client import supabase
 
 def is_profile_complete(user_id):
     """
@@ -6,33 +6,19 @@ def is_profile_complete(user_id):
     1. user_profiles row exists
     2. user has at least 3 skills
     """
-    conn = None
-    cur = None
-    
     try:
-        conn = get_db()
-        cur = conn.cursor()
+        # 1. Check if the profile row exists
+        profile_response = supabase.table("user_profiles").select("user_id").eq("user_id", user_id).execute()
+        if not profile_response.data:
+            return False
 
-        cur.execute(
-            """
-            SELECT
-              EXISTS (SELECT 1 FROM user_profiles WHERE user_id = %s)
-              AND
-              (SELECT COUNT(*) FROM user_skills WHERE user_id = %s) >= 3
-            """,
-            (user_id, user_id)
-        )
+        # 2. Check if they have at least 3 skills (using count="exact" so it doesn't download the actual rows)
+        skills_response = supabase.table("user_skills").select("*", count="exact").eq("user_id", user_id).execute()
+        if skills_response.count is None or skills_response.count < 3:
+            return False
 
-        result = cur.fetchone()[0]
-        return result
+        return True
 
     except Exception as e:
         print(f"❌ PROFILE CHECK ERROR: {e}")
         return False  # Safe default if the database fails
-
-    finally:
-        # Guarantee the connection is released back to the pool!
-        if cur:
-            cur.close()
-        if conn:
-            conn.close()

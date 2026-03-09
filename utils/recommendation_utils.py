@@ -1,12 +1,11 @@
-from utils.db import get_db
-
+from utils.supabase_client import supabase
 import pandas as pd
 import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
+import re
 
-
-# 1. The "Smart Dictionary" (You can add as many as you want later)
+# 1. The "Smart Dictionary"
 DOMAIN_KNOWLEDGE = {
     "react": "frontend web user interface ui javascript",
     "machine learning": "ai artificial intelligence data deep learning ml",
@@ -39,103 +38,68 @@ def _calculate_text_similarity(user_text, item_texts):
     Helper function to safely calculate TF-IDF Cosine Similarity.
     Returns an array of scores from 0.0 to 1.0.
     """
-    # If the user has no text for this category, return zero scores
     if not user_text or not str(user_text).strip():
         return np.zeros(len(item_texts))
         
-    # Combine user text (index 0) with all item texts
     all_text = [str(user_text)] + [str(text) if text else "" for text in item_texts]
-    
     vectorizer = TfidfVectorizer(stop_words='english')
     
     try:
         tfidf_matrix = vectorizer.fit_transform(all_text)
-        # Calculate similarity between User (Index 0) and Items (Index 1 to end)
         similarity_scores = cosine_similarity(tfidf_matrix[0:1], tfidf_matrix[1:]).flatten()
         return similarity_scores
     except ValueError:
-        # This triggers if the text only contains stop words or is completely empty
         return np.zeros(len(item_texts))
-
 
 def get_internship_recommendations(user_id, top_n=10):
     """
     Core Recommender Engine: 
     Weights: 50% Interests, 35% Skills, 15% Location
     """
-    conn = None
-    cur = None
-    
     try:
-        conn = get_db()
-        cur = conn.cursor()
-
-        # ---------------------------------------------------------
-        # 1. FETCH USER PROFILE, SKILLS & INTERESTS
-        # ---------------------------------------------------------
-        cur.execute("""
-            SELECT 
-                up.location, 
-                (SELECT string_agg(skill, ' ') FROM user_skills WHERE user_id = %s) as skills,
-                (SELECT string_agg(interest, ' ') FROM user_interests WHERE user_id = %s) as interests
-            FROM user_profiles up
-            WHERE up.user_id = %s
-        """, (user_id, user_id, user_id))
-        
-        user_data = cur.fetchone()
-        
-        if not user_data:
+        # 1. FETCH USER PROFILE
+        profile_res = supabase.table("user_profiles").select("location").eq("user_id", user_id).execute()
+        if not profile_res.data:
             return [] # No profile exists yet
 
-        user_loc = user_data[0] or ""
-        user_skills = user_data[1] or ""
-        user_interests = user_data[2] or ""
+        user_loc = profile_res.data[0].get("location") or ""
+
+        # Fetch skills & interests as separate lightweight queries
+        skills_res = supabase.table("user_skills").select("skill").eq("user_id", user_id).execute()
+        user_skills = " ".join([s["skill"] for s in skills_res.data]) if skills_res.data else ""
+
+        interests_res = supabase.table("user_interests").select("interest").eq("user_id", user_id).execute()
+        user_interests = " ".join([i["interest"] for i in interests_res.data]) if interests_res.data else ""
         
-        # Ensure expand_keywords is imported/defined in this file
         user_skills = expand_keywords(user_skills)
         user_interests = expand_keywords(user_interests)
 
-        # ---------------------------------------------------------
-        # 2. FETCH AVAILABLE INTERNSHIPS (Filter out applied ones)
-        # ---------------------------------------------------------
-        cur.execute("""
-            SELECT id, title, organization, location, duration, stipend, skills_final
-            FROM internships
-            WHERE id NOT IN (
-                SELECT internship_id FROM user_activity 
-                WHERE user_id = %s AND activity_type IN ('applied', 'ignored', 'saved')
-            )
-        """, (user_id,))
-        
-        internships = cur.fetchall()
+        # 2. FETCH ACTIVITY TO FILTER OUT APPLIED/SAVED INTERNSHIPS
+        activity_res = supabase.table("user_activity").select("internship_id").eq("user_id", user_id).in_("activity_type", ["applied", "ignored", "saved"]).execute()
+        excluded_ids = [str(act["internship_id"]) for act in activity_res.data] if activity_res.data else []
 
-        # ---------------------------------------------------------
-        # ⚠️ WE REMOVED THE .close() CALLS FROM HERE! 
-        # They now safely live in the 'finally' block below.
-        # ---------------------------------------------------------
+        # Fetch all internships
+        internships_res = supabase.table("internships").select("id, title, organization, location, duration, stipend, skills_final").execute()
+        internships = internships_res.data
+
+        # Filter out the excluded ones using Python (Safest method to avoid PostgREST array syntax errors)
+        if excluded_ids:
+            internships = [i for i in internships if str(i["id"]) not in excluded_ids]
 
         if not internships:
             return []
 
-        # Convert to Pandas DataFrame
-        df = pd.DataFrame(internships, columns=[
-            'id', 'title', 'organization', 'location', 'duration', 'stipend', 'skills_final'
-        ])
+        # Convert dictionary list directly to Pandas DataFrame
+        df = pd.DataFrame(internships)
 
-        # ---------------------------------------------------------
         # 3. CALCULATE THE 3 SEPARATE SIMILARITY SCORES
-        # ---------------------------------------------------------
-        
         df['rich_content'] = df['title'].fillna('') + " " + df['skills_final'].fillna('')
         
-        # Ensure _calculate_text_similarity is imported/defined in this file
         interest_scores = _calculate_text_similarity(user_interests, df['rich_content'].tolist())
         skill_scores = _calculate_text_similarity(user_skills, df['skills_final'].tolist())
         location_scores = _calculate_text_similarity(user_loc, df['location'].tolist())
 
-        # ---------------------------------------------------------
         # 4. NEW BALANCED WEIGHTS & FINAL SCORE
-        # ---------------------------------------------------------
         WEIGHT_SKILLS = 0.45
         WEIGHT_INTEREST = 0.40
         WEIGHT_LOCATION = 0.15
@@ -146,9 +110,7 @@ def get_internship_recommendations(user_id, top_n=10):
             (location_scores * WEIGHT_LOCATION)
         )
 
-        # ---------------------------------------------------------
         # 5. SORT, FILTER, AND RETURN
-        # ---------------------------------------------------------
         recommended_df = df.sort_values(by='final_score', ascending=False)
         recommended_df = recommended_df[recommended_df['final_score'] > 0.01]
         top_matches = recommended_df.head(top_n)
@@ -156,86 +118,60 @@ def get_internship_recommendations(user_id, top_n=10):
         return top_matches.to_dict(orient='records')
 
     except Exception as e:
-        print(f"❌ RECOMMENDATION ENGINE ERROR: {e}")
+        print(f"❌ INTERNSHIP RECOMMENDATION ENGINE ERROR: {e}")
         return []
-        
-    finally:
-        # THE ULTIMATE SAFETY NET: This ALWAYS runs, even if a user has no profile
-        # or if Pandas crashes mid-calculation.
-        if cur:
-            cur.close()
-        if conn:
-            conn.close()
 
-#*******Scholarship Recommendation Logic**********
-import re
-from utils.db import get_db
+# ******* Scholarship Recommendation Logic **********
 
 def get_scholarship_recommendations(user_id, top_n=5):
     """
     Rule-Based & Heuristic Scoring for Scholarships.
     Matches user demographics to scholarship eligibility text.
     """
-    conn = None
-    cur = None
-    
     try:
-        conn = get_db()
-        cur = conn.cursor()
-
-        # ---------------------------------------------------------
         # 1. FETCH USER DEMOGRAPHICS
-        # ---------------------------------------------------------
-        cur.execute("""
-            SELECT gender, category, disability_status, family_income 
-            FROM user_profiles 
-            WHERE user_id = %s
-        """, (user_id,))
+        profile_res = supabase.table("user_profiles").select("gender, category, disability_status, family_income").eq("user_id", user_id).execute()
         
-        user_data = cur.fetchone()
-        
-        # If the user hasn't filled out their profile, we can't accurately recommend
-        if not user_data:
+        if not profile_res.data:
             return [] 
 
-        u_gender = str(user_data[0]).lower() if user_data[0] else ""
-        u_category = str(user_data[1]).lower() if user_data[1] else "open"
-        u_disability = str(user_data[2]).lower() if user_data[2] else "no"
+        user_data = profile_res.data[0]
+        u_gender = str(user_data.get("gender") or "").lower()
+        u_category = str(user_data.get("category") or "open").lower()
+        u_disability = str(user_data.get("disability_status") or "no").lower()
         
-        # ---------------------------------------------------------
-        # 2. FETCH AVAILABLE SCHOLARSHIPS (Filter out applied ones)
-        # ---------------------------------------------------------
-        cur.execute("""
-            SELECT id, title, provider, amount, deadline, eligibility_text, category
-            FROM scholarships
-            WHERE id NOT IN (
-                SELECT opportunity_id FROM saved_opportunities 
-                WHERE user_id = %s AND opportunity_type = 'scholarship'
-            )
-        """, (user_id,))
-        
-        scholarships = cur.fetchall()
+        # 2. FETCH SAVED SCHOLARSHIPS TO EXCLUDE
+        saved_res = supabase.table("saved_opportunities").select("opportunity_id").eq("user_id", user_id).eq("opportunity_type", "scholarship").execute()
+        excluded_ids = [str(s["opportunity_id"]) for s in saved_res.data] if saved_res.data else []
 
-        # ---------------------------------------------------------
-        # ⚠️ REMOVED cur.close() AND conn.close() FROM HERE
-        # ---------------------------------------------------------
+        # Fetch all scholarships
+        sch_res = supabase.table("scholarships").select("id, title, provider, amount, deadline, eligibility_text, category").execute()
+        scholarships = sch_res.data
+
+        if excluded_ids:
+            scholarships = [s for s in scholarships if str(s["id"]) not in excluded_ids]
 
         if not scholarships:
             return []
 
         recommended_list = []
 
-        # ---------------------------------------------------------
         # 3. THE RULE-BASED SCORING ENGINE
-        # ---------------------------------------------------------
         for sch in scholarships:
-            sch_id, title, provider, amount, deadline, elig_text, sch_category = sch
+            # We must use dictionary gets here instead of tuple unpacking now!
+            sch_id = sch.get("id")
+            title = sch.get("title")
+            provider = sch.get("provider")
+            amount = sch.get("amount")
+            deadline = sch.get("deadline")
+            elig_text = sch.get("eligibility_text")
+            sch_category = sch.get("category")
             
-            elig_text_lower = str(elig_text).lower()
+            elig_text_lower = str(elig_text).lower() if elig_text else ""
             sch_category_lower = str(sch_category).lower() if sch_category else ""
             
             score = 0
-            is_eligible = True # Acts as a strict filter
+            is_eligible = True 
             
             # --- Rule A: Gender Strict Matching ---
             is_female_only = re.search(r'\b(women|girl|girls|female|ladies)\b', elig_text_lower)
@@ -244,16 +180,15 @@ def get_scholarship_recommendations(user_id, top_n=5):
             if u_gender == 'female' and is_female_only:
                 score += 50
             elif u_gender == 'male' and is_female_only and not is_male_only:
-                is_eligible = False # Strict filter: Male applying to Female-only
+                is_eligible = False 
             
             # --- Rule B: Category Matching ---
             if u_category != 'open':
                 if u_category in elig_text_lower or u_category in sch_category_lower:
                     score += 50
             elif u_category == 'open':
-                # If Open category student looks at an SC/ST/OBC only scholarship
                 if re.search(r'\b(sc|st|obc|minority)\b', elig_text_lower) and 'open' not in elig_text_lower:
-                    score -= 50 # Penalize, likely not eligible
+                    score -= 50 
                     
             # --- Rule C: Disability Matching ---
             if u_disability in ['yes', 'true']:
@@ -264,9 +199,7 @@ def get_scholarship_recommendations(user_id, top_n=5):
             if re.search(r'\b(all categories|open to all|any category|general)\b', elig_text_lower):
                 score += 20
 
-            # ---------------------------------------------------------
             # 4. STORE VALID MATCHES
-            # ---------------------------------------------------------
             if is_eligible and score >= 0:
                 recommended_list.append({
                     'id': sch_id,
@@ -285,10 +218,3 @@ def get_scholarship_recommendations(user_id, top_n=5):
     except Exception as e:
         print(f"❌ SCHOLARSHIP RS ERROR: {e}")
         return []
-        
-    finally:
-        # THE ULTIMATE SAFETY NET: Always releases the connection back to Supabase!
-        if cur:
-            cur.close()
-        if conn:
-            conn.close()
