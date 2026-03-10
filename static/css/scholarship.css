@@ -1,154 +1,214 @@
-/* ===============================
-   PAGE TITLE
-================================= */
+/* ======================================
+   GLOBAL
+====================================== */
+
+body {
+    background: #f4f6fb;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    color: #1a1a1a;
+}
+
+/* ======================================
+   PAGE HEADER
+====================================== */
 
 .page-title {
     padding: 25px 30px 5px 30px;
-    font-size: 26px;
+    font-size: 1.8rem;
     font-weight: 700;
+    margin-bottom: 6px;
 }
 
 .page-subtitle {
     padding: 0 30px 15px 30px;
-    color: #6b7280;
+    color: #6c757d;
     font-size: 14px;
 }
 
 
-/* ===============================
-   FILTER SECTION (Top Controls)
-================================= */
+/* ======================================
+   FILTER BAR
+====================================== */
 
 .filter-box {
     display: flex;
     align-items: center;
     gap: 20px;
     margin: 20px 30px;
-    padding: 20px;
-    background: #f3f6fd;
-    border-radius: 12px;
+    padding: 18px;
+    background: #ffffff;
+    border-radius: 14px;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
+    border: 1px solid #eef0f5;
 }
 
 .search-input {
     flex: 1;
-    padding: 10px 15px;
-    border-radius: 8px;
-    border: 1px solid #ddd;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid #e5e7eb;
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.search-input:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
 .filter-select {
-    padding: 10px;
-    border-radius: 8px;
-    border: 1px solid #ddd;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid #e5e7eb;
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.filter-select:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
 .filter-btn {
     padding: 10px 20px;
-    border-radius: 8px;
+    border-radius: 12px;
     border: none;
-    background: linear-gradient(to right, #2563eb, #1e40af);
+    background: linear-gradient(135deg, #2563eb, #1e40af);
     color: white;
+    font-weight: 600;
+    font-size: 0.9rem;
     cursor: pointer;
+    transition: all 0.2s ease;
 }
-/* ===============================
+
+.filter-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+}
+
+
+/* ======================================
    SCHOLARSHIP GRID
-================================= */
+====================================== */
 
 .scholarship-container {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);    gap: 25px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
     padding: 30px;
 }
 
 
-/* ===============================
-   CARD DESIGN
-================================= */
+/* ======================================
+   CARD DESIGN  — synced to internships
+====================================== */
 
 .scholarship-card {
-    /* 1️⃣ THIS IS THE FIX FOR THE BADGE */
-    position: relative; 
-    
+    position: relative;
+
     background: #ffffff;
-    padding: 22px;
-    border-radius: 16px;
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
-    transition: 0.3s;
+    padding: 24px;
+    border-radius: 18px;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+    transition: all 0.25s ease;
+    overflow: hidden;         /* keeps badge inside card boundary cleanly */
 
     display: flex;
     flex-direction: column;
-    justify-content: space-between;   /* Keeps the Apply button at the bottom */
-    height: 100%;
-}
-
-/* 2️⃣ Optional: Adds a nice lift effect since you already included 'transition: 0.3s' */
-.scholarship-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+    justify-content: space-between;
 }
 
 .scholarship-card:hover {
-    transform: translateY(-8px);
+    transform: translateY(-6px);
+    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.1);
 }
 
-/* Replace h3 with whatever tag your title is using */
+/* Title */
 .scholarship-card h5 {
-    padding-right: 90px; /* Creates an invisible wall so text won't touch the badge */
-    margin-top: 10px;    /* Gives a little breathing room at the top */
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #111827;
+    margin-top: 10px;
+    margin-bottom: 6px;
+    padding-right: 80px; /* keep text away from deadline badge */
 }
 
-/* ===============================
-   DEADLINE BADGE
-================================= */
+.scholarship-card h5 a {
+    color: inherit;
+    text-decoration: none;
+}
+
+/* Provider / Amount lines */
+.scholarship-card p {
+    font-size: 0.9rem;
+    color: #6b7280;
+    margin-bottom: 4px;
+}
+
+.scholarship-card p strong {
+    font-weight: 600;
+    color: #374151;
+}
+
+
+/* ======================================
+   DEADLINE BADGE  — kept as unique feature
+====================================== */
 
 .deadline-badge {
     position: absolute;
-    top: -12px;   /* Negative value pushes it UP and outside */
-    right: -10px; /* Negative value pushes it RIGHT and outside */
-    
+    top: 14px;
+    right: 14px;
+
     background: #fee2e2;
     color: #b91c1c;
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: bold;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1); /* Adds a shadow since it's floating */
+    padding: 5px 11px;
+    border-radius: 999px;       /* pill shape, consistent with .badge in internships */
+    font-size: 0.7rem;
+    font-weight: 600;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
 }
 
 
-/* ===============================
-   APPLY BUTTON (GRADIENT STYLE)
-================================= */
+/* ======================================
+   APPLY BUTTON  — synced to internships .btn-primary
+====================================== */
 
 .apply-btn {
     margin-top: 15px;
-    padding: 10px 16px;
-    border-radius: 10px;
-    background: linear-gradient(to right, #2563eb, #1e40af);
+    padding: 8px 0;
+    width: 100%;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #2563eb, #1e40af);
     color: white;
     border: none;
+    font-weight: 600;
+    font-size: 0.9rem;
     cursor: pointer;
-    transition: 0.3s ease;
+    transition: all 0.2s ease;
 }
 
 .apply-btn:hover {
-    background: linear-gradient(to right, #1e40af, #1e3a8a);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
 }
 
 
-/* ===============================
+/* ======================================
    APPLY POPUP MODAL
-================================= */
+====================================== */
 
 .apply-modal {
-    display: none;   /* only this */
+    display: none;
     position: fixed;
     z-index: 999;
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0,0,0,0.6);
+    background: rgba(0, 0, 0, 0.6);
     justify-content: center;
     align-items: center;
 }
@@ -157,35 +217,11 @@
     background: white;
     padding: 30px;
     width: 400px;
-    border-radius: 16px;
+    border-radius: 18px;        /* matched to card radius */
     text-align: center;
     position: relative;
+    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.15);
 }
-
-
-/* ===============================
-   CONTINUE BUTTON (POPUP)
-================================= */
-
-.blue-apply-btn {
-    display: inline-block;
-    margin-top: 20px;
-    padding: 10px 20px;
-    border-radius: 8px;
-    background: linear-gradient(to right, #2563eb, #1e40af);
-    color: white;
-    text-decoration: none;
-    transition: 0.3s ease;
-}
-
-.blue-apply-btn:hover {
-    background: linear-gradient(to right, #1e40af, #1e3a8a);
-}
-
-
-/* ===============================
-   CLOSE BUTTON
-================================= */
 
 .close-btn {
     position: absolute;
@@ -193,33 +229,85 @@
     right: 18px;
     font-size: 22px;
     cursor: pointer;
+    color: #6b7280;
 }
-/* ===============================
-   PAGINATION
-================================= */
+
+.close-btn:hover {
+    color: #111827;
+}
+
+/* Continue button inside popup — synced to .btn-primary */
+.blue-apply-btn {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 10px 24px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #2563eb, #1e40af);
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+}
+
+.blue-apply-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+}
+
+
+/* ======================================
+   PAGINATION  — synced to internships
+====================================== */
 
 .pagination {
     display: flex;
     justify-content: center;
-    gap: 10px;
+    gap: 8px;
     margin: 30px 0;
 }
 
 .page-btn {
     padding: 8px 14px;
-    border-radius: 8px;
-    background: #e5e7eb;
+    border-radius: 10px;
+    background: #ffffff;
     text-decoration: none;
-    color: #111827;
-    transition: 0.3s;
+    color: #374151;
+    box-shadow: 0 4px 10px rgba(15, 23, 42, 0.05);
+    border: none;
+    transition: background 0.2s, color 0.2s;
 }
 
 .page-btn:hover {
-    background: #2563eb;
-    color: white;
+    background: #e0e7ff;
 }
 
 .page-btn.active {
     background: #2563eb;
     color: white;
+}
+
+
+/* ======================================
+   RESPONSIVE
+====================================== */
+
+@media (max-width: 992px) {
+    .scholarship-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .scholarship-container {
+        grid-template-columns: 1fr;
+        padding: 16px;
+    }
+
+    .filter-box {
+        flex-direction: column;
+        align-items: stretch;
+        margin: 16px;
+        padding: 14px;
+    }
 }

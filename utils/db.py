@@ -1,15 +1,5 @@
-import os
 import psycopg2
-from dotenv import load_dotenv
-
-load_dotenv()
+import os
 
 def get_db():
-    return psycopg2.connect(
-        host=os.getenv("DB_HOST"),
-        dbname=os.getenv("DB_NAME"),
-        user=os.getenv("DB_USER"),
-        password=os.getenv("DB_PASSWORD"),
-        port=os.getenv("DB_PORT"),
-        sslmode="require"  # This is the magic line that fixes the timeout!
-    )
+    return psycopg2.connect(os.getenv("DATABASE_URL"))

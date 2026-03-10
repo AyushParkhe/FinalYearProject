@@ -8,7 +8,6 @@ body {
     color: #1a1a1a;
 }
 
-/* Container spacing */
 .container {
     max-width: 1200px;
 }
@@ -27,7 +26,7 @@ h2 {
 }
 
 /* ======================================
-   FILTER BAR (CLEAN + FLOATING)
+   FILTER BAR
 ====================================== */
 form {
     background: #ffffff;
@@ -37,6 +36,7 @@ form {
     border: 1px solid #eef0f5;
 }
 
+.form-control,
 .form-select {
     border-radius: 10px;
     border: 1px solid #e5e7eb;
@@ -44,13 +44,14 @@ form {
     font-size: 0.9rem;
 }
 
+.form-control:focus,
 .form-select:focus {
     border-color: #2563eb;
     box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
 /* ======================================
-   INTERNSHIP CARD
+   CARD
 ====================================== */
 .card {
     border: none;
@@ -58,7 +59,7 @@ form {
     background: #ffffff;
     box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
     transition: all 0.25s ease;
-    overflow: hidden;
+    overflow: visible;
 }
 
 .card:hover {
@@ -80,26 +81,25 @@ form {
     color: #111827;
 }
 
-/* Organization */
+/* Organisation / Provider */
 .card-body p.text-muted {
     font-size: 0.9rem;
     margin-bottom: 4px;
 }
 
-/* Location */
+/* Location / small lines */
 .card-body p.small {
     font-size: 0.85rem;
     color: #6b7280;
 }
 
-/* Duration + Stipend block */
 .card-body p.small strong {
     font-weight: 600;
     color: #374151;
 }
 
 /* ======================================
-   SOURCE BADGE (MODERN PILL)
+   SOURCE BADGE
 ====================================== */
 .badge {
     font-size: 0.7rem;
@@ -111,7 +111,23 @@ form {
 }
 
 /* ======================================
-   ACTION AREA
+   DEADLINE BADGE  (scholarships only)
+====================================== */
+.deadline-badge {
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: #fee2e2 !important;
+    color: #b91c1c !important;
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+}
+
+/* ======================================
+   CARD ACTIONS (button area)
 ====================================== */
 .card-actions {
     margin-top: auto;
@@ -120,7 +136,9 @@ form {
     gap: 10px;
 }
 
-/* APPLY BUTTON */
+/* ======================================
+   APPLY / PRIMARY BUTTON
+====================================== */
 .btn-primary {
     border-radius: 12px;
     padding: 8px 0;
@@ -134,9 +152,12 @@ form {
 .btn-primary:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+    background: linear-gradient(135deg, #2563eb, #1e40af);
 }
 
-/* VIEW DETAILS */
+/* ======================================
+   VIEW DETAILS BUTTON
+====================================== */
 .btn-outline-secondary {
     border-radius: 12px;
     padding: 8px 0;
@@ -151,18 +172,23 @@ form {
 .btn-outline-secondary:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+    color: #ffffff;
 }
 
-/* SAVE BUTTON */
+/* ======================================
+   SAVE BUTTON
+====================================== */
 .save-btn {
     border-radius: 12px;
     font-size: 0.85rem;
     padding: 7px 0;
+    width: 100%;
     background: #ffffff;
     border: 1px solid #2563eb;
     color: #2563eb;
     font-weight: 500;
     transition: all 0.2s ease;
+    cursor: pointer;
 }
 
 .save-btn:hover {
@@ -178,7 +204,7 @@ form {
 }
 
 /* ======================================
-   PAGINATION (MODERN MINIMAL)
+   PAGINATION
 ====================================== */
 .pagination .page-link {
     border-radius: 10px;
@@ -199,7 +225,65 @@ form {
 }
 
 /* ======================================
-   RESPONSIVE IMPROVEMENT
+   APPLY POPUP MODAL  (scholarships)
+====================================== */
+.apply-modal {
+    display: none;
+    position: fixed;
+    z-index: 999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    justify-content: center;
+    align-items: center;
+}
+
+.apply-content {
+    background: white;
+    padding: 30px;
+    width: 400px;
+    border-radius: 18px;
+    text-align: center;
+    position: relative;
+    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.15);
+}
+
+.close-btn {
+    position: absolute;
+    top: 12px;
+    right: 18px;
+    font-size: 22px;
+    cursor: pointer;
+    color: #6b7280;
+}
+
+.close-btn:hover {
+    color: #111827;
+}
+
+.blue-apply-btn {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 10px 24px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #2563eb, #1e40af);
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+}
+
+.blue-apply-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+    color: white;
+}
+
+/* ======================================
+   RESPONSIVE
 ====================================== */
 @media (max-width: 768px) {
     .card-body {

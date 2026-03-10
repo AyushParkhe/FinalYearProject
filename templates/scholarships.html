@@ -3,118 +3,244 @@
 {% block title %}Scholarships | SmartIntern{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/scholarship.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/internships.css') }}">
+<style>
+  /* Deadline badge — scholarships only, scoped here so internships.css stays clean */
+  .deadline-badge {
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 5px 11px;
+    border-radius: 999px;
+    background: #fee2e2;
+    color: #b91c1c;
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    white-space: nowrap;
+  }
+  .card-title-padded {
+    padding-right: 115px; /* stop title text overlapping badge */
+  }
+  /* popup modal */
+  .apply-modal {
+    display: none;
+    position: fixed;
+    z-index: 999;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    justify-content: center;
+    align-items: center;
+  }
+  .apply-content {
+    background: #fff;
+    padding: 30px;
+    width: 400px;
+    border-radius: 18px;
+    text-align: center;
+    position: relative;
+    box-shadow: 0 18px 40px rgba(15,23,42,0.15);
+  }
+  .close-btn {
+    position: absolute;
+    top: 12px;
+    right: 18px;
+    font-size: 22px;
+    cursor: pointer;
+    color: #6b7280;
+    background: none;
+    border: none;
+  }
+  .blue-apply-btn {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 10px 24px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #2563eb, #1e40af);
+    color: #fff;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+  }
+  .blue-apply-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(37,99,235,0.3);
+    color: #fff;
+  }
+</style>
 {% endblock %}
 
-<script>
-function openApplyPopup(title, link) {
-    document.getElementById("applyTitle").innerText = title;
-    document.getElementById("applyLinkBtn").href = link;
-    document.getElementById("applyPopup").style.display = "flex";
-}
-
-function closeApplyPopup() {
-    document.getElementById("applyPopup").style.display = "none";
-}
-</script>
 {% block content %}
+<div class="container my-5">
 
-<h2 class="page-title">Available Scholarships</h2>
-<p class="page-subtitle">
-    Explore verified scholarship opportunities from trusted sources.
-</p>
+  <!-- PAGE HEADER -->
+  <div class="mb-4">
+    <h2 class="fw-bold">Available Scholarships</h2>
+    <p class="text-muted">
+      Explore verified scholarship opportunities from trusted sources.
+    </p>
+  </div>
 
-<!-- FILTER SECTION (Like Internship Page) -->
-<form method="GET" action="{{ url_for('scholarships') }}" class="filter-box">
+  <!-- FILTERS -->
+  <form method="GET" action="{{ url_for('scholarships') }}" class="row g-3 mb-4">
 
-    <input type="text" 
-           name="search" 
-           id="searchInput" 
-           placeholder="Search scholarships..." 
-           class="search-input"
-           value="{{ current_search }}">
+    <div class="col-md-4">
+      <input
+        type="text"
+        name="search"
+        id="searchInput"
+        value="{{ current_search }}"
+        class="form-control"
+        placeholder="Search scholarships..."
+      >
+    </div>
 
-    <select name="source" id="categoryFilter" class="filter-select">
-        <option value="all" {% if current_source == 'all' %}selected{% endif %}>All Sources</option>
+    <div class="col-md-4">
+      <select name="source" id="categoryFilter" class="form-select">
+        <option value="all"         {% if current_source == 'all'        %}selected{% endif %}>All Sources</option>
         <option value="buddy4study" {% if current_source == 'Buddy4Study' %}selected{% endif %}>Buddy4Study</option>
-        <option value="mahadbt" {% if current_source == 'mahadbt' %}selected{% endif %}>MahaDBT</option>
-    </select>
+        <option value="mahadbt"     {% if current_source == 'mahadbt'    %}selected{% endif %}>MahaDBT</option>
+      </select>
+    </div>
 
-    <button type="submit" id="applyFilterBtn" class="filter-btn">
+    <div class="col-md-4">
+      <button type="submit" class="btn btn-primary w-100">
         Apply Filters
-    </button>
+      </button>
+    </div>
 
-</form>
+  </form>
 
+  <!-- SCHOLARSHIP CARDS -->
+  {% if scholarships %}
+    <div class="row g-4" id="scholarshipList">
 
-<!-- SCHOLARSHIP GRID -->
-<div class="scholarship-container" id="scholarshipList">
+      {% for s in scholarships %}
+        <div class="col-md-6 col-lg-4"
+             data-title="{{ s.title|lower }}"
+             data-category="{{ s.category|lower }}">
 
-{% for s in scholarships %}
-    <div class="scholarship-card"
-         data-title="{{ s.title|lower }}"
-         data-category="{{ s.category|lower }}">
+          <div class="card h-100 shadow-sm" style="position: relative; overflow: visible;">
+            <div class="card-body d-flex flex-column">
 
-        <h5>
-    <a href="{{ url_for('scholarship_details', scholarship_id=s.id) }}" class="text-reset text-decoration-none">
-        {{ s.title }}
-    </a>
-</h5>
+              <!-- Deadline Badge -->
+              <span class="deadline-badge">Deadline: {{ s.deadline }}</span>
 
-        <span class="deadline-badge">
-            Deadline: {{ s.deadline }}
-        </span>
+              <!-- Title -->
+              <h5 class="card-title card-title-padded">
+                <a href="{{ url_for('scholarship_details', scholarship_id=s.id) }}"
+                   class="text-reset text-decoration-none">
+                  {{ s.title }}
+                </a>
+              </h5>
 
-        <p><strong>Provider:</strong> {{ s.provider }}</p>
-        <p class="amount"><strong>Amount:</strong> {{ s.amount }}</p>
+              <!-- Provider  (= Organisation in internships) -->
+              <p class="text-muted mb-1">{{ s.provider }}</p>
 
-        <button class="apply-btn"
-        onclick="openApplyPopup('{{ s.title }}', '{{ s.apply_url }}')">
-        Apply Now
-        </button>
+              <!-- Amount  (= Duration/Stipend in internships) -->
+              <p class="small mb-2">
+                <strong>Amount:</strong> {{ s.amount or "Not specified" }}
+              </p>
+
+              <!-- Source badge -->
+              {% if s.source %}
+                <span class="badge bg-secondary mb-2 align-self-start">
+                  Source: {{ s.source }}
+                </span>
+              {% endif %}
+
+              <!-- Deadline line  (= Posted on in internships) -->
+              {% if s.deadline %}
+                <p class="small text-muted mb-3">
+                  Deadline: {{ s.deadline }}
+                </p>
+              {% endif %}
+
+              <!-- Actions — identical to internships -->
+              <div class="card-actions">
+
+                <button class="btn btn-primary btn-sm w-100"
+                        onclick="openApplyPopup('{{ s.title }}', '{{ s.apply_url }}')">
+                  Apply
+                </button>
+
+                <a href="{{ url_for('scholarship_details', scholarship_id=s.id) }}"
+                   class="btn btn-outline-secondary btn-sm w-100">
+                  View Details
+                </a>
+
+                {% if s.id in saved_ids %}
+                  <button class="save-btn" disabled>Saved</button>
+                {% else %}
+                  <button class="save-btn"
+                          data-id="{{ s.id }}"
+                          data-type="scholarship">
+                    Save
+                  </button>
+                {% endif %}
+
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+      {% endfor %}
 
     </div>
-{% endfor %}
+  {% else %}
+    <p>No scholarships available at the moment.</p>
+  {% endif %}
 
-</div>
+  <!-- PAGINATION -->
+  {% if scholarships %}
+    <nav class="mt-5">
+      <ul class="pagination justify-content-center">
 
-<div class="pagination">
+        {% if page > 1 %}
+          <li class="page-item">
+            <a class="page-link"
+               href="{{ url_for('scholarships', page=page-1, search=current_search, source=current_source) }}">
+              Previous
+            </a>
+          </li>
+        {% endif %}
 
-    {% if page > 1 %}
-        <a href="{{ url_for('scholarships', page=page-1) }}" class="page-btn">
-            Previous
-        </a>
-    {% endif %}
+        {% for p in range(1, total_pages + 1) %}
+          <li class="page-item {% if p == page %}active{% endif %}">
+            <a class="page-link"
+               href="{{ url_for('scholarships', page=p, search=current_search, source=current_source) }}">
+              {{ p }}
+            </a>
+          </li>
+        {% endfor %}
 
-    {% for p in range(1, total_pages + 1) %}
-        <a href="{{ url_for('scholarships', page=p) }}"
-           class="page-btn {% if p == page %}active{% endif %}">
-            {{ p }}
-        </a>
-    {% endfor %}
+        {% if page < total_pages %}
+          <li class="page-item">
+            <a class="page-link"
+               href="{{ url_for('scholarships', page=page+1, search=current_search, source=current_source) }}">
+              Next
+            </a>
+          </li>
+        {% endif %}
 
-    {% if page < total_pages %}
-        <a href="{{ url_for('scholarships', page=page+1) }}" class="page-btn">
-            Next
-        </a>
-    {% endif %}
+      </ul>
+    </nav>
+  {% endif %}
 
-</div>
-
-<!-- APPLY POPUP (MUST BE INSIDE BLOCK CONTENT) -->
-<div id="applyPopup" class="apply-modal">
+  <!-- APPLY POPUP -->
+  <div id="applyPopup" class="apply-modal">
     <div class="apply-content">
-        <span class="close-btn" onclick="closeApplyPopup()">&times;</span>
-
-        <h2 id="applyTitle"></h2>
-        <p>You are about to apply for this scholarship.</p>
-
-        <a id="applyLinkBtn" target="_blank" class="blue-apply-btn">
-            Continue to Apply
-        </a>
+      <button class="close-btn" onclick="closeApplyPopup()">&times;</button>
+      <h2 id="applyTitle"></h2>
+      <p>You are about to apply for this scholarship.</p>
+      <a id="applyLinkBtn" target="_blank" class="blue-apply-btn">
+        Continue to Apply
+      </a>
     </div>
-</div>
+  </div>
 
+</div>
 {% endblock %}
 
 
@@ -123,52 +249,46 @@ function closeApplyPopup() {
 
 /* APPLY POPUP */
 function openApplyPopup(title, link) {
-    document.getElementById("applyTitle").innerText = title;
-    document.getElementById("applyLinkBtn").href = link;
-    document.getElementById("applyPopup").style.display = "flex";
+  document.getElementById("applyTitle").innerText = title;
+  document.getElementById("applyLinkBtn").href = link;
+  document.getElementById("applyPopup").style.display = "flex";
 }
-
 function closeApplyPopup() {
-    document.getElementById("applyPopup").style.display = "none";
+  document.getElementById("applyPopup").style.display = "none";
 }
 
-
-/* SEARCH */
-document.getElementById("searchInput").addEventListener("keyup", function() {
-
-    let searchValue = this.value.toLowerCase();
-    let cards = document.querySelectorAll(".scholarship-card");
-
-    cards.forEach(card => {
-        let title = card.getAttribute("data-title");
-
-        if (title.includes(searchValue)) {
-            card.style.display = "block";
-        } else {
-            card.style.display = "none";
-        }
-    });
+/* SAVE — same logic as internships, ready for backend */
+document.addEventListener("click", async (e) => {
+  const btn = e.target.closest(".save-btn");
+  if (!btn || btn.disabled) return;
+  const res = await fetch("/save", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      opportunity_id: btn.dataset.id,
+      opportunity_type: btn.dataset.type
+    })
+  });
+  if (res.ok) {
+    btn.innerText = "Saved";
+    btn.disabled = true;
+  }
 });
 
+/* LIVE SEARCH */
+document.getElementById("searchInput").addEventListener("keyup", function () {
+  const val = this.value.toLowerCase();
+  document.querySelectorAll("#scholarshipList > div").forEach(col => {
+    col.style.display = col.dataset.title.includes(val) ? "" : "none";
+  });
+});
 
 /* CATEGORY FILTER */
-document.getElementById("categoryFilter").addEventListener("change", function() {
-
-    let selected = this.value;
-    let cards = document.querySelectorAll(".scholarship-card");
-
-    cards.forEach(card => {
-
-        let category = card.getAttribute("data-category");
-
-        if (selected === "all" || category === selected) {
-            card.style.display = "block";
-        } else {
-            card.style.display = "none";
-        }
-
-    });
-
+document.getElementById("categoryFilter").addEventListener("change", function () {
+  const selected = this.value;
+  document.querySelectorAll("#scholarshipList > div").forEach(col => {
+    col.style.display = (selected === "all" || col.dataset.category === selected) ? "" : "none";
+  });
 });
 
 </script>

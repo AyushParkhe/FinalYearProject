@@ -7,7 +7,8 @@ from datetime import datetime
 from supabase import create_client, ClientOptions
 import hashlib
 import os
-
+from utils.db import get_db
+from psycopg2.extras import RealDictCursor
 from utils.security import validate_password, hash_password, check_password
 from utils.profile_utils import is_profile_complete
 
@@ -416,6 +417,7 @@ def employer_dashboard():
 # Employer creates a new internship listing.
 # Requires account to be approved.
 # ============================================================
+# ---------------- POST INTERNSHIP ----------------
 @app.route("/employer/post-internship", methods=["GET", "POST"])
 def post_internship():
     if "employer_id" not in session:
@@ -434,49 +436,54 @@ def post_internship():
         skills = request.form.get("skills_final", "").strip()
         apply_link = request.form.get("apply_link", "").strip()
 
-        # Ensure apply_link has a valid URL scheme
         if apply_link and not apply_link.startswith(('http://', 'https://')):
             apply_link = 'https://' + apply_link
 
         employer_id = session["employer_id"]
         company_name = session.get("employer_name", "Unknown Company")
         posted_on = datetime.today().strftime('%Y-%m-%d')
-
-        # Hash title+company+location to detect duplicates
         content_hash = hashlib.sha256(
             f"{title}_{company_name}_{location}".encode('utf-8')
         ).hexdigest()
 
+        conn = None
+        cur = None
         try:
-            supabase.table("internships").insert({
-                "title": title,
-                "organization": company_name,
-                "location": location,
-                "duration": duration,
-                "stipend": stipend,
-                "skills_final": skills,
-                "posted_on": posted_on,
-                "type": "Internship",
-                "source": "SmartIntern Direct",
-                "apply_link": apply_link,
-                "content_hash": content_hash,
-                "employer_id": employer_id
-            }).execute()
-
+            conn = get_db()
+            cur = conn.cursor()
+            cur.execute(
+                """
+                INSERT INTO internships (
+                    title, organization, location, duration, stipend,
+                    skills_final, posted_on, type, source, apply_link,
+                    content_hash, employer_id
+                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                """,
+                (
+                    title, company_name, location, duration, stipend,
+                    skills, posted_on, "Internship", "SmartIntern Direct",
+                    apply_link, content_hash, employer_id
+                )
+            )
+            conn.commit()
             flash("Internship posted successfully!", "success")
             return redirect(url_for("employer_dashboard"))
 
         except Exception as e:
             print(f"POST INTERNSHIP ERROR: {e}")
+            if conn:
+                conn.rollback()
             flash("An error occurred while posting. Please try again.", "danger")
+        finally:
+            if cur:
+                cur.close()
+            if conn:
+                conn.close()
 
     return render_template("post_internship.html")
 
 
-# ============================================================
-# EDIT INTERNSHIP
-# Employer can update an existing internship they own.
-# ============================================================
+# ---------------- EDIT INTERNSHIP ----------------
 @app.route("/employer/edit-internship/<int:job_id>", methods=["GET", "POST"])
 def edit_internship(job_id):
     if "employer_id" not in session:
@@ -495,37 +502,49 @@ def edit_internship(job_id):
         if apply_link and not apply_link.startswith(('http://', 'https://')):
             apply_link = 'https://' + apply_link
 
+        conn = None
+        cur = None
         try:
-            # Update only rows owned by this employer (security check via employer_id)
-            supabase.table("internships") \
-                .update({
-                    "title": title,
-                    "location": location,
-                    "duration": duration,
-                    "stipend": stipend,
-                    "skills_final": skills,
-                    "apply_link": apply_link
-                }) \
-                .eq("id", job_id) \
-                .eq("employer_id", employer_id) \
-                .execute()
-
+            conn = get_db()
+            cur = conn.cursor()
+            cur.execute(
+                """
+                UPDATE internships
+                SET title = %s, location = %s, duration = %s, stipend = %s,
+                    skills_final = %s, apply_link = %s
+                WHERE id = %s AND employer_id = %s
+                """,
+                (title, location, duration, stipend, skills, apply_link, job_id, employer_id)
+            )
+            conn.commit()
             flash("Internship updated successfully!", "success")
             return redirect(url_for("employer_dashboard"))
 
         except Exception as e:
             print(f"EDIT INTERNSHIP ERROR: {e}")
+            if conn:
+                conn.rollback()
             flash("Error updating internship.", "danger")
+        finally:
+            if cur:
+                cur.close()
+            if conn:
+                conn.close()
 
-    # GET: load existing internship details for the edit form
+    # GET: load existing details
+    conn = None
+    cur = None
     try:
-        response = supabase.table("internships") \
-            .select("id, title, location, duration, stipend, skills_final, apply_link") \
-            .eq("id", job_id) \
-            .eq("employer_id", employer_id) \
-            .execute()
-
-        job = response.data[0] if response.data else None
+        conn = get_db()
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+        cur.execute(
+            """
+            SELECT id, title, location, duration, stipend, skills_final, apply_link
+            FROM internships WHERE id = %s AND employer_id = %s
+            """,
+            (job_id, employer_id)
+        )
+        job = cur.fetchone()
 
         if not job:
             flash("Job not found or unauthorized.", "danger")
@@ -537,33 +556,43 @@ def edit_internship(job_id):
         print(f"FETCH EDIT ERROR: {e}")
         flash("Error loading job details.", "danger")
         return redirect(url_for("employer_dashboard"))
+    finally:
+        if cur:
+            cur.close()
+        if conn:
+            conn.close()
 
 
-# ============================================================
-# DELETE INTERNSHIP
-# Permanently removes an internship owned by this employer.
-# ============================================================
+# ---------------- DELETE INTERNSHIP ----------------
 @app.route("/employer/delete-internship/<int:job_id>", methods=["POST"])
 def delete_internship(job_id):
     if "employer_id" not in session:
         return redirect(url_for("employer_login"))
 
+    conn = None
+    cur = None
     try:
-        supabase.table("internships") \
-            .delete() \
-            .eq("id", job_id) \
-            .eq("employer_id", session["employer_id"]) \
-            .execute()
-
+        conn = get_db()
+        cur = conn.cursor()
+        cur.execute(
+            "DELETE FROM internships WHERE id = %s AND employer_id = %s",
+            (job_id, session["employer_id"])
+        )
+        conn.commit()
         flash("Internship deleted permanently.", "info")
 
     except Exception as e:
         print(f"DELETE INTERNSHIP ERROR: {e}")
+        if conn:
+            conn.rollback()
         flash("Error deleting internship.", "danger")
+    finally:
+        if cur:
+            cur.close()
+        if conn:
+            conn.close()
 
     return redirect(url_for("employer_dashboard"))
-
-
 # ============================================================
 # EMPLOYER LOGOUT
 # ============================================================

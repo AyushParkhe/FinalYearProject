@@ -124,11 +124,10 @@
 
               <!-- Actions -->
               <div class="card-actions">
-                <a href="{{ internship.apply_link }}"
-                   target="_blank"
-                   class="btn btn-primary btn-sm w-100">
+                <button class="btn btn-primary btn-sm w-100"
+                        onclick="openApplyPopup('{{ internship.title }}', '{{ internship.apply_link }}')">
                   Apply
-                </a>
+                </button>
 
                 <a href="/internships/{{ internship.id }}"
                    class="btn btn-outline-secondary btn-sm w-100">
@@ -188,9 +187,85 @@
       </ul>
     </nav>
   {% endif %}
-  {% endblock %}
+
+  <!-- ===============================
+       APPLY POPUP MODAL
+  ================================ -->
+  <div id="applyPopup" class="apply-modal">
+    <div class="apply-content">
+      <button class="close-btn" onclick="closeApplyPopup()">&times;</button>
+      <h2 id="applyTitle"></h2>
+      <p>You are about to apply for this internship.</p>
+      <a id="applyLinkBtn" target="_blank" class="blue-apply-btn">
+        Continue to Apply
+      </a>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
 {% block extra_js %}
+<style>
+  .apply-modal {
+    display: none;
+    position: fixed;
+    z-index: 999;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    justify-content: center;
+    align-items: center;
+  }
+  .apply-content {
+    background: #fff;
+    padding: 30px;
+    width: 400px;
+    border-radius: 18px;
+    text-align: center;
+    position: relative;
+    box-shadow: 0 18px 40px rgba(15,23,42,0.15);
+  }
+  .close-btn {
+    position: absolute;
+    top: 12px;
+    right: 18px;
+    font-size: 22px;
+    cursor: pointer;
+    color: #6b7280;
+    background: none;
+    border: none;
+  }
+  .blue-apply-btn {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 10px 24px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #2563eb, #1e40af);
+    color: #fff;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+  }
+  .blue-apply-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(37,99,235,0.3);
+    color: #fff;
+  }
+</style>
 <script>
+
+/* APPLY POPUP */
+function openApplyPopup(title, link) {
+  document.getElementById("applyTitle").innerText = title;
+  document.getElementById("applyLinkBtn").href = link;
+  document.getElementById("applyPopup").style.display = "flex";
+}
+function closeApplyPopup() {
+  document.getElementById("applyPopup").style.display = "none";
+}
+
+/* SAVE */
 document.addEventListener("click", async (e) => {
   const btn = e.target.closest(".save-btn");
   if (!btn || btn.disabled) return;
