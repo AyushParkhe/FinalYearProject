@@ -37,21 +37,17 @@
 }
 
 /* ============================================
-   MINIMAL GLOBAL RESETS (Safe for all pages)
+   MINIMAL GLOBAL RESETS
    ============================================ */
 
 html {
     scroll-behavior: smooth;
 }
 
-/* Only target body on internal pages, not landing */
 body:not(.landing-page) {
     background-color: var(--gray-50);
 }
 
-/* ============================================
-   NAVBAR BRAND — Logo Image + Text Combined
-   ============================================ */
 /* ============================================
    NAVBAR BRAND — Floating Badge Style
    ============================================ */
@@ -63,36 +59,28 @@ body:not(.landing-page) {
     gap: 0.6rem;
 }
 
-/* ── Logo Image — Floating Badge ── */
 .site-logo {
     width: 38px;
     height: 38px;
     object-fit: contain;
     border-radius: 10px;
-
-    /* Layered shadows — creates floating depth, no ring */
     box-shadow:
         0 2px 4px rgba(0, 0, 0, 0.08),
         0 6px 16px rgba(30, 58, 138, 0.18),
         0 12px 28px rgba(30, 58, 138, 0.1);
-
     transform: rotate(0deg) translateY(0px);
-
     transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
                 box-shadow 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-/* Hover — floats up with a slight tilt, shadow deepens */
 .navbar-brand:hover .site-logo {
     transform: rotate(-4deg) translateY(-3px) scale(1.05);
-
     box-shadow:
         0 4px 8px rgba(0, 0, 0, 0.1),
         0 12px 28px rgba(30, 58, 138, 0.28),
         0 20px 40px rgba(30, 58, 138, 0.14);
 }
 
-/* Logo text animates in sync */
 .navbar-brand:hover .logo-text {
     background-position: center center;
     letter-spacing: 4px;
@@ -104,7 +92,7 @@ body:not(.landing-page) {
 }
 
 /* ============================================
-   LOGO TEXT — Light Navbar, Ultra Premium Final
+   LOGO TEXT
    ============================================ */
 
 .logo-text {
@@ -116,8 +104,6 @@ body:not(.landing-page) {
     text-decoration: none;
     display: inline-block;
     position: relative;
-
-    /* Deep, saturated gradient — always bold on light bg */
     background: linear-gradient(
         110deg,
         #0f2167 0%,
@@ -132,22 +118,18 @@ body:not(.landing-page) {
     background-clip: text;
     background-size: 300% auto;
     background-position: left center;
-
     filter: drop-shadow(0 1px 6px rgba(30, 58, 138, 0.2));
-
     transition: background-position 0.7s cubic-bezier(0.4, 0, 0.2, 1),
                 filter 0.4s ease,
                 letter-spacing 0.3s ease;
 }
 
-/* Hover — shimmer sweeps through electric blue center, stays dark & vivid */
 .logo-text:hover {
     background-position: center center;
     letter-spacing: 4px;
     filter: drop-shadow(0 2px 16px rgba(37, 99, 235, 0.4));
 }
 
-/* Gloss underline sweep */
 .logo-text::after {
     content: '';
     position: absolute;
@@ -165,7 +147,6 @@ body:not(.landing-page) {
     width: 100%;
 }
 
-/* ── Dark mode override ── */
 [data-theme="dark"] .logo-text {
     background: linear-gradient(
         110deg,
@@ -184,50 +165,49 @@ body:not(.landing-page) {
 }
 
 
-
-
 /* ============================================
-   NAVIGATION BAR STYLES (Scoped to .navbar)
+   NAVIGATION BAR — Glassmorphism + Blobs
+   NOTE: Remove bg-white and shadow-sm from
+   the <nav> tag in base.html for this to work
    ============================================ */
-
 .navbar.navbar-light.sticky-top {
-    background: linear-gradient(135deg, rgba(30, 58, 138, 0.03) 0%, rgba(255, 255, 255, 1) 50%, rgba(16, 185, 129, 0.03) 100%) !important;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    background: linear-gradient(135deg, #f0f4ff 0%, #ffffff 40%, #f0fdf8 100%) !important;
+    box-shadow: 0 1px 0 rgba(30, 58, 138, 0.08), 0 4px 20px rgba(0, 0, 0, 0.06);
     padding: 1.5rem 0;
     transition: all var(--transition-base);
-    border-bottom: 3px solid transparent;
-    border-image: linear-gradient(90deg, var(--navy-primary), var(--navy-light), var(--accent-green)) 1;
     position: relative;
+    overflow: hidden;
 }
 
+/* Top accent line */
 .navbar.navbar-light.sticky-top::before {
     content: '';
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
-    height: 5px;
+    height: 3px;
     background: linear-gradient(90deg, var(--navy-primary) 0%, var(--navy-light) 50%, var(--accent-green) 100%);
+    z-index: 2;
 }
 
+/* Visible diagonal color wash */
 .navbar.navbar-light.sticky-top::after {
     content: '';
     position: absolute;
-    top: 5px;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: repeating-linear-gradient(
-        90deg,
-        transparent,
-        transparent 100px,
-        rgba(30, 58, 138, 0.02) 100px,
-        rgba(30, 58, 138, 0.02) 200px
-    );
+    inset: 0;
+    background:
+        radial-gradient(ellipse 600px 300px at -15% 50%, rgba(30, 58, 138, 0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 500px 250px at 115% 50%, rgba(16, 185, 129, 0.10) 0%, transparent 60%);
     pointer-events: none;
+    z-index: 0;
 }
 
-/* Logo Styling - Only in navbar */
+.navbar.navbar-light.sticky-top .container {
+    position: relative;
+    z-index: 1;
+}
+/* Logo */
 .navbar .navbar-brand {
     display: flex;
     align-items: center;
@@ -246,7 +226,7 @@ body:not(.landing-page) {
     color: var(--navy-primary);
 }
 
-/* Custom Hamburger Toggle - Scoped */
+/* Custom Hamburger Toggle */
 .navbar .custom-toggler {
     border: none;
     padding: 0.5rem;
@@ -272,33 +252,23 @@ body:not(.landing-page) {
     left: 6px;
 }
 
-.navbar .toggler-line.top {
-    top: 10px;
-}
-
-.navbar .toggler-line.middle {
-    top: 18px;
-}
-
-.navbar .toggler-line.bottom {
-    top: 26px;
-}
+.navbar .toggler-line.top    { top: 10px; }
+.navbar .toggler-line.middle { top: 18px; }
+.navbar .toggler-line.bottom { top: 26px; }
 
 .navbar .custom-toggler:not(.collapsed) .toggler-line.top {
     transform: rotate(45deg);
     top: 18px;
 }
-
 .navbar .custom-toggler:not(.collapsed) .toggler-line.middle {
     opacity: 0;
 }
-
 .navbar .custom-toggler:not(.collapsed) .toggler-line.bottom {
     transform: rotate(-45deg);
     top: 18px;
 }
 
-/* Navigation Links - Scoped to navbar */
+/* Navigation Links */
 .navbar .navbar-nav {
     gap: 1rem;
 }
@@ -348,15 +318,9 @@ body:not(.landing-page) {
     transform: translateY(-2px);
 }
 
-.navbar .nav-link:hover::before {
-    width: 70%;
-}
+.navbar .nav-link:hover::before { width: 70%; }
+.navbar .nav-link:hover::after  { opacity: 1; }
 
-.navbar .nav-link:hover::after {
-    opacity: 1;
-}
-
-/* Active nav link styling */
 .navbar .nav-link.active {
     color: var(--white) !important;
     background: linear-gradient(135deg, var(--navy-primary), var(--navy-light));
@@ -364,13 +328,11 @@ body:not(.landing-page) {
     box-shadow: 0 4px 12px rgba(30, 58, 138, 0.3);
 }
 
-.navbar .nav-link.active::before {
-    display: none;
-}
+.navbar .nav-link.active::before { display: none; }
 
-/* Dropdown Menu - Scoped to navbar */
+/* Dropdown Menu */
 .navbar .dropdown-menu {
-    border: none;
+    border: 2px solid var(--gray-100);
     box-shadow: var(--shadow-lg);
     border-radius: 12px;
     padding: 0.75rem;
@@ -378,18 +340,11 @@ body:not(.landing-page) {
     animation: dropdownFadeIn 0.3s ease;
     background: var(--white);
     min-width: 200px;
-    border: 2px solid var(--gray-100);
 }
 
 @keyframes dropdownFadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(-10px); }
+    to   { opacity: 1; transform: translateY(0); }
 }
 
 .navbar .dropdown-item {
@@ -422,9 +377,7 @@ body:not(.landing-page) {
     transform: translateX(0);
 }
 
-.navbar .dropdown-item:last-child {
-    margin-bottom: 0;
-}
+.navbar .dropdown-item:last-child { margin-bottom: 0; }
 
 .navbar .dropdown-toggle {
     display: flex;
@@ -444,7 +397,7 @@ body:not(.landing-page) {
     transform: rotate(180deg);
 }
 
-/* Button Styles in Navbar - Scoped */
+/* Navbar Buttons */
 .navbar .btn-outline-primary {
     border: 2px solid var(--navy-primary);
     color: var(--navy-primary);
@@ -507,9 +460,7 @@ body:not(.landing-page) {
     transition: left 0.5s ease;
 }
 
-.navbar .btn-primary:hover::before {
-    left: 100%;
-}
+.navbar .btn-primary:hover::before { left: 100%; }
 
 .navbar .btn-primary:hover {
     background: linear-gradient(135deg, var(--navy-dark) 0%, var(--navy-primary) 100%);
@@ -517,8 +468,9 @@ body:not(.landing-page) {
     box-shadow: 0 8px 20px rgba(30, 58, 138, 0.4);
 }
 
+
 /* ============================================
-   FOOTER STYLES (Scoped to .footer)
+   FOOTER STYLES
    ============================================ */
 
 .footer {
@@ -584,7 +536,6 @@ body:not(.landing-page) {
     transform: translateX(0);
 }
 
-/* Copyright Strip - Scoped */
 .copyright {
     background-color: #0a0e1a;
     color: var(--gray-300);
@@ -594,12 +545,23 @@ body:not(.landing-page) {
     border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+.footer-download-desc {
+    color: var(--gray-300);
+    font-size: 0.9rem;
+    margin-bottom: 0.75rem;
+}
+
+.footer-download-meta {
+    color: var(--gray-600);
+    font-size: 0.8rem;
+    margin-top: 0.5rem;
+}
+
 /* ============================================
    RESPONSIVE DESIGN
    ============================================ */
 
 @media (max-width: 991.98px) {
-    /* Mobile Navigation */
     .navbar .navbar-collapse {
         margin-top: 1rem;
         padding: 1.5rem;
@@ -608,15 +570,13 @@ body:not(.landing-page) {
         box-shadow: var(--shadow-lg);
         border: 2px solid var(--gray-100);
     }
-    
-    .navbar .navbar-nav {
-        gap: 0.5rem;
-    }
-    
+
+    .navbar .navbar-nav { gap: 0.5rem; }
+
     .navbar .nav-link {
         padding: 1rem 1.25rem !important;
     }
-    
+
     .navbar .btn-outline-primary,
     .navbar .btn-primary {
         width: 100%;
@@ -624,51 +584,31 @@ body:not(.landing-page) {
         margin-top: 0.75rem;
         padding: 1rem 1.75rem;
     }
-    
-    /* Footer Adjustments */
-    .footer {
-        padding: 2rem 0 1rem;
-    }
-    
-    .footer .footer-section-title {
-        font-size: 1rem;
-    }
-    
-    .navbar .logo-text {
-        font-size: 1.35rem;
-    }
-    
-    .navbar .logo-text::after {
-        font-size: 0.6rem;
-        bottom: -16px;
-    }
-    
-    .navbar .site-logo {
-        height: 42px;
-    }
 
-    .navbar.navbar-light.sticky-top {
-        padding: 1rem 0;
-    }
+    .footer { padding: 2rem 0 1rem; }
+
+    .footer .footer-section-title { font-size: 1rem; }
+
+    .navbar .logo-text { font-size: 1.35rem; }
+
+    .navbar .site-logo { height: 42px; }
+
+    .navbar.navbar-light.sticky-top { padding: 1rem 0; }
 }
 
 @media (max-width: 575.98px) {
-    .footer {
-        text-align: center;
-    }
-    
+    .footer { text-align: center; }
+
     .footer .footer-section-title::after {
         left: 50%;
         transform: translateX(-50%);
     }
-    
-    .footer .footer-links a {
-        justify-content: center;
-    }
+
+    .footer .footer-links a { justify-content: center; }
 }
 
 /* ============================================
-   FOCUS STYLES FOR ACCESSIBILITY
+   ACCESSIBILITY
    ============================================ */
 
 .navbar *:focus-visible,
@@ -685,25 +625,30 @@ body:not(.landing-page) {
 @media print {
     .navbar,
     .footer,
-    .copyright {
-        display: none;
-    }
+    .copyright { display: none; }
 }
+
+/* ============================================
+   DOWNLOAD BUTTON
+   ============================================ */
+
 .download-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 14px 32px;
-  background: #4f46e5;
-  color: #fff;
-  border-radius: 10px;
-  font-weight: 700;
-  font-size: 1rem;
-  text-decoration: none;
-  transition: background 0.2s, transform 0.1s;
-  box-shadow: 0 4px 14px rgba(79,70,229,0.4);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 32px;
+    background: #4f46e5;
+    color: #fff;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 1rem;
+    text-decoration: none;
+    transition: background 0.2s, transform 0.1s;
+    box-shadow: 0 4px 14px rgba(79, 70, 229, 0.4);
 }
-.download-btn:hover { 
-  background: #4338ca; 
-  transform: translateY(-1px);
+
+.download-btn:hover {
+    background: #4338ca;
+    transform: translateY(-1px);
+    color: #fff;
 }
