@@ -835,8 +835,6 @@ def internships():
 # Paginated list with optional search and source filters.
 # ============================================================
 @app.route("/scholarships")
-@login_required
-
 def scholarships():
     page = request.args.get("page", 1, type=int)
     search_query = request.args.get("search", "").strip()
@@ -845,10 +843,10 @@ def scholarships():
     offset = (page - 1) * PER_PAGE
 
     scholarship_list = []
+    saved_ids = set()
     total_pages = 0
 
     try:
-        # Build filtered query for count
         count_query = supabase.table("scholarships").select("id", count="exact")
 
         if search_query:
@@ -862,7 +860,6 @@ def scholarships():
         total_scholarships = count_response.count or 0
         total_pages = (total_scholarships + PER_PAGE - 1) // PER_PAGE
 
-        # Build filtered query for actual rows
         data_query = supabase.table("scholarships").select("*")
 
         if search_query:
@@ -879,19 +876,28 @@ def scholarships():
 
         scholarship_list = data_response.data or []
 
+        # Fetch saved scholarship IDs for logged-in user
+        user_id = session.get("user_id")
+        if user_id:
+            saved_response = supabase.table("saved_opportunities") \
+                .select("opportunity_id") \
+                .eq("user_id", user_id) \
+                .eq("opportunity_type", "scholarship") \
+                .execute()
+            saved_ids = {int(row["opportunity_id"]) for row in (saved_response.data or [])}
+
     except Exception as e:
         print(f"SCHOLARSHIPS LIST ERROR: {e}")
 
     return render_template(
         "scholarships.html",
         scholarships=scholarship_list,
+        saved_ids=saved_ids,
         page=page,
         total_pages=total_pages,
         current_search=search_query,
         current_source=source_filter
     )
-
-
 # ============================================================
 # INTERNSHIP DETAIL PAGE
 # Fetches a single internship by its ID.
@@ -1062,30 +1068,45 @@ def saved_page():
     internships = []
     scholarships = []
 
+    conn = None
+    cur = None
     try:
-        # Step 1: Get the saved internship IDs for this user
-        saved_response = supabase.table("saved_opportunities") \
-            .select("opportunity_id") \
-            .eq("user_id", user_id) \
-            .eq("opportunity_type", "internship") \
-            .execute()
+        conn = get_db()
+        cur = conn.cursor(cursor_factory=RealDictCursor)
 
-        saved_ids = [row["opportunity_id"] for row in (saved_response.data or [])]
+        # Saved internships
+        cur.execute(
+            """
+            SELECT i.*
+            FROM saved_opportunities s
+            JOIN internships i ON i.id = s.opportunity_id
+            WHERE s.user_id = %s AND s.opportunity_type = 'internship'
+            """,
+            (user_id,)
+        )
+        internships = cur.fetchall()
 
-        # Step 2: Fetch the full internship details for those IDs
-        if saved_ids:
-            internships_response = supabase.table("internships") \
-                .select("*") \
-                .in_("id", saved_ids) \
-                .execute()
-            internships = internships_response.data or []
+        # Saved scholarships
+        cur.execute(
+            """
+            SELECT sc.*
+            FROM saved_opportunities s
+            JOIN scholarships sc ON sc.id = s.opportunity_id
+            WHERE s.user_id = %s AND s.opportunity_type = 'scholarship'
+            """,
+            (user_id,)
+        )
+        scholarships = cur.fetchall()
 
     except Exception as e:
         print(f"SAVED PAGE ERROR: {e}")
+    finally:
+        if cur:
+            cur.close()
+        if conn:
+            conn.close()
 
     return render_template("saved.html", internships=internships, scholarships=scholarships)
-
-
 # ============================================================
 # UNSAVE OPPORTUNITY
 # Removes a record from saved_opportunities.

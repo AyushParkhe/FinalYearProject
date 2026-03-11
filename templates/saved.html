@@ -47,12 +47,10 @@
       <div class="empty-state">
         <div class="empty-state-icon">
           <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <!-- Folder Icon -->
             <path d="M40 60H160V140C160 146.627 154.627 152 148 152H52C45.3726 152 40 146.627 40 140V60Z" 
                   fill="#E5E7EB" stroke="#9CA3AF" stroke-width="2"/>
             <path d="M40 60V56C40 49.3726 45.3726 44 52 44H80L92 56H160V60H40Z" 
                   fill="#D1D5DB" stroke="#9CA3AF" stroke-width="2"/>
-            <!-- Heart Icon (crossed) -->
             <circle cx="100" cy="100" r="25" fill="white" stroke="#9CA3AF" stroke-width="2"/>
             <path d="M100 88L106 94L100 100L94 94L100 88Z" fill="#9CA3AF"/>
             <line x1="85" y1="85" x2="115" y2="115" stroke="#9CA3AF" stroke-width="2"/>
@@ -68,26 +66,57 @@
   <!-- ================= SCHOLARSHIPS ================= -->
   <div class="saved-section">
     <h3>Scholarships</h3>
-    
-    <div class="empty-state">
-      <div class="empty-state-icon">
-        <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <!-- Graduation Cap -->
-          <path d="M100 60L160 85V110L100 135L40 110V85L100 60Z" 
-                fill="#E5E7EB" stroke="#9CA3AF" stroke-width="2"/>
-          <path d="M100 60L40 85L100 110L160 85L100 60Z" 
-                fill="#D1D5DB" stroke="#9CA3AF" stroke-width="2"/>
-          <rect x="155" y="85" width="10" height="40" rx="2" fill="#9CA3AF"/>
-          <circle cx="160" cy="130" r="5" fill="#9CA3AF"/>
-          <!-- Coming Soon Badge -->
-          <circle cx="100" cy="140" r="25" fill="white" stroke="#3B82F6" stroke-width="2"/>
-          <text x="100" y="145" text-anchor="middle" fill="#3B82F6" font-size="12" font-weight="600">Soon</text>
-        </svg>
+
+    {% if scholarships %}
+      {% for s in scholarships %}
+        <div class="saved-card">
+          <div class="saved-card-main">
+            <h4>
+              <a href="/scholarships/{{ s.id }}" class="saved-title">
+                {{ s.title }}
+              </a>
+            </h4>
+
+            <p class="saved-org">{{ s.provider }}</p>
+
+            <div class="saved-meta-row">
+              {% if s.amount %}
+                <span>{{ s.amount }}</span>
+              {% endif %}
+              {% if s.deadline %}
+                <span>Deadline: {{ s.deadline }}</span>
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="saved-card-actions">
+            <button class="unsave-btn"
+                    data-id="{{ s.id }}"
+                    data-type="scholarship">
+              Remove
+            </button>
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <div class="empty-state">
+        <div class="empty-state-icon">
+          <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M100 60L160 85V110L100 135L40 110V85L100 60Z" 
+                  fill="#E5E7EB" stroke="#9CA3AF" stroke-width="2"/>
+            <path d="M100 60L40 85L100 110L160 85L100 60Z" 
+                  fill="#D1D5DB" stroke="#9CA3AF" stroke-width="2"/>
+            <rect x="155" y="85" width="10" height="40" rx="2" fill="#9CA3AF"/>
+            <circle cx="160" cy="130" r="5" fill="#9CA3AF"/>
+          </svg>
+        </div>
+        <h3 class="empty-state-title">No saved scholarships yet</h3>
+        <p class="empty-state-text">Start exploring scholarships and save the ones you're interested in</p>
+        <a href="{{ url_for('scholarships') }}" class="empty-state-cta">Browse Scholarships</a>
       </div>
-      <h3 class="empty-state-title">Scholarships Coming Soon</h3>
-      <p class="empty-state-text">We're working on adding scholarship opportunities to your dashboard</p>
-    </div>
+    {% endif %}
   </div>
+
 </div>
 {% endblock %}
 
@@ -99,7 +128,6 @@ document.addEventListener("click", async (e) => {
   const btn = e.target;
   const card = btn.closest(".saved-card");
 
-  // Add removing animation class
   card.classList.add("removing");
 
   const res = await fetch("/unsave", {
@@ -112,33 +140,22 @@ document.addEventListener("click", async (e) => {
   });
 
   if (res.ok) {
-    // Wait for animation to complete before removing
     setTimeout(() => {
       card.remove();
-      
-      // Check if section is now empty
+
       const section = card.closest('.saved-section');
       const remainingCards = section.querySelectorAll('.saved-card');
-      
+
       if (remainingCards.length === 0) {
-        // Add empty state
+        const isScholarship = btn.dataset.type === "scholarship";
         const emptyState = document.createElement('div');
         emptyState.className = 'empty-state';
         emptyState.innerHTML = `
-          <div class="empty-state-icon">
-            <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M40 60H160V140C160 146.627 154.627 152 148 152H52C45.3726 152 40 146.627 40 140V60Z" 
-                    fill="#E5E7EB" stroke="#9CA3AF" stroke-width="2"/>
-              <path d="M40 60V56C40 49.3726 45.3726 44 52 44H80L92 56H160V60H40Z" 
-                    fill="#D1D5DB" stroke="#9CA3AF" stroke-width="2"/>
-              <circle cx="100" cy="100" r="25" fill="white" stroke="#9CA3AF" stroke-width="2"/>
-              <path d="M100 88L106 94L100 100L94 94L100 88Z" fill="#9CA3AF"/>
-              <line x1="85" y1="85" x2="115" y2="115" stroke="#9CA3AF" stroke-width="2"/>
-            </svg>
-          </div>
-          <h3 class="empty-state-title">No saved internships yet</h3>
-          <p class="empty-state-text">Start exploring opportunities and save the ones you're interested in</p>
-          <a href="/internships" class="empty-state-cta">Browse Internships</a>
+          <h3 class="empty-state-title">No saved ${isScholarship ? 'scholarships' : 'internships'} yet</h3>
+          <p class="empty-state-text">Start exploring and save the ones you're interested in</p>
+          <a href="/${isScholarship ? 'scholarships' : 'internships'}" class="empty-state-cta">
+            Browse ${isScholarship ? 'Scholarships' : 'Internships'}
+          </a>
         `;
         section.appendChild(emptyState);
       }
