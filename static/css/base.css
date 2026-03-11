@@ -37,7 +37,7 @@
 }
 
 /* ============================================
-   MINIMAL GLOBAL RESETS
+   MINIMAL GLOBAL RESETS (Safe for all pages)
    ============================================ */
 
 html {
@@ -166,20 +166,21 @@ body:not(.landing-page) {
 
 
 /* ============================================
-   NAVIGATION BAR — Glassmorphism + Blobs
-   NOTE: Remove bg-white and shadow-sm from
-   the <nav> tag in base.html for this to work
+   NAVIGATION BAR
    ============================================ */
+
 .navbar.navbar-light.sticky-top {
-    background: linear-gradient(135deg, #f0f4ff 0%, #ffffff 40%, #f0fdf8 100%) !important;
+    /* Clean white with a very faint blue tint — no patterns */
+    background: rgba(255, 255, 255, 0.98) !important;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     box-shadow: 0 1px 0 rgba(30, 58, 138, 0.08), 0 4px 20px rgba(0, 0, 0, 0.06);
     padding: 1.5rem 0;
     transition: all var(--transition-base);
     position: relative;
-    overflow: hidden;
 }
 
-/* Top accent line */
+/* Top accent line only — clean and sharp */
 .navbar.navbar-light.sticky-top::before {
     content: '';
     position: absolute;
@@ -188,26 +189,11 @@ body:not(.landing-page) {
     right: 0;
     height: 3px;
     background: linear-gradient(90deg, var(--navy-primary) 0%, var(--navy-light) 50%, var(--accent-green) 100%);
-    z-index: 2;
 }
 
-/* Visible diagonal color wash */
-.navbar.navbar-light.sticky-top::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background:
-        radial-gradient(ellipse 600px 300px at -15% 50%, rgba(30, 58, 138, 0.12) 0%, transparent 60%),
-        radial-gradient(ellipse 500px 250px at 115% 50%, rgba(16, 185, 129, 0.10) 0%, transparent 60%);
-    pointer-events: none;
-    z-index: 0;
-}
+/* ::after completely removed — was causing the stripe pattern */
 
-.navbar.navbar-light.sticky-top .container {
-    position: relative;
-    z-index: 1;
-}
-/* Logo */
+/* Logo Styling */
 .navbar .navbar-brand {
     display: flex;
     align-items: center;
@@ -332,7 +318,7 @@ body:not(.landing-page) {
 
 /* Dropdown Menu */
 .navbar .dropdown-menu {
-    border: 2px solid var(--gray-100);
+    border: none;
     box-shadow: var(--shadow-lg);
     border-radius: 12px;
     padding: 0.75rem;
@@ -340,6 +326,7 @@ body:not(.landing-page) {
     animation: dropdownFadeIn 0.3s ease;
     background: var(--white);
     min-width: 200px;
+    border: 2px solid var(--gray-100);
 }
 
 @keyframes dropdownFadeIn {
@@ -570,13 +557,13 @@ body:not(.landing-page) {
         box-shadow: var(--shadow-lg);
         border: 2px solid var(--gray-100);
     }
-
+    
     .navbar .navbar-nav { gap: 0.5rem; }
-
+    
     .navbar .nav-link {
         padding: 1rem 1.25rem !important;
     }
-
+    
     .navbar .btn-outline-primary,
     .navbar .btn-primary {
         width: 100%;
@@ -584,13 +571,13 @@ body:not(.landing-page) {
         margin-top: 0.75rem;
         padding: 1rem 1.75rem;
     }
-
+    
     .footer { padding: 2rem 0 1rem; }
-
+    
     .footer .footer-section-title { font-size: 1rem; }
-
+    
     .navbar .logo-text { font-size: 1.35rem; }
-
+    
     .navbar .site-logo { height: 42px; }
 
     .navbar.navbar-light.sticky-top { padding: 1rem 0; }
@@ -598,12 +585,12 @@ body:not(.landing-page) {
 
 @media (max-width: 575.98px) {
     .footer { text-align: center; }
-
+    
     .footer .footer-section-title::after {
         left: 50%;
         transform: translateX(-50%);
     }
-
+    
     .footer .footer-links a { justify-content: center; }
 }
 
