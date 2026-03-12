@@ -170,7 +170,6 @@ body:not(.landing-page) {
    ============================================ */
 
 .navbar.navbar-light.sticky-top {
-    /* Clean white with a very faint blue tint — no patterns */
     background: rgba(255, 255, 255, 0.98) !important;
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
@@ -180,7 +179,6 @@ body:not(.landing-page) {
     position: relative;
 }
 
-/* Top accent line only — clean and sharp */
 .navbar.navbar-light.sticky-top::before {
     content: '';
     position: absolute;
@@ -191,9 +189,6 @@ body:not(.landing-page) {
     background: linear-gradient(90deg, var(--navy-primary) 0%, var(--navy-light) 50%, var(--accent-green) 100%);
 }
 
-/* ::after completely removed — was causing the stripe pattern */
-
-/* Logo Styling */
 .navbar .navbar-brand {
     display: flex;
     align-items: center;
@@ -545,6 +540,141 @@ body:not(.landing-page) {
 }
 
 /* ============================================
+   DOWNLOAD BUTTON
+   ============================================ */
+
+.download-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 32px;
+    background: #4f46e5;
+    color: #fff;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 1rem;
+    text-decoration: none;
+    transition: background 0.2s, transform 0.1s;
+    box-shadow: 0 4px 14px rgba(79, 70, 229, 0.4);
+}
+
+.download-btn:hover {
+    background: #4338ca;
+    transform: translateY(-1px);
+    color: #fff;
+}
+
+.download-btn.disabled {
+    background: #4b5563;
+    box-shadow: none;
+    cursor: not-allowed;
+    opacity: 0.6;
+    transform: none;
+    pointer-events: none; /* blocks hover */
+}
+
+/* Override pointer-events so onclick still fires */
+.download-btn.disabled {
+    pointer-events: auto;
+}
+
+.download-btn.disabled:hover {
+    background: #4b5563;
+    transform: none;
+    box-shadow: none;
+    color: #fff;
+}
+
+/* ============================================
+   DEV MODAL
+   ============================================ */
+
+#devModal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+}
+
+/* When JS sets display:flex, animations fire */
+#devModal[style*="flex"] {
+    animation: fadeIn 0.2s ease forwards;
+}
+
+#devModal[style*="flex"] .dev-modal-box {
+    animation: slideUp 0.25s ease forwards;
+}
+
+#devModal .dev-modal-box {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 2.5rem 2rem;
+    max-width: 380px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.22);
+}
+
+#devModal .dev-modal-icon {
+    font-size: 3rem;
+    line-height: 1;
+    margin-bottom: 0.75rem;
+    display: block;
+}
+
+#devModal .dev-modal-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 0.5rem;
+}
+
+#devModal .dev-modal-text {
+    color: #6b7280;
+    font-size: 0.95rem;
+    margin-bottom: 1.75rem;
+}
+
+#devModal .dev-modal-btn {
+    background: var(--navy-primary);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 0.6rem 2rem;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+    box-shadow: 0 4px 12px rgba(30, 58, 138, 0.3);
+}
+
+#devModal .dev-modal-btn:hover {
+    background: var(--navy-dark);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(30, 58, 138, 0.4);
+}
+
+#devModal .dev-modal-btn:active {
+    transform: translateY(0);
+    box-shadow: none;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(24px) scale(0.97); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ============================================
    RESPONSIVE DESIGN
    ============================================ */
 
@@ -592,6 +722,11 @@ body:not(.landing-page) {
     }
     
     .footer .footer-links a { justify-content: center; }
+
+    .download-btn {
+        width: 100%;
+        justify-content: center;
+    }
 }
 
 /* ============================================
@@ -613,29 +748,4 @@ body:not(.landing-page) {
     .navbar,
     .footer,
     .copyright { display: none; }
-}
-
-/* ============================================
-   DOWNLOAD BUTTON
-   ============================================ */
-
-.download-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 14px 32px;
-    background: #4f46e5;
-    color: #fff;
-    border-radius: 10px;
-    font-weight: 700;
-    font-size: 1rem;
-    text-decoration: none;
-    transition: background 0.2s, transform 0.1s;
-    box-shadow: 0 4px 14px rgba(79, 70, 229, 0.4);
-}
-
-.download-btn:hover {
-    background: #4338ca;
-    transform: translateY(-1px);
-    color: #fff;
 }
