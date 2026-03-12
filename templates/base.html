@@ -13,9 +13,13 @@
     <link rel="manifest" href="{{ url_for('static', filename='favicon/site.webmanifest') }}">
     <!-- Favicon end -->
 
-    <meta name="description" content="SmartIntern - A Final Year Project Made By The Students Of Government Polytechnic Chhatrapti Sambhajinagar">
-    <title>{% block title %}SmartIntern{% endblock %}</title>
-
+{% block meta_description %}
+<meta name="description" content="SmartIntern is a personalized internship and scholarship recommendation platform. A final year project developed by the students of Government Polytechnic Chhatrapati Sambhajinagar, deployed on Render.">
+{% endblock %}
+<meta property="og:title" content="SmartIntern | Internship & Scholarship Project">
+<meta property="og:description" content="Find your perfect internship and scholarship matches with SmartIntern.">
+<meta property="og:type" content="website">
+    <title>{% block title %}SmartIntern | Internship & Scholarship Recommendations{% endblock %}</title>
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" 
           integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" 
@@ -212,7 +216,7 @@
     =================================== -->
     <div class="copyright">
         <div class="container">
-            &copy; 2026 SmartIntern. All rights reserved.
+            &copy; 2026 SmartIntern Project. All rights reserved.
         </div>
     </div>
 
