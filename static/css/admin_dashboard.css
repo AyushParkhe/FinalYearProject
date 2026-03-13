@@ -1,0 +1,242 @@
+/* =============================================
+   SmartIntern — Admin Dashboard Styles
+   ============================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  --primary:       #1e40af;
+  --primary-light: #3b82f6;
+  --primary-bg:    #dbeafe;
+  --success:       #16a34a;
+  --success-bg:    #dcfce7;
+  --danger:        #dc2626;
+  --danger-bg:     #fee2e2;
+  --text-primary:  #111827;
+  --text-muted:    #6b7280;
+  --border:        #e5e7eb;
+  --surface:       #ffffff;
+  --page-bg:       #f0f5ff;
+  --shadow-sm:     0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.05);
+  --shadow-md:     0 4px 16px rgba(30,64,175,.10);
+  --radius:        12px;
+  --font-body:     'DM Sans', sans-serif;
+  --font-mono:     'JetBrains Mono', monospace;
+}
+
+/* ── Base ── */
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--page-bg);
+  color: var(--text-primary);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* ── Page wrapper ── */
+/* .container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 24px 80px;
+} */
+
+/* ── Page heading row ── */
+.d-flex.justify-content-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+h2 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--primary);
+  letter-spacing: -.02em;
+  margin: 0;
+}
+
+/* ── Flash alerts ── */
+.alert {
+  padding: 12px 18px;
+  border-radius: 8px;
+  font-size: .9rem;
+  font-weight: 500;
+  margin-bottom: 12px;
+  border: 1px solid transparent;
+}
+.alert-success  { background: var(--success-bg); color: var(--success);  border-color: #bbf7d0; }
+.alert-danger   { background: var(--danger-bg);  color: var(--danger);   border-color: #fecaca; }
+.alert-info     { background: var(--primary-bg); color: var(--primary);  border-color: #bfdbfe; }
+.alert-warning  { background: #fef9c3; color: #92400e; border-color: #fde68a; }
+
+/* ── Section label above Active Employers ── */
+h4.mt-5 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  margin: 48px 0 16px;
+  padding-left: 4px;
+}
+
+/* ── Cards ── */
+.card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
+  border: none !important;
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+
+.card-header {
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+}
+.card-header h5 {
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0;
+  letter-spacing: -.01em;
+}
+
+/* Pending — blue header */
+.card.border-primary .card-header { background: var(--primary) !important; color: #fff; }
+
+/* Approved — green header */
+.card.border-success .card-header { background: var(--success) !important; color: #fff; }
+
+.card-body { padding: 0; }
+
+/* ── Tables ── */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0;
+  font-size: .875rem;
+}
+
+.table thead th {
+  background: #f8faff;
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: .75rem;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+.table tbody tr {
+  border-bottom: 1px solid var(--border);
+  transition: background .15s;
+}
+.table tbody tr:last-child { border-bottom: none; }
+.table tbody tr:hover { background: #f5f8ff; }
+
+.table td {
+  padding: 14px 20px;
+  vertical-align: middle;
+}
+
+.fw-bold { font-weight: 600; }
+.text-muted { color: var(--text-muted); }
+.font-monospace { font-family: var(--font-mono); font-size: .82rem; }
+.text-end { text-align: right; }
+
+/* ── Buttons ── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 16px;
+  font-family: var(--font-body);
+  font-size: .8rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 7px;
+  cursor: pointer;
+  transition: background .18s, transform .12s, box-shadow .18s;
+  white-space: nowrap;
+  text-decoration: none;
+}
+.btn:active { transform: scale(.97); }
+
+.btn-success {
+  background: var(--success);
+  color: #fff;
+}
+.btn-success:hover { background: #15803d; box-shadow: 0 4px 12px rgba(22,163,74,.30); }
+
+.btn-danger {
+  background: var(--danger);
+  color: #fff;
+}
+.btn-danger:hover { background: #b91c1c; box-shadow: 0 4px 12px rgba(220,38,38,.30); }
+
+.btn-outline-danger {
+  background: transparent;
+  color: var(--danger);
+  border: 1.5px solid var(--danger);
+}
+.btn-outline-danger:hover { background: var(--danger); color: #fff; }
+
+.btn-sm { padding: 5px 12px; font-size: .78rem; }
+
+/* Inline forms in table cells */
+form.d-inline { display: inline; }
+
+/* ── Empty state ── */
+.text-center.p-5 {
+  text-align: center;
+  padding: 56px 24px;
+}
+.text-center.p-5 h5 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+.text-center.p-5 p {
+  font-size: .875rem;
+  color: #9ca3af;
+  margin: 0;
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .container { padding: 0 16px 60px; }
+  h2 { font-size: 1.4rem; }
+
+  .table thead { display: none; }
+  .table, .table tbody, .table tr, .table td { display: block; width: 100%; }
+
+  .table tbody tr {
+    padding: 16px;
+    border-bottom: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 10px;
+  }
+  .table td {
+    padding: 4px 0;
+    text-align: left !important;
+    border: none;
+  }
+  .table td::before {
+    content: attr(data-label);
+    font-size: .7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: var(--text-muted);
+    display: block;
+  }
+  .btn { width: 100%; justify-content: center; margin-bottom: 6px; }
+}

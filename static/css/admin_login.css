@@ -1,0 +1,191 @@
+/* =============================================
+   SmartIntern — Admin Login Styles
+   ============================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap');
+
+:root {
+  --primary:       #1e40af;
+  --primary-light: #3b82f6;
+  --primary-bg:    #dbeafe;
+  --text-primary:  #111827;
+  --text-muted:    #6b7280;
+  --border:        #d1d5db;
+  --surface:       #ffffff;
+  --page-bg:       #f0f5ff;
+  --dark:          #111827;
+  --dark-hover:    #1f2937;
+  --danger:        #dc2626;
+  --danger-bg:     #fee2e2;
+  --success:       #16a34a;
+  --success-bg:    #dcfce7;
+  --shadow-lg:     0 20px 48px rgba(30,64,175,.14), 0 4px 16px rgba(0,0,0,.06);
+  --radius:        14px;
+  --font:          'DM Sans', sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  font-family: var(--font);
+  background: var(--page-bg);
+  color: var(--text-primary);
+  line-height: 1.6;
+  margin: 0;
+  min-height: 100vh;
+
+  /* Subtle grid pattern background */
+  background-image:
+    linear-gradient(rgba(59,130,246,.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(59,130,246,.06) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* ── Centering wrapper ── */
+.container { padding: 0 16px; }
+
+.row.justify-content-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 90vh;
+}
+
+.col-md-4 {
+  width: 100%;
+  max-width: 400px;
+}
+
+/* ── Card ── */
+.card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  border: none !important;
+  overflow: hidden;
+  animation: cardIn .4s cubic-bezier(.22,.68,0,1.2) both;
+}
+
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(24px) scale(.97); }
+  to   { opacity: 1; transform: translateY(0)   scale(1);    }
+}
+
+/* ── Card header ── */
+.card-header {
+  padding: 28px 32px;
+  background: var(--dark) !important;
+  color: #fff;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Decorative shimmer line */
+.card-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--primary-light), #60a5fa, var(--primary-light));
+  background-size: 200% 100%;
+  animation: shimmer 2.4s linear infinite;
+}
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.card-header h4 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -.01em;
+  margin: 0;
+}
+
+/* Small lock icon above title */
+.card-header::before {
+  content: '🔐';
+  display: block;
+  font-size: 2rem;
+  margin-bottom: 8px;
+  filter: grayscale(1) brightness(2);
+}
+
+/* ── Card body ── */
+.card-body {
+  padding: 32px;
+}
+
+/* ── Flash alerts ── */
+.alert {
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: .875rem;
+  font-weight: 500;
+  margin-bottom: 20px;
+  border: 1px solid transparent;
+}
+.alert-success { background: var(--success-bg); color: var(--success);  border-color: #bbf7d0; }
+.alert-danger  { background: var(--danger-bg);  color: var(--danger);   border-color: #fecaca; }
+.alert-info    { background: var(--primary-bg); color: var(--primary);  border-color: #bfdbfe; }
+
+/* ── Form ── */
+.mb-4 { margin-bottom: 24px; }
+
+.form-label {
+  display: block;
+  font-size: .78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.form-control {
+  width: 100%;
+  padding: 11px 14px;
+  font-family: var(--font);
+  font-size: .95rem;
+  color: var(--text-primary);
+  background: #f9fafb;
+  border: 1.5px solid var(--border);
+  border-radius: 9px;
+  outline: none;
+  transition: border-color .2s, box-shadow .2s, background .2s;
+}
+.form-control:focus {
+  border-color: var(--primary-light);
+  background: #fff;
+  box-shadow: 0 0 0 4px rgba(59,130,246,.12);
+}
+.form-control::placeholder { color: #9ca3af; }
+
+/* ── Submit button ── */
+.btn-dark {
+  display: block;
+  width: 100%;
+  padding: 13px;
+  font-family: var(--font);
+  font-size: .95rem;
+  font-weight: 700;
+  letter-spacing: .01em;
+  color: #fff;
+  background: var(--dark);
+  border: none;
+  border-radius: 9px;
+  cursor: pointer;
+  transition: background .2s, transform .12s, box-shadow .2s;
+}
+.btn-dark:hover {
+  background: var(--dark-hover);
+  box-shadow: 0 6px 20px rgba(17,24,39,.28);
+}
+.btn-dark:active { transform: scale(.98); }
+
+/* ── Responsive ── */
+@media (max-width: 480px) {
+  .card-body  { padding: 24px 20px; }
+  .card-header { padding: 22px 20px; }
+}

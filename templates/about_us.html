@@ -1,247 +1,460 @@
 {% extends "base.html" %}
 
 {% block title %}About Us | SmartIntern{% endblock %}
+
 {% block extra_css %}
-<!-- <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet"> -->
 
 <style>
-/* *{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif;} */
-body{background:#f8f9fa;color:#333;}
-/* .container{width:90%;max-width:1200px;margin:auto;} */
+
+body{
+background:#f8f9fa;
+color:#333;
+font-family: 'Inter', sans-serif;
+}
 
 /* HERO */
-.hero{
-  background:linear-gradient(120deg,#00a5ec,#0077b6);
-  color:#fff;
-  padding:100px 0;
-}
-.hero h1{font-size:46px;margin-bottom:16px;}
-.hero p{font-size:18px;max-width:750px;line-height:1.7;}
 
-/* SECTIONS */
-.section{background:#fff;padding:80px 0;}
-.section h2{font-size:34px;color:#1f4fa3;margin-bottom:22px;}
-.section p{font-size:16px;line-height:1.9;max-width:900px;color:#444;}
+.hero{
+background:linear-gradient(135deg,#00a5ec,#0077b6,#004e92);
+background-size:300% 300%;
+animation:gradientMove 8s ease infinite;
+color:white;
+padding:120px 0;
+text-align:center;
+}
+
+@keyframes gradientMove{
+0%{background-position:0% 50%;}
+50%{background-position:100% 50%;}
+100%{background-position:0% 50%;}
+}
+
+.hero h1{
+font-size:50px;
+margin-bottom:16px;
+font-weight:700;
+letter-spacing:1px;
+}
+
+.hero p{
+font-size:18px;
+max-width:750px;
+margin:auto;
+line-height:1.8;
+opacity:0.95;
+}
+
+
+/* SECTION */
+
+.section{
+background:#fff;
+padding:90px 0;
+}
+
+.section h2{
+font-size:36px;
+color:#1f4fa3;
+margin-bottom:25px;
+text-align:center;
+font-weight:700;
+}
+
+.section p{
+font-size:16px;
+line-height:1.9;
+max-width:900px;
+margin:auto;
+color:#555;
+text-align:center;
+}
+
 
 /* VALUES */
+
 .values{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-  gap:32px;
-  margin-top:50px;
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+gap:32px;
+margin-top:55px;
 }
+
+/* GLASS CARDS */
+
 .value-box{
-  background:#f4f6f8;
-  padding:34px;
-  border-radius:14px;
+background:rgba(255,255,255,0.7);
+backdrop-filter:blur(10px);
+padding:36px;
+border-radius:16px;
+border:2px solid #0077b6;
+transition:all 0.4s ease;
+cursor:pointer;
+text-align:center;
+position:relative;
+overflow:hidden;
+box-shadow:0 10px 25px rgba(0,0,0,0.08);
 }
-.value-box h3{color:#0077b6;margin-bottom:12px;}
+
+.value-box h3{
+color:#0077b6;
+margin-bottom:12px;
+font-weight:600;
+}
+
+.value-box:hover{
+transform:translateY(-10px) scale(1.05);
+background:linear-gradient(120deg,#00a5ec,#0077b6);
+color:white;
+box-shadow:0 20px 40px rgba(0,0,0,0.2);
+}
+
+.value-box:hover h3{
+color:white;
+}
+
+/* SHINE ANIMATION */
+
+.value-box::after{
+content:"";
+position:absolute;
+top:0;
+left:-100%;
+width:100%;
+height:100%;
+background:rgba(255,255,255,0.2);
+transform:skewX(-30deg);
+transition:0.6s;
+}
+
+.value-box:hover::after{
+left:120%;
+}
+
 
 /* TEAM */
-.tabs{
-  display:flex;
-  gap:45px;
-  margin:50px 0;
-  font-size:16px;
-}
-.tab{
-  cursor:pointer;
-  color:#777;
-  padding-bottom:6px;
-}
-.tab.active{
-  color:#0077b6;
-  border-bottom:2px solid #0077b6;
+
+.team-wrapper{
+max-width:1000px;
+margin:auto;
+margin-top:60px;
 }
 
-.team-list{max-width:900px;}
+
+/* ADVISOR */
+
+.advisor{
+text-align:center;
+margin-bottom:80px;
+padding:30px;
+border-radius:16px;
+background:linear-gradient(135deg,#e3f4ff,#f5fbff);
+box-shadow:0 10px 30px rgba(0,0,0,0.08);
+transition:0.3s;
+}
+
+.advisor:hover{
+transform:translateY(-5px);
+}
+
+.advisor img{
+width:150px;
+height:150px;
+border-radius:50%;
+object-fit:cover;
+margin-bottom:15px;
+border:5px solid #0077b6;
+}
+
+.advisor h3{
+color:#0077b6;
+margin-bottom:8px;
+}
+
+.advisor p{
+max-width:600px;
+margin:auto;
+color:#555;
+}
+
+
+/* TEAM COLUMNS */
+
+.team-columns{
+display:flex;
+justify-content:space-between;
+gap:40px;
+}
+
+.team-col{
+display:flex;
+flex-direction:column;
+gap:40px;
+}
+
+
+/* MEMBER CARD */
 
 .member{
-  display:flex;
-  gap:28px;
-  margin-bottom:45px;
+display:flex;
+gap:18px;
+align-items:flex-start;
+padding:18px;
+border-radius:14px;
+transition:all 0.35s ease;
+background:white;
+box-shadow:0 8px 20px rgba(0,0,0,0.06);
 }
+
 .member img{
-  width:120px;
-  height:120px;
-  border-radius:50%;
-  object-fit:cover;
+width:85px;
+height:85px;
+border-radius:50%;
+object-fit:cover;
+border:3px solid #0077b6;
 }
+
 .member h4{
-  margin-bottom:8px;
-  font-size:18px;
+margin-bottom:6px;
+color:#1f4fa3;
 }
+
 .member p{
-  font-size:14px;
-  color:#555;
-  line-height:1.6;
+font-size:14px;
+color:#555;
+line-height:1.6;
+}
+
+/* HOVER EFFECT */
+
+.member:hover{
+transform:translateY(-6px) scale(1.02);
+box-shadow:0 15px 35px rgba(0,0,0,0.15);
 }
 
 
-@media(max-width:650px){
-  .member{
-    flex-direction:column;
-    align-items:center;
-    text-align:center;
-  }
-  .hero h1{font-size:34px;}
+/* SCROLL ANIMATION */
+
+.fade-in{
+opacity:0;
+transform:translateY(40px);
+transition:all 0.8s ease;
 }
+
+.fade-in.show{
+opacity:1;
+transform:translateY(0);
+}
+
+
+/* MOBILE */
+
+@media(max-width:768px){
+
+.hero h1{
+font-size:36px;
+}
+
+.team-columns{
+flex-direction:column;
+}
+
+.member{
+flex-direction:column;
+align-items:center;
+text-align:center;
+}
+
+}
+
 </style>
+
 {% endblock %}
+
 
 
 {% block content %}
 
 <!-- HERO -->
-<div class="hero">
-  <div class="container">
-    <h1>About SmartIntern</h1>
-    <p>
-      SmartIntern is an intelligent internship and scholarship discovery platform
-      that provides personalized, data-driven recommendations to help students
-      find the right opportunities at the right time.
-    </p>
-  </div>
+
+<div class="hero fade-in">
+<div class="container">
+
+<h1>About SmartIntern</h1>
+
+<p>
+SmartIntern is an intelligent internship and scholarship discovery platform
+that provides personalized, data-driven recommendations to help students
+find the right opportunities at the right time.
+</p>
+
 </div>
+</div>
+
+
 
 <!-- WHO WE ARE -->
-<div class="section">
-  <div class="container">
-    <h2>Who we are</h2>
-    <p>
-      SmartIntern was built to address the challenge students face in discovering
-      relevant internships and scholarships across multiple platforms.
-      We aggregate verified opportunities and intelligently match them with
-      students based on skills, interests, and academic profiles.
-    </p>
-  </div>
+
+<div class="section fade-in">
+<div class="container">
+
+<h2>Who we are</h2>
+
+<p>
+SmartIntern was built to address the challenge students face in discovering
+relevant internships and scholarships across multiple platforms.
+We aggregate verified opportunities and intelligently match them with
+students based on skills, interests, and academic profiles.
+</p>
+
 </div>
+</div>
+
+
 
 <!-- BELIEFS -->
-<div class="section">
-  <div class="container">
-    <h2>What we believe in</h2>
 
-    <div class="values">
-      <div class="value-box">
-        <h3>Accessibility</h3>
-        <p>Every student deserves equal access to career opportunities.</p>
-      </div>
+<div class="section fade-in">
+<div class="container">
 
-      <div class="value-box">
-        <h3>Transparency</h3>
-        <p>Only verified, trustworthy, and up-to-date information.</p>
-      </div>
+<h2>What we believe in</h2>
 
-      <div class="value-box">
-        <h3>Personalization</h3>
-        <p>Opportunities should match individual goals and strengths.</p>
-      </div>
-    </div>
-  </div>
+<div class="values">
+
+<div class="value-box">
+<h3>Accessibility</h3>
+<p>Every student deserves equal access to career opportunities.</p>
 </div>
+
+<div class="value-box">
+<h3>Transparency</h3>
+<p>Only verified, trustworthy, and up-to-date information.</p>
+</div>
+
+<div class="value-box">
+<h3>Personalization</h3>
+<p>Opportunities should match individual goals and strengths.</p>
+</div>
+
+</div>
+
+</div>
+</div>
+
+
 
 <!-- TEAM -->
-<div class="section">
-  <div class="container">
-    <h2>Meet the team</h2>
 
-    <div class="tabs">
-      <span class="tab active" onclick="showTeam('current')">Current team</span>
-      <span class="tab" onclick="showTeam('advisor')">Advisors</span>
-    </div>
+<div class="section fade-in">
+<div class="container">
 
-    <!-- CURRENT TEAM -->
-    <div id="current-team" class="team-list">
+<h2>Meet the Team</h2>
 
-      <div class="member">
-        <img src="static/img/about_us/ap.jpeg">
-        <div>
-          <h4>Ayush Parkhe</h4>
-          <p>Core team member responsible for system planning and development.</p>
-        </div>
-      </div>
+<div class="team-wrapper">
 
-      <div class="member">
-        <img src="static/img/about_us/vp.jpeg">
-        <div>
-          <h4>Vaishnavi Patil</h4>
-          <p>Works on AI logic, data processing, and recommendation systems.</p>
-        </div>
-      </div>
 
-      <div class="member">
-        <img src="static/img/about_us/dk.jpeg">
-        <div>
-          <h4>Dipali Khosare</h4>
-          <p>Handles research, documentation, and data verification.</p>
-        </div>
-      </div>
+<div class="advisor">
 
-      <div class="member">
-        <img src="static/img/about_us/pm.jpeg">
-        <div>
-          <h4>Prajkta Mane</h4>
-          <p>Supports UI structure and content validation.</p>
-        </div>
-      </div>
+<img src="static/img/about_us/sontakke_mam.jpeg">
 
-      <div class="member">
-        <img src="static/img/about_us/ds.jpeg">
-        <div>
-          <h4>Dipali Sanap</h4>
-          <p>Assists with backend coordination and data preparation.</p>
-        </div>
-      </div>
+<h3>P. V. Sontakke</h3>
 
-      <div class="member">
-        <img src="static/img/about_us/dw.jpeg">
-        <div>
-          <h4>Dipika Warade</h4>
-          <p>Works on data analysis and recommendation accuracy.</p>
-        </div>
-      </div>
+<p>
+Project Advisor and Mentor guiding the team in research methodology,
+system design, and technical implementation while helping students
+develop innovative solutions.
+</p>
 
-    </div>
-
-    <!-- ADVISOR -->
-    <div id="advisor-team" class="team-list" style="display:none;">
-      <div class="member">
-        <img src="static/img/about_us/sontakke_mam.jpeg">
-        <div>
-          <h4>P. V. Sontakke</h4>
-          <p>
-            Project Advisor and Mentor, guiding the team in research methodology,
-            system design, and technical implementation.
-          </p>
-        </div>
-      </div>
-    </div>
-
-  </div>
 </div>
+
+
+
+<div class="team-columns">
+
+<div class="team-col">
+
+<div class="member">
+<img src="static/img/about_us/ap.jpeg">
+<div>
+<h4>Ayush Parkhe</h4>
+<p>Core developer responsible for backend system design and platform integration.</p>
+</div>
+</div>
+
+<div class="member">
+<img src="static/img/about_us/dk.jpeg">
+<div>
+<h4>Dipali Khosare</h4>
+<p>Focuses on research, documentation, and verification of internship data.</p>
+</div>
+</div>
+
+<div class="member">
+<img src="static/img/about_us/ds.jpeg">
+<div>
+<h4>Dipali Sanap</h4>
+<p>Supports backend coordination and assists in organizing system data.</p>
+</div>
+</div>
+
+</div>
+
+
+
+<div class="team-col">
+
+<div class="member">
+<img src="static/img/about_us/vp.jpeg">
+<div>
+<h4>Vaishnavi Patil</h4>
+<p>Works on AI logic and machine learning models for smart recommendations.</p>
+</div>
+</div>
+
+<div class="member">
+<img src="static/img/about_us/pm.jpeg">
+<div>
+<h4>Prajkta Mane</h4>
+<p>Contributes to UI structure and ensures accurate content across the platform.</p>
+</div>
+</div>
+
+<div class="member">
+<img src="static/img/about_us/dw.jpeg">
+<div>
+<h4>Dipika Warade</h4>
+<p>Handles data analysis and improves recommendation accuracy.</p>
+</div>
+</div>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+
 {% endblock %}
+
+
 
 {% block extra_js %}
 
 <script>
-function showTeam(type){
-  const current=document.getElementById('current-team');
-  const advisor=document.getElementById('advisor-team');
-  const tabs=document.querySelectorAll('.tab');
-  tabs.forEach(t=>t.classList.remove('active'));
-  if(type==='current'){
-    current.style.display='block';
-    advisor.style.display='none';
-    tabs[0].classList.add('active');
-  }else{
-    current.style.display='none';
-    advisor.style.display='block';
-    tabs[1].classList.add('active');
-  }
+
+const observer = new IntersectionObserver(entries => {
+entries.forEach(entry => {
+if(entry.isIntersecting){
+entry.target.classList.add("show");
 }
+});
+});
+
+document.querySelectorAll(".fade-in").forEach(el=>{
+observer.observe(el);
+});
+
 </script>
+
 {% endblock %}
-
-
-

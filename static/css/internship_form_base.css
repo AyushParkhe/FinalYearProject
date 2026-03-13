@@ -1,0 +1,252 @@
+/* ======================================
+   IMPORTS
+====================================== */
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=DM+Serif+Display&display=swap');
+
+/* ======================================
+   CSS VARIABLES
+====================================== */
+:root {
+  --blue-500:  #2563eb;
+  --blue-700:  #1e40af;
+  --blue-50:   #eff6ff;
+  --blue-100:  #dbeafe;
+  --blue-200:  #bfdbfe;
+  --green-500: #22c55e;
+  --green-600: #16a34a;
+  --green-50:  #f0fdf4;
+  --slate-50:  #f8fafc;
+  --slate-100: #f1f5f9;
+  --slate-200: #e2e8f0;
+  --slate-400: #94a3b8;
+  --slate-500: #64748b;
+  --slate-600: #475569;
+  --slate-800: #1e293b;
+  --slate-900: #0f172a;
+  --white:     #ffffff;
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --shadow-md: 0 8px 28px rgba(15, 23, 42, 0.09);
+  --transition: 0.22s ease;
+}
+
+/* ======================================
+   GLOBAL
+====================================== */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--slate-50);
+  color: var(--slate-800);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ======================================
+   PAGE WRAPPER
+====================================== */
+/* .container {
+  max-width: 780px;
+} */
+
+/* ======================================
+   CARD
+====================================== */
+.card {
+  border: none !important;
+  border-radius: var(--radius-lg) !important;
+  background: var(--white);
+  box-shadow: var(--shadow-md) !important;
+  overflow: hidden;
+  animation: fadeUp 0.5s ease both;
+}
+
+.card-header {
+  padding: 36px 40px 20px !important;
+  background: var(--white) !important;
+  border-bottom: none !important;
+}
+
+.card-header h3 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.75rem;
+  font-weight: 400;
+  color: var(--slate-900);
+  margin-bottom: 6px !important;
+}
+
+.card-header p.text-muted {
+  font-size: 0.92rem;
+  color: var(--slate-500) !important;
+  margin: 0 !important;
+}
+
+.card-body {
+  padding: 8px 40px 40px !important;
+}
+
+/* ======================================
+   FORM LABELS
+====================================== */
+.form-label {
+  font-size: 0.82rem !important;
+  font-weight: 700 !important;
+  color: var(--slate-600) !important;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 7px !important;
+}
+
+/* ======================================
+   INPUTS
+====================================== */
+.form-control {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.93rem !important;
+  color: var(--slate-800) !important;
+  background: var(--white) !important;
+  border: 1.5px solid var(--slate-200) !important;
+  border-radius: var(--radius-sm) !important;
+  padding: 11px 15px !important;
+  transition: border-color var(--transition), box-shadow var(--transition), background var(--transition) !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.form-control::placeholder {
+  color: var(--slate-400) !important;
+  font-weight: 400;
+}
+
+.form-control:focus {
+  border-color: var(--blue-500) !important;
+  box-shadow: 0 0 0 3.5px rgba(37, 99, 235, 0.1) !important;
+  background: var(--blue-50) !important;
+}
+
+/* ======================================
+   FLASH / ALERT
+====================================== */
+.alert {
+  border-radius: var(--radius-sm) !important;
+  border: none !important;
+  font-size: 0.88rem;
+  font-weight: 500;
+  padding: 12px 18px !important;
+  margin-bottom: 24px !important;
+}
+
+.alert-success {
+  background: var(--green-50) !important;
+  color: var(--green-600) !important;
+  border-left: 3px solid var(--green-500) !important;
+}
+
+.alert-danger,
+.alert-error {
+  background: #fef2f2 !important;
+  color: #b91c1c !important;
+  border-left: 3px solid #ef4444 !important;
+}
+
+/* ======================================
+   DIVIDER between field groups
+====================================== */
+.mb-4 {
+  position: relative;
+}
+
+/* ======================================
+   BUTTONS
+====================================== */
+
+/* Cancel */
+.btn-outline-secondary {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.9rem !important;
+  font-weight: 600 !important;
+  border-radius: var(--radius-sm) !important;
+  padding: 10px 28px !important;
+  border: 1.5px solid var(--slate-200) !important;
+  color: var(--slate-600) !important;
+  background: var(--white) !important;
+  transition: all var(--transition) !important;
+}
+
+.btn-outline-secondary:hover {
+  background: var(--slate-100) !important;
+  border-color: var(--slate-300) !important;
+  color: var(--slate-800) !important;
+}
+
+/* Publish (green — post page) */
+.btn-success {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.9rem !important;
+  font-weight: 700 !important;
+  border-radius: var(--radius-sm) !important;
+  padding: 10px 28px !important;
+  border: none !important;
+  background: linear-gradient(135deg, var(--green-500), var(--green-600)) !important;
+  color: var(--white) !important;
+  transition: all var(--transition) !important;
+}
+
+.btn-success:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(34, 197, 94, 0.35) !important;
+}
+
+/* Save Changes (blue — edit page) */
+.btn-primary {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.9rem !important;
+  font-weight: 700 !important;
+  border-radius: var(--radius-sm) !important;
+  padding: 10px 28px !important;
+  border: none !important;
+  background: linear-gradient(135deg, var(--blue-500), var(--blue-700)) !important;
+  color: var(--white) !important;
+  transition: all var(--transition) !important;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.35) !important;
+}
+
+.btn-primary:active,
+.btn-success:active {
+  transform: translateY(0) !important;
+  box-shadow: none !important;
+}
+
+/* ======================================
+   ANIMATION
+====================================== */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+
+/* ======================================
+   RESPONSIVE
+====================================== */
+@media (max-width: 640px) {
+  .card-header {
+    padding: 28px 24px 16px !important;
+  }
+
+  .card-body {
+    padding: 8px 24px 32px !important;
+  }
+
+  .btn-outline-secondary,
+  .btn-success,
+  .btn-primary {
+    padding: 10px 18px !important;
+  }
+}

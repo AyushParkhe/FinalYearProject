@@ -1,0 +1,55 @@
+
+/* Employer Landing Page */
+body{
+    font-family: Arial, Helvetica, sans-serif;
+    margin:0;
+    background:#f6f7fb;
+}
+
+.bg-dark{
+    background:#111 !important;
+}
+
+.text-warning{
+    color:#ffc107 !important;
+}
+
+/* .container{
+    max-width:1100px;
+    margin:auto;
+} */
+
+.btn{
+    padding:12px 22px;
+    border-radius:8px;
+    text-decoration:none;
+    font-weight:600;
+}
+
+.btn-warning{
+    background:#ffc107;
+    color:#000;
+}
+
+.btn-outline-light{
+    border:2px solid #fff;
+    color:#fff;
+}
+
+.card{
+    border-radius:12px;
+    background:#fff;
+    transition:0.3s;
+}
+
+.card:hover{
+    transform:translateY(-5px);
+}
+
+.shadow-sm{
+    box-shadow:0 4px 15px rgba(0,0,0,0.08);
+}
+
+.text-center{
+    text-align:center;
+}

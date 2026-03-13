@@ -1,0 +1,248 @@
+/* ======================================
+   IMPORTS
+====================================== */
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Serif+Display:ital@0;1&display=swap');
+
+/* ======================================
+   CSS VARIABLES
+====================================== */
+:root {
+  --blue-500:  #2563eb;
+  --blue-700:  #1e40af;
+  --blue-900:  #1e3a8a;
+  --blue-50:   #eff6ff;
+  --blue-100:  #dbeafe;
+  --slate-50:  #f8fafc;
+  --slate-100: #f1f5f9;
+  --slate-200: #e2e8f0;
+  --slate-400: #94a3b8;
+  --slate-500: #64748b;
+  --slate-600: #475569;
+  --slate-700: #334155;
+  --slate-800: #1e293b;
+  --slate-900: #0f172a;
+  --white:     #ffffff;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --shadow-md: 0 8px 28px rgba(15, 23, 42, 0.08);
+  --transition: 0.22s ease;
+}
+
+/* ======================================
+   GLOBAL
+====================================== */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--slate-50);
+  color: var(--slate-700);
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* .container {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 0 24px;
+} */
+
+/* ======================================
+   HERO
+====================================== */
+.privacy-hero {
+  position: relative;
+  background: linear-gradient(135deg, var(--blue-900) 0%, var(--blue-700) 50%, var(--blue-500) 100%);
+  padding: 80px 24px 72px;
+  text-align: center;
+  overflow: hidden;
+}
+
+/* Decorative circles */
+.privacy-hero::before,
+.privacy-hero::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.07);
+  pointer-events: none;
+}
+.privacy-hero::before {
+  width: 380px;
+  height: 380px;
+  top: -130px;
+  left: -80px;
+}
+.privacy-hero::after {
+  width: 260px;
+  height: 260px;
+  bottom: -100px;
+  right: -40px;
+}
+
+.privacy-hero h1 {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 400;
+  color: var(--white);
+  letter-spacing: -0.5px;
+  margin-bottom: 12px;
+  position: relative;
+  z-index: 1;
+  animation: fadeUp 0.55s ease both;
+}
+
+.privacy-hero p {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.8);
+  position: relative;
+  z-index: 1;
+  animation: fadeUp 0.55s 0.1s ease both;
+}
+
+/* ======================================
+   CONTENT CARD
+====================================== */
+.privacy-content {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: 56px 64px;
+  margin: -36px auto 72px;
+  position: relative;
+  z-index: 2;
+  animation: fadeUp 0.55s 0.18s ease both;
+}
+
+/* Intro paragraph */
+.privacy-content > p:first-child {
+  font-size: 0.97rem;
+  color: var(--slate-500);
+  line-height: 1.8;
+  padding-bottom: 32px;
+  border-bottom: 1px solid var(--slate-100);
+  margin-bottom: 36px;
+}
+
+/* ======================================
+   SECTION HEADINGS
+====================================== */
+.privacy-content h2 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.2rem;
+  font-weight: 400;
+  color: var(--slate-900);
+  margin: 36px 0 12px;
+  padding-left: 16px;
+  border-left: 3px solid var(--blue-500);
+  line-height: 1.4;
+}
+
+.privacy-content h2:first-of-type {
+  margin-top: 0;
+}
+
+/* ======================================
+   BODY TEXT
+====================================== */
+.privacy-content p {
+  font-size: 0.93rem;
+  color: var(--slate-600);
+  line-height: 1.8;
+  margin-bottom: 0;
+}
+
+.privacy-content h2 + p {
+  margin-top: 0;
+}
+
+/* ======================================
+   LISTS
+====================================== */
+.privacy-content ul {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.privacy-content ul li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 0.93rem;
+  color: var(--slate-600);
+  padding: 10px 14px;
+  background: var(--slate-50);
+  border: 1px solid var(--slate-200);
+  border-radius: 10px;
+  line-height: 1.6;
+  transition: background var(--transition), border-color var(--transition);
+}
+
+.privacy-content ul li:hover {
+  background: var(--blue-50);
+  border-color: var(--blue-100);
+}
+
+/* Blue dot before each list item */
+.privacy-content ul li::before {
+  content: '';
+  width: 7px;
+  height: 7px;
+  min-width: 7px;
+  border-radius: 50%;
+  background: var(--blue-500);
+  margin-top: 7px;
+}
+
+/* ======================================
+   CONTACT EMAIL HIGHLIGHT
+====================================== */
+.privacy-content p strong {
+  color: var(--blue-500);
+  font-weight: 600;
+}
+
+/* ======================================
+   LAST UPDATED NOTE
+====================================== */
+.privacy-content p[style] {
+  all: unset;
+  display: block;
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 1px solid var(--slate-100);
+  font-size: 0.82rem;
+  color: var(--slate-400);
+  font-style: italic;
+}
+
+/* ======================================
+   ANIMATIONS
+====================================== */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+
+/* ======================================
+   RESPONSIVE
+====================================== */
+@media (max-width: 700px) {
+  .privacy-content {
+    padding: 32px 24px;
+    margin: -24px auto 48px;
+    border-radius: var(--radius-md);
+  }
+
+  .privacy-hero {
+    padding: 60px 20px 56px;
+  }
+}

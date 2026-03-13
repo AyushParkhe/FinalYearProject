@@ -14,7 +14,7 @@
     <!-- Favicon end -->
 
 {% block meta_description %}
-<meta name="description" content="SmartIntern is a personalized internship and scholarship recommendation platform. A final year project developed by the students of Government Polytechnic Chhatrapati Sambhajinagar, deployed on Render.">
+<meta name="description" content="A final year project developed by the students of Government Polytechnic Chhatrapati Sambhajinagar.">
 {% endblock %}
 <meta property="og:title" content="SmartIntern | Internship & Scholarship Project">
 <meta property="og:description" content="Find your perfect internship and scholarship matches with SmartIntern.">
@@ -27,6 +27,7 @@
 
     <!-- Shared and page-specific CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    
     {% block extra_css %}{% endblock %}
 </head>
 <body>
@@ -241,6 +242,7 @@
 
     <!-- Shared JavaScript -->
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+   
 
     <!-- Close modal when clicking the backdrop -->
     <script>
@@ -251,6 +253,121 @@
 
     <!-- Page-specific JavaScript -->
     {% block extra_js %}{% endblock %}
+    <!-- =============================================
+     SMARTY CHATBOT WIDGET
+     Paste this entire block just before </body>
+     in your base.html
+     ============================================= -->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/chatbot.css') }}">
+
+<!-- Floating Bubble -->
+<button id="smarty-bubble" aria-label="Chat with Smarty AI">
+  <span class="cb-icon cb-chat">
+    <svg viewBox="0 0 24 24"><path d="M12 2C6.477 2 2 6.163 2 11.307c0 2.608 1.162 4.956 3.032 6.63L4 22l4.606-2.017A11.18 11.18 0 0012 20.614c5.523 0 10-4.163 10-9.307S17.523 2 12 2z"/></svg>
+  </span>
+  <span class="cb-icon cb-close">
+    <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round">
+      <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+    </svg>
+  </span>
+  <span id="smarty-badge"></span>
+</button>
+
+<!-- Chat Window -->
+<div id="smarty-window" role="dialog" aria-label="Smarty AI Assistant">
+
+  <!-- Header -->
+  <div class="cb-header">
+    <div class="cb-avatar">
+      <svg viewBox="0 0 24 24"><path d="M12 2C6.477 2 2 6.163 2 11.307c0 2.608 1.162 4.956 3.032 6.63L4 22l4.606-2.017A11.18 11.18 0 0012 20.614c5.523 0 10-4.163 10-9.307S17.523 2 12 2z"/></svg>
+    </div>
+    <div class="cb-header-info">
+      <div class="cb-name">Smarty — SmartIntern AI</div>
+      <div class="cb-status"><span class="cb-dot"></span>Online · Always ready to help</div>
+    </div>
+    <div class="cb-header-btns">
+      <button class="cb-hbtn" id="smarty-clear" title="Clear chat">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/>
+        </svg>
+      </button>
+      <button class="cb-hbtn" id="smarty-expand" title="Expand to fullscreen">
+        <svg id="smarty-expand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/>
+          <line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/>
+        </svg>
+        <svg id="smarty-shrink-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none">
+          <polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/>
+          <line x1="10" y1="14" x2="3" y2="21"/><line x1="21" y1="3" x2="14" y2="10"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="cb-fs-wrap">
+
+    <aside class="cb-sidebar">
+      <div class="cb-sidebar-title">Try asking</div>
+      <button class="cb-sidebar-prompt">How do I register on SmartIntern?</button>
+      <button class="cb-sidebar-prompt">How to write a strong resume?</button>
+      <button class="cb-sidebar-prompt">What skills should I add to my profile?</button>
+      <button class="cb-sidebar-prompt">How do recommendations work?</button>
+      <button class="cb-sidebar-prompt">Tips for technical interview prep</button>
+      <button class="cb-sidebar-prompt">Who built SmartIntern?</button>
+      <button class="cb-sidebar-clear" id="smarty-sidebar-clear">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/>
+        </svg>
+        Clear conversation
+      </button>
+    </aside>
+
+    <div class="cb-main">
+      <div id="smarty-messages">
+
+        <div class="cb-welcome" id="smarty-welcome">
+          <div class="cb-welcome-icon">
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.477 2 2 6.163 2 11.307c0 2.608 1.162 4.956 3.032 6.63L4 22l4.606-2.017A11.18 11.18 0 0012 20.614c5.523 0 10-4.163 10-9.307S17.523 2 12 2z"/></svg>
+          </div>
+          <h4>Hi! I'm Smarty 👋</h4>
+          <p>Ask me about internships, scholarships, your profile, or anything else!</p>
+          <div class="cb-chips">
+            <button class="cb-chip">Find internships</button>
+            <button class="cb-chip">Resume tips</button>
+            <button class="cb-chip">Interview prep</button>
+            <button class="cb-chip">Who built this?</button>
+          </div>
+        </div>
+
+        <div id="smarty-typing">
+          <div class="cb-msg-av">
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.477 2 2 6.163 2 11.307c0 2.608 1.162 4.956 3.032 6.63L4 22l4.606-2.017A11.18 11.18 0 0012 20.614c5.523 0 10-4.163 10-9.307S17.523 2 12 2z"/></svg>
+          </div>
+          <div class="cb-typing-bubble">
+            <span></span><span></span><span></span>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="cb-input-area">
+        <div class="cb-input-row">
+          <textarea id="smarty-input" rows="1" placeholder="Ask me anything…"></textarea>
+          <button class="cb-send" id="smarty-send" aria-label="Send">
+            <svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2v7z"/></svg>
+          </button>
+        </div>
+        <div class="cb-hint">Enter to send · Shift+Enter for new line</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+ <script src="{{ url_for('static', filename='js/chatbot.js') }}"></script>
 
 </body>
 </html>

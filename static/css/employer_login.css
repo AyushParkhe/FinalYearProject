@@ -1,0 +1,58 @@
+
+/* Employer Login Page */
+body{
+    font-family: Arial, Helvetica, sans-serif;
+    background:#f5f6fa;
+}
+
+/* .container{
+    max-width:1000px;
+    margin:auto;
+} */
+
+.card{
+    background:#fff;
+    border-radius:16px;
+    border:1px solid #eee;
+}
+
+.shadow-sm{
+    box-shadow:0 6px 20px rgba(0,0,0,0.08);
+}
+
+.card-body{
+    padding:40px;
+}
+
+.form-control{
+    width:100%;
+    padding:10px;
+    border-radius:6px;
+    border:1px solid #ccc;
+}
+
+.form-control:focus{
+    outline:none;
+    border-color:#0d6efd;
+}
+
+.btn{
+    background:#0d6efd;
+    color:#fff;
+    border:none;
+    padding:10px;
+    border-radius:8px;
+    cursor:pointer;
+}
+
+.btn:hover{
+    background:#0b5ed7;
+}
+
+.text-center{
+    text-align:center;
+}
+
+.text-muted{
+    color:#6c757d;
+}
