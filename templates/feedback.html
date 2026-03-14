@@ -1,415 +1,437 @@
-
 {% extends "base.html" %}
 
 {% block title %}Feedback | SmartIntern{% endblock %}
 
 {% block extra_css %}
-    
-    <style>
-        /* ============================================
-   FEEDBACK PAGE — Heading Block
-   ============================================ */
+<style>
 
-/* Page title */
-h2 {
-    font-size: 2rem;
-    font-weight: 800;
-    letter-spacing: -0.5px;
-    margin-bottom: 0.5rem;
+/* =================================
+SMARTINTERN PREMIUM FEEDBACK PAGE
+================================= */
 
-    background: linear-gradient(
-        110deg,
-        #0f2167 0%,
-        #1e3a8a 30%,
-        #2563eb 60%,
-        #1d4ed8 100%
-    );
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+body{
+    background: linear-gradient(135deg,#dbeafe,#e0f2fe,#f1f5ff);
+    background-size:400% 400%;
+    animation: gradientMove 12s ease infinite;
 }
 
-/* Subtitle */
-.subtitle {
-    font-size: 1rem;
-    color: #4b5563;
-    max-width: 520px;
-    line-height: 1.7;
-    margin: 0 0 2rem 0;
+@keyframes gradientMove{
+0%{background-position:0% 50%}
+50%{background-position:100% 50%}
+100%{background-position:0% 50%}
 }
 
-/* ============================================
-   FEEDBACK FLASH MESSAGE
-   ============================================ */
+.feedback-container{
+    min-height:90vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:40px 20px;
+    font-family:'Segoe UI',sans-serif;
+}
 
-.feedback-flash {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.6rem;
-    margin: 0.75rem 0 1.25rem 0;
+/* =====================
+Glass Card
+===================== */
 
-    padding: 0.75rem 1.25rem;
-    border-radius: 12px;
+.card{
+    width:100%;
+    max-width:720px;
 
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: #15803d;
+    background:rgba(255,255,255,0.65);
+    backdrop-filter:blur(18px);
 
-    background: linear-gradient(135deg, #dcfce7 0%, #d1fae5 100%);
-    border: 1px solid rgba(21, 128, 61, 0.15);
+    border-radius:22px;
+
+    padding:40px;
+
+    border:1px solid rgba(255,255,255,0.4);
 
     box-shadow:
-        0 2px 8px rgba(21, 128, 61, 0.1),
-        0 1px 3px rgba(0, 0, 0, 0.04);
+    0 30px 70px rgba(0,0,0,.15);
 
-    /* Slides down smoothly when it appears */
-    animation: flashSlideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    animation:fadeUp .7s ease;
 }
 
-/* Checkmark icon prepended automatically */
-.feedback-flash::before {
-    content: '✓';
-    width: 20px;
-    height: 20px;
-    background: #15803d;
-    color: #ffffff;
-    border-radius: 50%;
-    font-size: 0.7rem;
-    font-weight: 800;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
+@keyframes fadeUp{
+from{
+opacity:0;
+transform:translateY(30px)
+}
+to{
+opacity:1;
+transform:translateY(0)
+}
 }
 
-/* Auto-dismisses after 4s */
-.feedback-flash {
-    animation: flashSlideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both,
-               flashFadeOut 0.4s ease 4s forwards;
+/* Title */
+
+h2{
+    text-align:center;
+    font-size:2.2rem;
+    font-weight:800;
+
+    background:linear-gradient(120deg,#1e3a8a,#2563eb,#3b82f6);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
 }
 
-@keyframes flashSlideIn {
-    from {
-        opacity: 0;
-        transform: translateY(-8px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+.subtitle{
+    text-align:center;
+    margin-bottom:30px;
+    color:#555;
 }
 
-@keyframes flashFadeOut {
-    from { opacity: 1; transform: translateY(0); }
-    to   { opacity: 0; transform: translateY(-6px); }
+/* ===================
+Progress Bar
+=================== */
+
+.progress-wrapper{
+    margin-bottom:30px;
 }
 
+.progress-text{
+    font-size:13px;
+    font-weight:600;
+    margin-bottom:6px;
+}
 
-        .card {
-            background: white;
-            width: 100%;
-            max-width: 750px;
-            padding: 35px;
-            border-radius: 16px;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.1);
-            animation: fadeIn 0.6s ease-in-out;
-        }
+.progress-bar-bg{
+    width:100%;
+    height:8px;
+    background:#e5e7eb;
+    border-radius:10px;
+    overflow:hidden;
+}
 
-        .feedback-container {
-            margin: 0 auto; /* Centers the block if it has a width */
-            font-family: 'Segoe UI', sans-serif;
-            background-color: #e6f2ff; /* Light Blue Background */
-            
-            /* Fix: Change flexbox to flex */
-            display: flex; 
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            
-            padding: 40px 15px;
-            min-height: 80vh; /* Ensures it takes up vertical space */
-        }
+.progress-bar{
+    height:100%;
+    width:0%;
+    background:linear-gradient(90deg,#2563eb,#60a5fa);
+    transition:width .4s ease;
+}
 
-        /* Add this to center the actual card inside the blue area */
-        .feedback-card {
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            width: 100%;
-            max-width: 600px; /* Adjust based on your visual preference */
-        }
+/* ===================
+Questions
+=================== */
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(15px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+.question{
+    margin-bottom:24px;
+}
 
-        h2 {
-            text-align: center;
-            margin-bottom: 10px;
-            color: #004080;
-        }
+.question label.title{
+    font-weight:600;
+    display:block;
+    margin-bottom:8px;
+}
 
-        .subtitle {
-            text-align: center;
-            font-size: 14px;
-            color: #555;
-            margin-bottom: 25px;
-        }
+/* Inputs */
 
-        .question {
-            margin-bottom: 22px;
-        }
+input[type=text],
+input[type=email]{
+    width:100%;
+    padding:12px;
 
-        .question label.title {
-            font-weight: 600;
-            display: block;
-            margin-bottom: 8px;
-            color: #333;
-        }
+    border-radius:10px;
+    border:1px solid #d1d5db;
 
-        input[type="text"],
-        input[type="email"] {
-            width: 100%;
-            padding: 10px;
-            border-radius: 8px;
-            border: 1px solid #ccc;
-            outline: none;
-            font-size: 14px;
-            transition: 0.3s;
-        }
+    transition:.3s;
+}
 
-        input[type="text"]:focus,
-        input[type="email"]:focus {
-            border-color: #3399ff;
-            box-shadow: 0 0 8px rgba(51,153,255,0.4);
-        }
+input:focus{
+    border-color:#2563eb;
+    box-shadow:0 0 10px rgba(37,99,235,.35);
+}
 
-        .options label {
-            display: block;
-            background: #f2f8ff;
-            padding: 10px 12px;
-            margin-bottom: 8px;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 14px;
-            border: 2px solid transparent;
-        }
+/* ===================
+Options
+=================== */
 
-        .options label:hover {
-            background: #d9ecff;
-            transform: scale(1.02);
-        }
+.options label{
+    display:block;
 
-        .options input {
-            margin-right: 8px;
-        }
+    padding:12px 14px;
 
-        /* Animated selection effect */
-        .options input:checked + span {
-            font-weight: 600;
-            color: #004080;
-        }
+    margin-bottom:8px;
 
-        .options input:checked {
-            accent-color: #3399ff;
-        }
+    border-radius:14px;
 
-        .options label:has(input:checked) {
-            background: #cce5ff;
-            border: 2px solid #3399ff;
-            transform: scale(1.03);
-        }
+    background:#f1f6ff;
 
-        button {
-            width: 100%;
-            padding: 12px;
-            border: none;
-            border-radius: 10px;
-            background: #3399ff;
-            color: white;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.3s;
-        }
+    cursor:pointer;
 
-        button:hover {
-            background: #007acc;
-            transform: scale(1.02);
-        }
+    border:2px solid transparent;
 
-        @media(max-width:600px){
-            .card{
-                padding: 20px;
-            }
-        }
+    transition:.25s;
 
-    </style>
-    {% endblock %}
+    position:relative;
+}
+
+.options label:hover{
+    transform:translateX(5px) scale(1.02);
+    background:#e6f0ff;
+}
+
+.options input{
+    margin-right:8px;
+}
+
+.options input:checked{
+    accent-color:#2563eb;
+}
+
+.options label:has(input:checked){
+    background:#dbeafe;
+    border:2px solid #3b82f6;
+    transform:scale(1.03);
+}
+
+/* ===================
+Button
+=================== */
+
+button{
+    width:100%;
+    padding:14px;
+
+    border:none;
+
+    border-radius:14px;
+
+    font-weight:600;
+
+    font-size:15px;
+
+    color:white;
+
+    background:linear-gradient(135deg,#2563eb,#3b82f6,#1d4ed8);
+
+    cursor:pointer;
+
+    transition:.3s;
+
+    box-shadow:0 12px 25px rgba(37,99,235,.35);
+}
+
+button:hover{
+    transform:translateY(-3px);
+    box-shadow:0 18px 35px rgba(37,99,235,.45);
+}
+
+/* ===================
+Success Popup
+=================== */
+
+.success-popup{
+    position:fixed;
+
+    top:50%;
+    left:50%;
+
+    transform:translate(-50%,-50%) scale(.7);
+
+    background:white;
+
+    padding:35px 45px;
+
+    border-radius:20px;
+
+    text-align:center;
+
+    box-shadow:0 30px 70px rgba(0,0,0,.25);
+
+    opacity:0;
+    pointer-events:none;
+
+    transition:.4s;
+
+    z-index:999;
+}
+
+.success-popup.show{
+    opacity:1;
+    transform:translate(-50%,-50%) scale(1);
+}
+
+.success-icon{
+    font-size:45px;
+    margin-bottom:10px;
+}
+
+</style>
+{% endblock %}
 
 {% block content %}
+
 <div class="feedback-container">
 
-    <h2>SmartIntern Feedback</h2>
-    {% with messages = get_flashed_messages(with_categories=true) %}
-  {% for category, message in messages %}
-    {% if category == "feedback_success" %}
-      <div id="feedback-flash" class="feedback-flash">
-        {{ message }}
-      </div>
-    {% endif %}
-  {% endfor %}
-{% endwith %}
-    <p class="subtitle">Your feedback helps us improve personalized internship and scholarship recommendations.</p>
+<div class="card">
 
-    <form action="/submit-feedback" method="POST">
+<h2>SmartIntern Feedback</h2>
 
-        <div class="question">
-            <label class="title">Your Name</label>
-            <input type="text" name="name" value="{{ prefill_name }}" required>
-        </div>
+<p class="subtitle">
+Your feedback helps improve personalized internship and scholarship recommendations.
+</p>
 
-        <div class="question">
-            <label class="title">Email Address</label>
-            <input type="email" name="email" value="{{ prefill_email }}" required>
-        </div>
+<div class="progress-wrapper">
 
-        <!-- Reusable Option Format -->
-        <!-- Important: wrap text in <span> for animation -->
+<div class="progress-text">
+Question <span id="progress-number">0</span>/8
+</div>
 
-        <div class="question">
-            <label class="title">1. How satisfied are you with SmartIntern recommendations?</label>
-            <div class="options">
-                <label><input type="radio" name="satisfaction" value="Very Satisfied" required><span> Very Satisfied</span></label>
-                <label><input type="radio" name="satisfaction" value="Satisfied"><span> Satisfied</span></label>
-                <label><input type="radio" name="satisfaction" value="Neutral"><span> Neutral</span></label>
-                <label><input type="radio" name="satisfaction" value="Unsatisfied"><span> Unsatisfied</span></label>
-                <label><input type="radio" name="satisfaction" value="Very Unsatisfied"><span> Very Unsatisfied</span></label>
-            </div>
-        </div>
+<div class="progress-bar-bg">
+<div class="progress-bar" id="progress-bar"></div>
+</div>
 
-        <div class="question">
-            <label class="title">2. Were the recommendations relevant to your profile?</label>
-            <div class="options">
-                <label><input type="radio" name="relevance" value="Very Relevant" required><span> Very Relevant</span></label>
-                <label><input type="radio" name="relevance" value="Somewhat Relevant"><span> Somewhat Relevant</span></label>
-                <label><input type="radio" name="relevance" value="Neutral"><span> Neutral</span></label>
-                <label><input type="radio" name="relevance" value="Not Relevant"><span> Not Relevant</span></label>
-            </div>
-        </div>
+</div>
 
-        <div class="question">
-            <label class="title">3. Which type did you use?</label>
-            <div class="options">
-                <label><input type="radio" name="used_type" value="Internship" required><span> Internship</span></label>
-                <label><input type="radio" name="used_type" value="Scholarship"><span> Scholarship</span></label>
-                <label><input type="radio" name="used_type" value="Both"><span> Both</span></label>
-            </div>
-        </div>
+<form action="/submit-feedback" method="POST" id="feedbackForm">
 
-        <div class="question">
-            <label class="title">4. Did SmartIntern save your time?</label>
-            <div class="options">
-                <label><input type="radio" name="time_saved" value="Yes" required><span> Yes</span></label>
-                <label><input type="radio" name="time_saved" value="No"><span> No</span></label>
-                <label><input type="radio" name="time_saved" value="Not Sure"><span> Not Sure</span></label>
-            </div>
-        </div>
+<div class="question">
+<label class="title">Your Name</label>
+<input type="text" name="name" value="{{ prefill_name }}" required>
+</div>
 
-        <div class="question">
-            <label class="title">5. How easy is SmartIntern to use?</label>
-            <div class="options">
-                <label><input type="radio" name="ease" value="Very Easy" required><span> Very Easy</span></label>
-                <label><input type="radio" name="ease" value="Easy"><span> Easy</span></label>
-                <label><input type="radio" name="ease" value="Neutral"><span> Neutral</span></label>
-                <label><input type="radio" name="ease" value="Difficult"><span> Difficult</span></label>
-            </div>
-        </div>
+<div class="question">
+<label class="title">Email Address</label>
+<input type="email" name="email" value="{{ prefill_email }}" required>
+</div>
 
-        <div class="question">
-            <label class="title">6. Overall Experience (Out of 5)</label>
-            <div class="options">
-                <label><input type="radio" name="overall_experience" value="1" required><span> 1 - Very Poor</span></label>
-                <label><input type="radio" name="overall_experience" value="2"><span> 2 - Poor</span></label>
-                <label><input type="radio" name="overall_experience" value="3"><span> 3 - Average</span></label>
-                <label><input type="radio" name="overall_experience" value="4"><span> 4 - Good</span></label>
-                <label><input type="radio" name="overall_experience" value="5"><span> 5 - Excellent</span></label>
-            </div>
-        </div>
+<!-- Questions remain same -->
 
-        <!-- Q7 -->
-        <div class="question">
-            <label class="title">
-             7. What factors should SmartIntern improve personalization on?
-            </label>
-            <div class="options">
-                <label>
-                    <input type="radio" name="improve" value="Skills" required>
-                    <span> Skills</span>
-                </label>
-                <label>
-                    <input type="radio" name="improve" value="Location">
-                    <span> Location</span>
-                </label>
-                <label>
-                    <input type="radio" name="improve" value="Education Level">
-                    <span> Education Level</span>
-                </label>
-                <label>
-                    <input type="radio" name="improve" value="Interests">
-                    <span> Interests</span>
-                </label>
-                <label>
-                    <input type="radio" name="improve" value="Experience">
-                    <span> Experience</span>
-                </label>
-                <label>
-                    <input type="radio" name="improve" value="All of the above">
-                    <span> All of the above</span>
-                </label>
-            </div>
-        </div>
+<div class="question">
+<label class="title">1. How satisfied are you with SmartIntern recommendations?</label>
+<div class="options">
+<label><input type="radio" name="satisfaction" value="Very Satisfied" required>Very Satisfied</label>
+<label><input type="radio" name="satisfaction" value="Satisfied">Satisfied</label>
+<label><input type="radio" name="satisfaction" value="Neutral">Neutral</label>
+<label><input type="radio" name="satisfaction" value="Unsatisfied">Unsatisfied</label>
+<label><input type="radio" name="satisfaction" value="Very Unsatisfied">Very Unsatisfied</label>
+</div>
+</div>
 
+<div class="question">
+<label class="title">2. Were the recommendations relevant to your profile?</label>
+<div class="options">
+<label><input type="radio" name="relevance" value="Very Relevant" required>Very Relevant</label>
+<label><input type="radio" name="relevance" value="Somewhat Relevant">Somewhat Relevant</label>
+<label><input type="radio" name="relevance" value="Neutral">Neutral</label>
+<label><input type="radio" name="relevance" value="Not Relevant">Not Relevant</label>
+</div>
+</div>
 
-        <div class="question">
-            <label class="title">
-            8. Would you recommend SmartIntern to other students?
-            </label>
-            <div class="options">
-                <label>
-                    <input type="radio" name="recommend" value="Yes" required>
-                    <span> Yes</span>
-                </label>
-                <label>
-                    <input type="radio" name="recommend" value="Maybe">
-                    <span> Maybe</span>
-                </label>
-                <label>
-                    <input type="radio" name="recommend" value="No">
-                    <span> No</span>
-                </label>
-            </div>
-        </div>
+<div class="question">
+<label class="title">3. Which type did you use?</label>
+<div class="options">
+<label><input type="radio" name="used_type" value="Internship" required>Internship</label>
+<label><input type="radio" name="used_type" value="Scholarship">Scholarship</label>
+<label><input type="radio" name="used_type" value="Both">Both</label>
+</div>
+</div>
 
-        <button type="submit">Submit Feedback</button>
+<div class="question">
+<label class="title">4. Did SmartIntern save your time?</label>
+<div class="options">
+<label><input type="radio" name="time_saved" value="Yes" required>Yes</label>
+<label><input type="radio" name="time_saved" value="No">No</label>
+<label><input type="radio" name="time_saved" value="Not Sure">Not Sure</label>
+</div>
+</div>
 
-    </form>
+<div class="question">
+<label class="title">5. How easy is SmartIntern to use?</label>
+<div class="options">
+<label><input type="radio" name="ease" value="Very Easy" required>Very Easy</label>
+<label><input type="radio" name="ease" value="Easy">Easy</label>
+<label><input type="radio" name="ease" value="Neutral">Neutral</label>
+<label><input type="radio" name="ease" value="Difficult">Difficult</label>
+</div>
+</div>
+
+<div class="question">
+<label class="title">6. Overall Experience (Out of 5)</label>
+<div class="options">
+<label><input type="radio" name="overall_experience" value="1" required>1 - Very Poor</label>
+<label><input type="radio" name="overall_experience" value="2">2 - Poor</label>
+<label><input type="radio" name="overall_experience" value="3">3 - Average</label>
+<label><input type="radio" name="overall_experience" value="4">4 - Good</label>
+<label><input type="radio" name="overall_experience" value="5">5 - Excellent</label>
+</div>
+</div>
+
+<div class="question">
+<label class="title">7. What factors should SmartIntern improve personalization on?</label>
+<div class="options">
+<label><input type="radio" name="improve" value="Skills" required>Skills</label>
+<label><input type="radio" name="improve" value="Location">Location</label>
+<label><input type="radio" name="improve" value="Education Level">Education Level</label>
+<label><input type="radio" name="improve" value="Interests">Interests</label>
+<label><input type="radio" name="improve" value="Experience">Experience</label>
+<label><input type="radio" name="improve" value="All of the above">All of the above</label>
+</div>
+</div>
+
+<div class="question">
+<label class="title">8. Would you recommend SmartIntern to other students?</label>
+<div class="options">
+<label><input type="radio" name="recommend" value="Yes" required>Yes</label>
+<label><input type="radio" name="recommend" value="Maybe">Maybe</label>
+<label><input type="radio" name="recommend" value="No">No</label>
+</div>
+</div>
+
+<button type="submit">Submit Feedback</button>
+
+</form>
+
+</div>
+</div>
+
+<div class="success-popup" id="successPopup">
+
+<div class="success-icon">🎉</div>
+
+<h3>Feedback Submitted!</h3>
+
+<p>Thank you for helping improve SmartIntern.</p>
 
 </div>
 
 {% endblock %}
+
 {% block extra_js %}
+
 <script>
-    setTimeout(function () {
-        const flash = document.getElementById("feedback-flash");
-        if (flash) {
-            flash.style.transition = "opacity 0.5s ease";
-            flash.style.opacity = "0";
-            setTimeout(() => flash.remove(), 500);
-        }
-    }, 3000);
+
+/* Progress Bar */
+
+const radios=document.querySelectorAll("input[type=radio]");
+const progressBar=document.getElementById("progress-bar");
+const progressNumber=document.getElementById("progress-number");
+
+let answered={};
+
+radios.forEach(r=>{
+r.addEventListener("change",()=>{
+answered[r.name]=true;
+
+let count=Object.keys(answered).length;
+
+progressNumber.innerText=count;
+progressBar.style.width=(count/8*100)+"%";
+});
+});
+
+/* Success Popup */
+
+const form=document.getElementById("feedbackForm");
+
+form.addEventListener("submit",()=>{
+setTimeout(()=>{
+document.getElementById("successPopup").classList.add("show");
+},300);
+});
+
 </script>
+
 {% endblock %}
